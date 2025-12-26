@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Academic Agent Pro</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkFjYWRlbWljIEFnZW50IiwKICAic2hvcnRfbmFtZSI6ICJBY2FkZW1pYyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzI5OTEvMjk5MTE0OC5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdCn0=">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+        // 1. CONFIGURATION
+        const actualConfig = JSON.parse(document.getElementById('firebase-config').textContent);
+        const appId = document.getElementById('app-id').textContent;
+        const apiKey = ""; // <--- PASTE GEMINI API KEY HERE (LINE 27)
+
+        const app = initializeApp(actualConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        // 2. UI ELEMENTS
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const statsContacted = document.getElementById('stats-contacted');
+
+        // 3. AUTH & DATA LOGIC
+        signInAnonymously(auth).catch(console.error);
+        onAuthStateChanged(auth, user => {
+            currentUser = user;
+            if (user) loadStats();
+        });
+
+        async function loadStats() {
+            const q = collection(db, 'users', currentUser.uid, 'universities');
+            onSnapshot(q, (snapshot) => {
+                statsContacted.textContent = snapshot.docs.length;
+            });
+        }
+
+        async function askGemini(prompt) {
+            if (!apiKey) return "AI is in offline mode. I can still save your data!";
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+                const data = await res.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (e) { return "I couldn't reach the AI. Check your API key."; }
+        }
+
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text || !currentUser) return;
+
+            addMessage(text, 'user');
+            chatInput.value = '';
+
+            if (text.toLowerCase().includes('add ')) {
+                const uniName = text.replace(/add /gi, '');
+                await setDoc(doc(db, 'users', currentUser.uid, 'universities', uniName.toLowerCase().replace(/\s/g, '')), {
+                    name: uniName,
+                    status: 'contacted',
+                    timestamp: Date.now()
+                });
+                addMessage(`Success! ${uniName} added to your PhD database.`, 'ai');
+            } else {
+                const response = await askGemini(text);
+                addMessage(response, 'ai');
+            }
+        };
+
+        function addMessage(text, role) {
+            const div = document.createElement('div');
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`;
+            div.innerHTML = `<div class="max-w-[85%] p-4 rounded-2xl ${role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200 border border-slate-700'} shadow-lg text-sm">${text}</div>`;
+            chatContainer.appendChild(div);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <script id="firebase-config" type="application/json">
+    {
+      "apiKey": "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+      "authDomain": "university-outreach-log.firebaseapp.com",
+      "projectId": "university-outreach-log",
+      "storageBucket": "university-outreach-log.firebasestorage.app",
+      "messagingSenderId": "566149647802",
+      "appId": "1:566149647802:web:490c7cc3d10b7cd7732183",
+      "measurementId": "G-XXFPWLS95J"
+    }
+    </script>
+    <div id="app-id" class="hidden">university-outreach-log</div>
+
+    <header class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <span class="font-black text-white">Y</span>
+            </div>
+            <div>
+                <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase">Academic Agent</h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase">Ph.D. Physical Chemist Hub</p>
+            </div>
+        </div>
+        <div class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+            <span id="stats-contacted" class="text-xs font-bold">0</span>
+        </div>
+    </header>
+
+    <main id="chat-container" class="flex-1 p-4 pb-32">
+        <div class="flex justify-start mb-4">
+            <div class="max-w-[85%] p-4 rounded-2xl bg-slate-800 text-slate-200 border border-slate-700 shadow-lg text-sm">
+                Salam Yewilsaw. Your PhD 2026 database is live. Type "Add [University Name]" to save a school.
+            </div>
+        </div>
+    </main>
+
+    <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
+        <form id="chat-form" class="max-w-md mx-auto relative">
+            <input id="chat-input" type="text" autocomplete="off" placeholder="Add NJIT..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl">
+            <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </form>
+    </footer>
+</body>
+</html>
