@@ -128,34 +128,29 @@
     }
 
     chatForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const text = chatInput.value.trim();
-      if (!text || !currentUser) return;
-      
-      addMessage(text, "user");
-      chatInput.value = "";
 
       if (text.toLowerCase().startsWith("add ")) {
-        const inputName = text.replace(/^add\s+/i, "").trim().toLowerCase();
-        const match = masterDataset.find(u => 
-          u.name.toLowerCase().includes(inputName) || 
-          (u.aliases && u.aliases.some(a => a.toLowerCase().includes(inputName)))
-        );
+  const normalize = str => str.toLowerCase().replace(/\s+/g, "");
+  const inputName = normalize(text.replace(/^add\s+/i, "").trim());
 
-        const finalName = match ? match.name : text.replace(/^add\s+/i, "");
-        
-        await setDoc(doc(db, "users", currentUser.uid, "universities", finalName.replace(/\s+/g, '-').toLowerCase()), {
-          name: finalName,
-          status: match ? match.status : "Contacted",
-          reason: match ? match.reason : "General monitoring in master log.",
-          contacts: match ? match.contacts : "Admissions Office",
-          timestamp: Date.now()
-        });
-        addMessage(`Successfully logged: ${finalName}.`, "ai");
-      } else {
-        const reply = await askGemini(text);
-        addMessage(reply, "ai");
-      }
+  const match = masterDataset.find(u =>
+    normalize(u.name) === inputName ||
+    (u.aliases && u.aliases.some(a => normalize(a) === inputName))
+  );
+
+  const finalName = match ? match.name : text.replace(/^add\s+/i, "");
+  await setDoc(doc(db, "users", currentUser.uid, "universities", finalName.replace(/\s+/g, '-').toLowerCase()), {
+    name: finalName,
+    aliases: match?.aliases || [],
+    status: match?.status || "Contacted",
+    reason: match?.reason || "General monitoring in master log.",
+    contacts: match?.contacts || "Admissions Office",
+    timestamp: Date.now()
+  });
+  addMessage(`Successfully logged: ${finalName}.`, "ai");
+}
+
+       }
     };
 
     function renderUniversities(docs) {
