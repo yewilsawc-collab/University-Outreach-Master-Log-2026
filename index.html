@@ -128,35 +128,45 @@
     }
 
     chatForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const text = chatInput.value.trim();
-      if (!text || !currentUser) return;
-      
-      addMessage(text, "user");
-      chatInput.value = "";
+  e.preventDefault();
+  const text = chatInput.value.trim();
+  if (!text || !currentUser) return;
 
-      if (text.toLowerCase().startsWith("add ")) {
-        const inputName = text.replace(/^add\s+/i, "").trim().toLowerCase();
-        const match = masterDataset.find(u => 
-          u.name.toLowerCase().includes(inputName) || 
-          (u.aliases && u.aliases.some(a => a.toLowerCase().includes(inputName)))
-        );
+  addMessage(text, "user");
+  chatInput.value = "";
 
-        const finalName = match ? match.name : text.replace(/^add\s+/i, "");
-        
-        await setDoc(doc(db, "users", currentUser.uid, "universities", finalName.replace(/\s+/g, '-').toLowerCase()), {
-          name: finalName,
-          status: match ? match.status : "Contacted",
-          reason: match ? match.reason : "General monitoring in master log.",
-          contacts: match ? match.contacts : "Admissions Office",
-          timestamp: Date.now()
-        });
-        addMessage(`Successfully logged: ${finalName}.`, "ai");
-      } else {
-        const reply = await askGemini(text);
-        addMessage(reply, "ai");
+  if (text.toLowerCase().startsWith("add ")) {
+    const normalize = str => str.toLowerCase().replace(/\s+/g, "");
+    const rawInput = text.replace(/^add\s+/i, "").trim();
+    const inputName = normalize(rawInput);
+
+    // Match against dataset names and aliases
+    const match = masterDataset.find(u =>
+      normalize(u.name) === inputName ||
+      (u.aliases && u.aliases.some(a => normalize(a) === inputName))
+    );
+
+    const finalName = match ? match.name : rawInput;
+
+    await setDoc(
+      doc(db, "users", currentUser.uid, "universities", finalName.replace(/\s+/g, "-").toLowerCase()),
+      {
+        name: finalName,
+        aliases: match?.aliases || [],
+        status: match?.status || "Contacted",
+        reason: match?.reason || "General monitoring in master log.",
+        contacts: match?.contacts || "Admissions Office",
+        timestamp: Date.now()
       }
-    };
+    );
+
+    addMessage(`Successfully logged: ${finalName}.`, "ai");
+  } else {
+    const reply = await askGemini(text);
+    addMessage(reply, "ai");
+  }
+};
+                                                                                    
 
     function renderUniversities(docs) {
       uniList.innerHTML = docs.map(u => `
