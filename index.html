@@ -64,34 +64,36 @@
     const statsTotal = document.getElementById("stats-total");
 
     const masterDataset = [
-  { name: "Yale University", aliases: ["Yale"], status: "Review", reason: "Submitted; checking Physical Chem faculty alignment.", contacts: "Dept. Admissions" },
-  { name: "New Jersey Institute of Technology", aliases: ["NJIT"], status: "Complete", reason: "Admissions coach contacted; supervisor LoR uploaded.", contacts: "Admissions Coach" },
-  { name: "University of California, Berkeley", aliases: ["UC Berkeley", "Berkeley"], status: "Contacted", reason: "Targeting Interfacial phenomena research labs.", contacts: "Dept. Office" },
-  { name: "University of Oxford", aliases: ["Oxford"], status: "Tracking", reason: "Ref #37273; verification of international fee status.", contacts: "Graduate Admissions" },
-  { name: "University of Chicago", aliases: ["UChicago"], status: "Pending", reason: "Manual override request for LoR upload.", contacts: "Lilian (Dept. Coordinator)" },
-  { name: "UC Davis", aliases: ["UC Davis", "Davis", "UCD"], status: "Pivoted", reason: "Moving to ChemE for better funding/waiver alignment.", contacts: "Ryan Gorsiski" },
-  { name: "Louisiana State University", aliases: ["LSU"], status: "Appeal", reason: "Direct request to Dr. Revati Kumar regarding kinetics.", contacts: "Dr. Kumar (PI)" },
-  { name: "University of Cincinnati", aliases: ["Cincinnati"], status: "Contacted", reason: "Registrar PDF sent; waiver code activation pending.", contacts: "Registrar" },
-  { name: "University of Florida", aliases: ["Florida"], status: "Pivoted", reason: "Targeted Sophonie Jean and Dr. Ziegler.", contacts: "Dept. Office" },
-  { name: "University of Houston", aliases: ["Houston"], status: "Inquiry", reason: "Inquiry regarding departmental sponsorship.", contacts: "Graduate Office" },
-  { name: "Virginia Commonwealth University", aliases: ["VCU"], status: "Inquiry", reason: "International waiver inquiry for physical chem.", contacts: "Graduate Office" },
-  { name: "University of California, Riverside", aliases: ["UCR"], status: "Interfolio", reason: "Partnership rate code inquiry for LoR delivery.", contacts: "Graduate Division" },
-  { name: "University of California, Santa Barbara", aliases: ["UCSB"], status: "Interfolio", reason: "Partnership rate code inquiry for LoR delivery.", contacts: "Graduate Division" },
-  { name: "Georgia Institute of Technology", aliases: ["Georgia Tech"], status: "Contacted", reason: "Monitoring departmental rate codes for Ph.D. cycle.", contacts: "Admissions Office" },
-  { name: "University of Wisconsin–Madison", aliases: ["Madison"], status: "Contacted", reason: "Departmental review of waiver eligibility.", contacts: "Dept. Coordinator" },
-  { name: "UNC Chapel Hill", aliases: ["UNC"], status: "Contacted", reason: "Monitoring for late-cycle sponsorship availability.", contacts: "Admissions Office" },
-  { name: "Johns Hopkins University", aliases: ["JHU"], status: "Monitoring", reason: "Holiday window monitoring for waiver codes.", contacts: "Admissions Office" },
-  { name: "Princeton University", aliases: ["Princeton"], status: "Monitoring", reason: "Central portal monitoring for waiver updates.", contacts: "Graduate School" },
-  { name: "Stanford University", aliases: ["Stanford"], status: "Monitoring", reason: "Central portal monitoring for waiver updates.", contacts: "Graduate School" },
-  { name: "Purdue University", aliases: ["Purdue"], status: "Monitoring", reason: "Awaiting response on international funding codes.", contacts: "Admissions" },
-  { name: "Cornell University", aliases: ["Cornell"], status: "Monitoring", reason: "Central portal monitoring for waiver updates.", contacts: "Admissions" },
-  { name: "University of California, Los Angeles", aliases: ["UCLA"], status: "Closed", reason: "DGE Triage denial (Tracking SR01137907).", contacts: "Graduate Division" },
-  { name: "Massachusetts Institute of Technology", aliases: ["MIT"], status: "Closed", reason: "Dec 1st deadline passed; no international waiver path.", contacts: "Dept. Coordinator" },
-  { name: "Harvard University", aliases: ["Harvard"], status: "Closed", reason: "Financial constraint for LoR delivery.", contacts: "Admissions" },
-  { name: "Columbia University", aliases: ["Columbia"], status: "Closed", reason: "Required financial payment for LoR delivery.", contacts: "Admissions" },
-  { name: "University of California, San Francisco", aliases: ["UCSF"], status: "Closed", reason: "Research mismatch for Physical Chemistry focus.", contacts: "Admissions" },
-  { name: "Caltech", aliases: ["California Institute of Technology"], status: "Closed", reason: "No international fee waiver pathway available.", contacts: "Graduate Office" }
-    const additionalSchools = ["Stanford", "Princeton", "Cornell", "Purdue", "Rice", "Johns Hopkins", "Georgia Tech", "UChicago", "UCR", "UCSB", "Cincinnati", "Florida", "Houston", "Penn State", "Texas A&M", "University of Washington", "University of Michigan", "Duke", "Northwestern", "Emory"];
+      { name: "Yale University", aliases: ["Yale"], status: "Review", reason: "Submitted; checking Physical Chem faculty alignment.", contacts: "Dept. Admissions" },
+      { name: "New Jersey Institute of Technology", aliases: ["NJIT"], status: "Complete", reason: "Admissions coach contacted; supervisor LoR uploaded.", contacts: "Admissions Coach" },
+      { name: "University of California, Berkeley", aliases: ["UC Berkeley", "Berkeley"], status: "Contacted", reason: "Targeting Interfacial phenomena research labs.", contacts: "Dept. Office" },
+      { name: "University of Oxford", aliases: ["Oxford"], status: "Tracking", reason: "Ref #37273; verification of international fee status.", contacts: "Graduate Admissions" },
+      { name: "University of Chicago", aliases: ["UChicago"], status: "Pending", reason: "Manual override request for LoR upload.", contacts: "Lilian (Dept. Coordinator)" },
+      { name: "UC Davis", aliases: ["UC Davis", "Davis", "UCD"], status: "Pivoted", reason: "Moving to ChemE for better funding/waiver alignment.", contacts: "Ryan Gorsiski" },
+      { name: "Louisiana State University", aliases: ["LSU"], status: "Appeal", reason: "Direct request to Dr. Revati Kumar regarding kinetics.", contacts: "Dr. Kumar (PI)" },
+      { name: "University of Cincinnati", aliases: ["Cincinnati"], status: "Contacted", reason: "Registrar PDF sent; waiver code activation pending.", contacts: "Registrar" },
+      { name: "University of Florida", aliases: ["Florida"], status: "Pivoted", reason: "Targeted Sophonie Jean and Dr. Ziegler.", contacts: "Dept. Office" },
+      { name: "University of Houston", aliases: ["Houston"], status: "Inquiry", reason: "Inquiry regarding departmental sponsorship.", contacts: "Graduate Office" },
+      { name: "Virginia Commonwealth University", aliases: ["VCU"], status: "Inquiry", reason: "International waiver inquiry for physical chem.", contacts: "Graduate Office" },
+      { name: "University of California, Riverside", aliases: ["UCR"], status: "Interfolio", reason: "Partnership rate code inquiry for LoR delivery.", contacts: "Graduate Division" },
+      { name: "University of California, Santa Barbara", aliases: ["UCSB"], status: "Interfolio", reason: "Partnership rate code inquiry for LoR delivery.", contacts: "Graduate Division" },
+      { name: "Georgia Institute of Technology", aliases: ["Georgia Tech"], status: "Contacted", reason: "Monitoring departmental rate codes for Ph.D. cycle.", contacts: "Admissions Office" },
+      { name: "University of Wisconsin–Madison", aliases: ["Madison"], status: "Contacted", reason: "Departmental review of waiver eligibility.", contacts: "Dept. Coordinator" },
+      { name: "UNC Chapel Hill", aliases: ["UNC"], status: "Contacted", reason: "Monitoring for late-cycle sponsorship availability.", contacts: "Admissions Office" },
+      { name: "Johns Hopkins University", aliases: ["JHU"], status: "Monitoring", reason: "Holiday window monitoring for waiver codes.", contacts: "Admissions Office" },
+      { name: "Princeton University", aliases: ["Princeton"], status: "Monitoring", reason: "Central portal monitoring for waiver updates.", contacts: "Graduate School" },
+      { name: "Stanford University", aliases: ["Stanford"], status: "Monitoring", reason: "Central portal monitoring for waiver updates.", contacts: "Graduate School" },
+      { name: "Purdue University", aliases: ["Purdue"], status: "Monitoring", reason: "Awaiting response on international funding codes.", contacts: "Admissions" },
+      { name: "Cornell University", aliases: ["Cornell"], status: "Monitoring", reason: "Central portal monitoring for waiver updates.", contacts: "Admissions" },
+      { name: "University of California, Los Angeles", aliases: ["UCLA"], status: "Closed", reason: "DGE Triage denial (Tracking SR01137907).", contacts: "Graduate Division" },
+      { name: "Massachusetts Institute of Technology", aliases: ["MIT"], status: "Closed", reason: "Dec 1st deadline passed; no international waiver path.", contacts: "Dept. Coordinator" },
+      { name: "Harvard University", aliases: ["Harvard"], status: "Closed", reason: "Financial constraint for LoR delivery.", contacts: "Admissions" },
+      { name: "Columbia University", aliases: ["Columbia"], status: "Closed", reason: "Required financial payment for LoR delivery.", contacts: "Admissions" },
+      { name: "University of California, San Francisco", aliases: ["UCSF"], status: "Closed", reason: "Research mismatch for Physical Chemistry focus.", contacts: "Admissions" },
+      { name: "Caltech", aliases: ["California Institute of Technology"], status: "Closed", reason: "No international fee waiver pathway available.", contacts: "Graduate Office" }
+    ];
+
+    const additionalSchools = ["Penn State", "Texas A&M", "University of Washington", "University of Michigan", "Duke", "Northwestern", "Emory"];
     additionalSchools.forEach(s => masterDataset.push({ name: s, aliases: [s], status: "Contacted", reason: "Master log monitoring for waiver availability.", contacts: "Admissions" }));
 
     let currentUser = null;
@@ -100,7 +102,7 @@
       if (user) { 
         currentUser = user; 
         startRealtime(); 
-        addMessage(`Good day.`, "ai");
+        addMessage(`Good day, Yewilsaw. Your Physical Chemistry PhD Hub is ready.`, "ai");
       }
     });
 
@@ -118,7 +120,7 @@
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: `User: Yewilsaw Chanie, Physical Chemistry Ph.D. applicant 2026. Thesis: Kinetics of adsorption in mordenite. Expertise: MATLAB, Linux, FT-IR, TGA, CHN. Context: 150 school outreach. Answer: ${prompt}` }] }] })
+          body: JSON.stringify({ contents: [{ parts: [{ text: `User: Yewilsaw Chanie, Physical Chemistry Ph.D. applicant 2026. Thesis: Kinetics of adsorption in mordenite. Expertise: MATLAB, Linux, FT-IR, TGA, CHN. Answer: ${prompt}` }] }] })
         });
         const data = await res.json();
         return data.candidates[0].content.parts[0].text;
@@ -135,8 +137,6 @@
 
       if (text.toLowerCase().startsWith("add ")) {
         const inputName = text.replace(/^add\s+/i, "").trim().toLowerCase();
-        
-        // Alias and Name Matching
         const match = masterDataset.find(u => 
           u.name.toLowerCase().includes(inputName) || 
           (u.aliases && u.aliases.some(a => a.toLowerCase().includes(inputName)))
@@ -183,4 +183,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
