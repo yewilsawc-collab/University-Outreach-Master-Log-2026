@@ -151,33 +151,37 @@
   addMessage(text, "user");
   chatInput.value = "";
 
+  // 1. CHECK FOR "ADD" COMMAND FIRST
   if (text.toLowerCase().startsWith("add ")) {
-    const normalize = str => str.toLowerCase().replace(/\s+/g, "");
-    const rawInput = text.replace(/^add\s+/i, "").trim();
-    const inputName = normalize(rawInput);
+    try {
+      const normalize = str => str.toLowerCase().replace(/\s+/g, "");
+      const rawInput = text.replace(/^add\s+/i, "").trim();
+      const inputName = normalize(rawInput);
 
-    // Match against dataset names and aliases
-    const match = masterDataset.find(u =>
-      normalize(u.name) === inputName ||
-      (u.aliases && u.aliases.some(a => normalize(a) === inputName))
-    );
+      const match = masterDataset.find(u =>
+        normalize(u.name) === inputName ||
+        (u.aliases && u.aliases.some(a => normalize(a) === inputName))
+      );
 
-    const finalName = match ? match.name : rawInput;
+      const finalName = match ? match.name : rawInput;
+      const docId = finalName.replace(/\s+/g, "-").toLowerCase();
 
-    await setDoc(
-      doc(db, "users", currentUser.uid, "universities", finalName.replace(/\s+/g, "-").toLowerCase()),
-      {
+      // SAVE TO FIREBASE IMMEDIATELY
+      await setDoc(doc(db, "users", currentUser.uid, "universities", docId), {
         name: finalName,
-        aliases: match?.aliases || [],
         status: match?.status || "Contacted",
         reason: match?.reason || "General monitoring in master log.",
         contacts: match?.contacts || "Admissions Office",
         timestamp: Date.now()
-      }
-    );
+      });
 
-    addMessage(`Successfully logged: ${finalName}.`, "ai");
-  } else {
+      addMessage(`✅ Logged: ${finalName}. (Database updated)`, "ai");
+    } catch (err) {
+      addMessage(`❌ Database Error: ${err.message}`, "ai");
+    }
+  } 
+  // 2. IF NOT AN "ADD" COMMAND, TALK TO GEMINI
+  else {
     const reply = await askGemini(text);
     addMessage(reply, "ai");
   }
