@@ -3,6 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Academic Agent Pro | Manual Command</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="firebase-config" type="application/json">
+  {
+    "apiKey": "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+    "authDomain": "university-outreach-log.firebaseapp.com",
+    "projectId": "university-outreach-log",
+    "storageBucket": "university-outreach-log.firebasestorage.app",
+    "messagingSenderId": "566149647802",
+    "appId": "1:566149647802:web:490c7cc3d10b7cd7732183"
+  }
+  </script>
+</head>
+<body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans overflow-x-hidden">
+
+  <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <span class="font-black text-white text-lg">Y</span>
+      </div>
+      <div>
+        <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
+        <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">Yewilsaw Chanie | yewilsawc@gmail.com</p>
+      </div>
+    </div>
+    <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 Targets</div>
+  </header>
+
+  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 overflow-x-auto whitespace-nowrap scrollbar-hide py-3 px-4 flex gap-2">
+    <button id="tab-Global" onclick="switchChatLog('Global')" class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-blue-500 bg-blue-600/20 text-blue-400 transition-all">Global Advisor</button>
+    <button id="tab-Logistics" onclick="switchChatLog('Logistics')" class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-slate-700 text-slate-500 transition-all">Portal Status</button>
+    <div id="dynamic-uni-tabs" class="flex gap-2 border-l border-slate-800 pl-2"></div>
+  </nav>
+
+  <main class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full">
+    <div id="portal-details-panel" class="hidden mb-6 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+       <h2 id="active-panel-title" class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">University Details</h2>
+       <div id="active-panel-content" class="text-[11px] text-slate-300 leading-relaxed space-y-2 whitespace-pre-wrap"></div>
+    </div>
+    <div id="chat-container" class="space-y-4 min-h-[50vh]"></div>
+  </main>
+
+  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
+    <form id="chat-form" class="max-w-md mx-auto relative">
+      <input id="chat-input" type="text" autocomplete="off" placeholder="Add [University] or message..." 
+             class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
+      <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </form>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+    const app = initializeApp(JSON.parse(document.getElementById("firebase-config").textContent));
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let activeLog = 'Global';
+
+    // PRE-LOADED DATA FROM YOUR COMMUNICATIONS
+    const MASTER_DATA = {
+      "Yale University": "• Account: yewilsawchanie@gmail.com\n• Status: Under Review (Sent Dec 17)\n• Materials: 1/3 LoRs received (MSc Supervisor). Explanatory doc uploaded for 2014 gap.\n• Missing: 2 Letters.\n• Contacts: graduate.admissions@yale.edu, chemistry.dgs@yale.edu",
+      "New Jersey Institute of Technology": "• Status: Complete (As of Dec 21)\n• Reason: Admissions coach internal review successful.\n• Materials: Supervisor LoR and Personal Statement verified.",
+      "Virginia Tech": "• Status: PAYMENT REQUIRED\n• Alert: Fee Waiver DENIED (Dec 22). Documentation did not support VSU enrollment.\n• Action: Pay fee or submit appeal referencing Ambo University Lecturer status.",
+      "University of California, Berkeley": "• Status: Submitted\n• Focus: Physical Chem (Experimental)\n• PIs Listed: 1. Head-Gordon, 2. Leone, 3. Neumark",
+      "Logistics": "Managing identity bridge for yewilsawchanie@gmail.com.\nHigh Priority: Yale LoR follow-up & Virginia Tech fee appeal."
+    };
+
+    const chatHistories = {
+      Global: [{ role: 'ai', text: "Agent Online. Ready for your 2026 Ph.D. cycle. Type 'Add [University]' to expand your log." }],
+      Logistics: [{ role: 'ai', text: "Monitoring portal communications for yewilsawchanie@gmail.com." }]
+    };
+
+    onAuthStateChanged(auth, (user) => { if (user) { currentUser = user; syncLogs(); renderChat(); } });
+    signInAnonymously(auth);
+
+    window.switchChatLog = (logId) => {
+      activeLog = logId;
+      document.querySelectorAll('nav button').forEach(b => b.classList.replace('bg-blue-600/20', 'bg-transparent'));
+      const activeBtn = document.getElementById(`tab-${logId}`);
+      if(activeBtn) activeBtn.classList.replace('bg-transparent', 'bg-blue-600/20');
+      
+      const panel = document.getElementById('portal-details-panel');
+      const dataKey = MASTER_DATA[logId] ? logId : (logId === 'Logistics' ? 'Logistics' : null);
+      
+      if (dataKey) {
+        panel.classList.remove('hidden');
+        document.getElementById('active-panel-title').innerText = `${logId} Snapshot`;
+        document.getElementById('active-panel-content').innerText = MASTER_DATA[dataKey];
+      } else { panel.classList.add('hidden'); }
+      
+      renderChat();
+    };
+
+    function syncLogs() {
+      const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snap) => {
+        const tabs = document.getElementById('dynamic-uni-tabs');
+        tabs.innerHTML = '';
+        const docs = snap.docs.map(d => d.data());
+        document.getElementById("stats-total").textContent = `${docs.length} Targets`;
+        docs.forEach(u => {
+          if (!chatHistories[u.name]) chatHistories[u.name] = [{ role: 'ai', text: `Log created for ${u.name}.` }];
+          const btn = document.createElement('button');
+          btn.id = `tab-${u.name}`; btn.innerText = u.name;
+          btn.className = "px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-slate-700 text-slate-400 bg-slate-800/50 flex-shrink-0";
+          btn.onclick = () => switchChatLog(u.name);
+          tabs.appendChild(btn);
+        });
+      });
+    }
+
+    document.getElementById("chat-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const isAdd = text.toLowerCase().startsWith("add ");
+
+      if (isAdd) {
+        const uni = text.replace(/^add\s+/i, "");
+        await setDoc(doc(db, "users", currentUser.uid, "universities", uni.toLowerCase().replace(/\s/g, "-")), { name: uni, timestamp: Date.now() });
+        addMessage(`
+          <div class="space-y-2">
+            <p class="font-bold text-emerald-400">✅ ${uni} added.</p>
+            <p class="text-[10px] text-slate-400">Log created. Click when ready to research:</p>
+            <button onclick="window.open('https://scholar.google.com/scholar?q=${uni}+Physical+Chemistry+kinetics+mordenite', '_blank')" 
+                    class="px-3 py-1 bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded text-[9px] font-black uppercase">
+              Research PIs
+            </button>
+          </div>
+        `, 'ai');
+      } else {
+        // Manual/Quiet mode for general chat
+        addMessage(text, 'user');
+      }
+      input.value = "";
+    };
+
+    function addMessage(text, role) {
+      if (!chatHistories[activeLog]) chatHistories[activeLog] = [];
+      chatHistories[activeLog].push({ role, text });
+      renderChat();
+    }
+
+    function renderChat() {
+      const container = document.getElementById("chat-container");
+      container.innerHTML = (chatHistories[activeLog] || []).map(m => `
+        <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}">
+          <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${m.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
+            ${m.text}
+          </div>
+        </div>
+      `).join('');
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Academic Agent Pro | Master Command</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="firebase-config" type="application/json">
@@ -41,61 +212,6 @@
     <div id="portal-details-panel" class="hidden mb-6 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
        <h2 id="active-panel-title" class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">University Details</h2>
        <div id="active-panel-content" class="text-[11px] text-slate-300 leading-relaxed space-y-2"></div>
-    </div>
-    <div id="chat-container" class="space-y-4 min-h-[50vh]"></div>
-  </main>
-
-  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
-    <form id="chat-form" class="max-w-md mx-auto relative">
-      <input id="chat-input" type="text" autocomplete="off" placeholder="Add school, check status, or chat..." 
-             class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
-      <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
-    </form>
-  </footer>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-
-    const app = initializeApp(JSON.parse(document.getElementById("firebase-config").textContent));
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const GEMINI_KEY = "AIzaSyDRHoimQpL6x1475X-KdA2cUmB7svg5-Gg";
-
-    let currentUser = null;
-    let activeLog = 'Global';
-
-    // MASTER DATA FROM YOUR FILES
-    const PORTAL_DATA = {
-      "Yale": "Status: Review. Missing: 2 Letters. Account: yewilsawchanie@. PIs: Interfacial/Kinetics focus. Contact: chemistry.dgs@yale.edu.",
-      "NJIT": "Status: Complete. Admissions Coach contacted. Supervisor LoR uploaded.",
-      "Virginia Tech": "Status: Payment Needed. Waiver Denied 12/22. Documentation for VSU enrollment missing.",
-      "Berkeley": "Status: Submitted (Chemistry PhD). PI Rank: 1. Head-Gordon, 2. Leone, 3. Neumark."
-    };
-
-    const chatHistories = {
-      Global: [{ role: 'ai', text: "Agent Online. I have your Mordenite research (DOI: 10.1002/jctb.4632) and Berkeley PI preferences loaded." }],
-      Logistics: [{ role: 'ai', text: "Monitoring yewilsawchanie@gmail.com. Yale LoR gap and VT fee waiver issues identified." }]
-    };
-
-    onAuthStateChanged(auth, (user) => { if (user) { currentUser = user; syncLogs(); renderChat(); } });
-    signInAnonymously(auth);
-
-    window.switchChatLog = (logId) => {
-      activeLog = logId;
-      document.querySelectorAll('nav button').forEach(b => b.classList.replace('bg-blue-600/20', 'bg-transparent'));
-      const activeBtn = document.getElementById(`tab-${logId}`);
-      if(activeBtn) activeBtn.classList.replace('bg-transparent', 'bg-blue-600/20');
-      
-      const panel = document.getElementById('portal-details-panel');
-      if (PORTAL_DATA[logId]) {
-        panel.classList.remove('hidden');
-        document.getElementById('active-panel-title').innerText = `${logId} Portal Snapshot`;
-        document.getElementById('active-panel-content').innerText = PORTAL_DATA[logId];
-      } else { panel.classList.add('hidden'); }
       
       renderChat();
     };
