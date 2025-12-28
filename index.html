@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Academic Agent Pro | Ph.D. Command Center</title>
+  <title>Academic Agent Pro | Master Command</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="firebase-config" type="application/json">
   {
@@ -16,7 +16,7 @@
   }
   </script>
 </head>
-<body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans overflow-x-hidden">
 
   <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
     <div class="flex items-center gap-3">
@@ -25,54 +25,30 @@
       </div>
       <div>
         <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
-        <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">Yewilsaw Chanie | Ph.D. Physical Chem 2026</p>
+        <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">Yewilsaw Chanie | yewilsawc@gmail.com</p>
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <button onclick="window.exportAllData()" title="Full System Backup" class="bg-blue-600/20 p-2 rounded-lg border border-blue-500/30 hover:bg-blue-600/40 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-      </button>
-      <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 Schools</div>
-    </div>
+    <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">Loading...</div>
   </header>
 
-  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex">
-    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400 transition-all">University Log</button>
-    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500 transition-all">AI Advisor</button>
-    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500 transition-all">Data Vault</button>
+  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 overflow-x-auto whitespace-nowrap scrollbar-hide py-3 px-4 flex gap-2">
+    <button id="tab-Global" onclick="switchChatLog('Global')" class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-blue-500 bg-blue-600/20 text-blue-400 transition-all">Global Advisor</button>
+    <button id="tab-Logistics" onclick="switchChatLog('Logistics')" class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-slate-700 text-slate-500 transition-all">Portal Status (yewilsawchanie@)</button>
+    <div id="dynamic-uni-tabs" class="flex gap-2 border-l border-slate-800 pl-2"></div>
   </nav>
 
   <main class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full">
-    
-    <div id="log-view" class="space-y-4">
-      <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
+    <div id="portal-details-panel" class="hidden mb-6 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+       <h2 id="active-panel-title" class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">University Details</h2>
+       <div id="active-panel-content" class="text-[11px] text-slate-300 leading-relaxed space-y-2"></div>
     </div>
-
-    <div id="chat-view" class="hidden">
-      <div id="chat-container" class="space-y-4 mb-8 min-h-[50vh]"></div>
-    </div>
-
-    <div id="vault-view" class="hidden space-y-6">
-      <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-4">Form Filler Vault (Berkeley Data)</h2>
-        <div class="space-y-3" id="vault-items"></div>
-      </div>
-      
-      <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-        <h2 class="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-4">Thesis Optimizer</h2>
-        <input type="file" id="file-input" class="hidden" onchange="window.handleConversion(event)" />
-        <button onclick="document.getElementById('file-input').click()" class="w-full py-4 border-2 border-dashed border-slate-700 rounded-xl text-slate-500 text-xs font-bold hover:border-emerald-500/50 hover:text-emerald-400 transition-all">
-          Upload Thesis to Optimize for Portal Uploads
-        </button>
-      </div>
-    </div>
-
+    <div id="chat-container" class="space-y-4 min-h-[50vh]"></div>
   </main>
 
   <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
     <form id="chat-form" class="max-w-md mx-auto relative">
-      <input id="chat-input" type="text" autocomplete="off" placeholder="Message or 'add Princeton'..." 
-             class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl backdrop-blur-md" />
+      <input id="chat-input" type="text" autocomplete="off" placeholder="Add school, check status, or chat..." 
+             class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
       <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       </button>
@@ -82,146 +58,107 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, collection, onSnapshot, query, orderBy, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-    const config = JSON.parse(document.getElementById("firebase-config").textContent);
-    const app = initializeApp(config);
+    const app = initializeApp(JSON.parse(document.getElementById("firebase-config").textContent));
     const auth = getAuth(app);
     const db = getFirestore(app);
     const GEMINI_KEY = "AIzaSyDRHoimQpL6x1475X-KdA2cUmB7svg5-Gg";
 
-    const chatContainer = document.getElementById("chat-container");
-    const uniList = document.getElementById("uni-list");
-    const vaultItems = document.getElementById("vault-items");
-
-    window.allDocs = [];
     let currentUser = null;
+    let activeLog = 'Global';
 
-    // --- INTEGRATED DATA VAULT CONTENT ---
-    const vaultData = [
-      { label: "M.Sc. Thesis Title", text: "Kinetics study of Adsorption and desorption of Ionic Liquid, 1-methyl-3-methylimidazolium bromide into/out of Mordenite." },
-      { label: "Research Goal", text: "Transitioning from phenomenological modeling of surface interactions to quantum mechanical electronic structure theory for materials chemistry." },
-      { label: "Berkeley PIs", text: "1. Martin Head-Gordon (Computational), 2. Stephen Leone (Ultrafast), 3. Daniel Neumark (Interfacial)." },
-      { label: "Technical Tools", text: "MATLAB, FT-IR Spectroscopy, TGA, CHN-Elemental Analysis, OriginLab." },
-      { label: "Credentials", text: "M.Sc. Phys Chem (3.34 GPA); B.Sc. Applied Chem (3.36 GPA); 7+ Years Experience in Ethiopian Higher Ed." }
-    ];
+    // MASTER DATA FROM YOUR FILES
+    const PORTAL_DATA = {
+      "Yale": "Status: Review. Missing: 2 Letters. Account: yewilsawchanie@. PIs: Interfacial/Kinetics focus. Contact: chemistry.dgs@yale.edu.",
+      "NJIT": "Status: Complete. Admissions Coach contacted. Supervisor LoR uploaded.",
+      "Virginia Tech": "Status: Payment Needed. Waiver Denied 12/22. Documentation for VSU enrollment missing.",
+      "Berkeley": "Status: Submitted (Chemistry PhD). PI Rank: 1. Head-Gordon, 2. Leone, 3. Neumark."
+    };
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) { 
-        currentUser = user; 
-        startRealtime(); 
-        renderVault();
-        addMessage("Academic Agent Online. System ready for Ph.D. 2026 cycle.", "ai");
-      }
-    });
+    const chatHistories = {
+      Global: [{ role: 'ai', text: "Agent Online. I have your Mordenite research (DOI: 10.1002/jctb.4632) and Berkeley PI preferences loaded." }],
+      Logistics: [{ role: 'ai', text: "Monitoring yewilsawchanie@gmail.com. Yale LoR gap and VT fee waiver issues identified." }]
+    };
+
+    onAuthStateChanged(auth, (user) => { if (user) { currentUser = user; syncLogs(); renderChat(); } });
     signInAnonymously(auth);
 
-    // TAB SWITCHER
-    window.switchTab = (tab) => {
-      ['log', 'chat', 'vault'].forEach(t => {
-        document.getElementById(`${t}-view`).classList.add('hidden');
-        document.getElementById(`tab-${t}`).classList.replace('text-blue-400', 'text-slate-500');
-        document.getElementById(`tab-${t}`).classList.replace('border-blue-500', 'border-transparent');
-      });
-      document.getElementById(`${tab}-view`).classList.remove('hidden');
-      document.getElementById(`tab-${tab}`).classList.replace('text-slate-500', 'text-blue-400');
-      document.getElementById(`tab-${tab}`).classList.replace('border-transparent', 'border-blue-500');
+    window.switchChatLog = (logId) => {
+      activeLog = logId;
+      document.querySelectorAll('nav button').forEach(b => b.classList.replace('bg-blue-600/20', 'bg-transparent'));
+      const activeBtn = document.getElementById(`tab-${logId}`);
+      if(activeBtn) activeBtn.classList.replace('bg-transparent', 'bg-blue-600/20');
+      
+      const panel = document.getElementById('portal-details-panel');
+      if (PORTAL_DATA[logId]) {
+        panel.classList.remove('hidden');
+        document.getElementById('active-panel-title').innerText = `${logId} Portal Snapshot`;
+        document.getElementById('active-panel-content').innerText = PORTAL_DATA[logId];
+      } else { panel.classList.add('hidden'); }
+      
+      renderChat();
     };
 
-    // MASTER DOWNLOAD
-    window.exportAllData = () => {
-      const data = { 
-        user: "Yewilsaw Chanie Mekonen",
-        log: window.allDocs, 
-        vault: vaultData,
-        export_date: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = "PhD_Agent_Backup_2026.json"; a.click();
-    };
-
-    // SEARCH & FILE MOCKUPS
-    window.researchPI = (school) => {
-      const query = encodeURIComponent(`${school} Physical Chemistry mordenite kinetics`);
-      window.open(`https://scholar.google.com/scholar?q=${query}`, '_blank');
-    };
-
-    window.handleConversion = (e) => {
-      const name = e.target.files[0].name;
-      addMessage(`Optimizing ${name} for portal compatibility...`, "ai");
-      setTimeout(() => addMessage(`✅ Success. ${name} converted to high-res PDF/A.`, "ai"), 1500);
-    };
-
-    // FIREBASE SYNC
-    function startRealtime() {
+    function syncLogs() {
       const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
       onSnapshot(q, (snap) => {
-        window.allDocs = snap.docs.map(d => d.data());
-        document.getElementById("stats-total").textContent = `${window.allDocs.length} Schools`;
-        renderUniversities(window.allDocs);
+        const tabs = document.getElementById('dynamic-uni-tabs');
+        tabs.innerHTML = '';
+        const docs = snap.docs.map(d => d.data());
+        document.getElementById("stats-total").textContent = `${docs.length} Targets`;
+        docs.forEach(u => {
+          if (!chatHistories[u.name]) chatHistories[u.name] = [{ role: 'ai', text: `Analyzing faculty for ${u.name}...` }];
+          const btn = document.createElement('button');
+          btn.id = `tab-${u.name}`; btn.innerText = u.name;
+          btn.className = "px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-slate-700 text-slate-400 bg-slate-800/50 flex-shrink-0";
+          btn.onclick = () => switchChatLog(u.name);
+          tabs.appendChild(btn);
+        });
       });
     }
 
-    function renderVault() {
-      vaultItems.innerHTML = vaultData.map(item => `
-        <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-700/30">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-[8px] font-black text-slate-500 uppercase">${item.label}</span>
-            <button onclick="navigator.clipboard.writeText('${item.text.replace(/'/g, "\\'")}')" class="text-[8px] text-blue-400 font-bold uppercase hover:text-blue-200">Copy</button>
-          </div>
-          <p class="text-[10px] text-slate-300 leading-relaxed">${item.text}</p>
-        </div>
-      `).join('');
-    }
-
-    function renderUniversities(docs) {
-      uniList.innerHTML = docs.map(u => `
-        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 mb-3 shadow-lg">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-xs font-black text-blue-400 uppercase">${u.name}</h3>
-            <button onclick="researchPI('${u.name}')" class="text-[7px] font-black px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-widest">🔍 Research PIs</button>
-          </div>
-          <div class="flex gap-2">
-            <button onclick="window.switchTab('chat')" class="bg-blue-600/20 text-blue-400 text-[8px] font-black px-2 py-1 rounded uppercase">AI Advisor</button>
-            <button onclick="window.switchTab('vault')" class="bg-slate-700/50 text-slate-300 text-[8px] font-black px-2 py-1 rounded uppercase">Form Filler</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // CHAT ENGINE
     document.getElementById("chat-form").onsubmit = async (e) => {
       e.preventDefault();
       const input = document.getElementById("chat-input");
       const text = input.value.trim();
-      if (!text || !currentUser) return;
-      
-      window.switchTab('chat');
-      addMessage(text, "user");
+      if (!text) return;
+
+      addMessage(text, 'user');
       input.value = "";
-      
+
       if (text.toLowerCase().startsWith("add ")) {
-        const raw = text.replace(/^add\s+/i, "").trim();
-        await setDoc(doc(db, "users", currentUser.uid, "universities", raw.replace(/\s+/g, "-").toLowerCase()), { name: raw, timestamp: Date.now() });
-        addMessage(`✅ School "${raw}" successfully logged. Check University Log tab.`, "ai");
+        const uni = text.replace(/^add\s+/i, "");
+        await setDoc(doc(db, "users", currentUser.uid, "universities", uni.toLowerCase().replace(/\s/g, "-")), { name: uni, timestamp: Date.now() });
+        addMessage(`✅ ${uni} added. Opening Google Scholar for Physical Chemistry...`, 'ai');
+        window.open(`https://scholar.google.com/scholar?q=${uni}+Physical+Chemistry+kinetics+mordenite`, '_blank');
+      } else if (text.toLowerCase().includes("status")) {
+        switchChatLog('Logistics');
       } else {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Context: Yewilsaw Chanie Mekonen, Ph.D. Physical Chem applicant. Background: Lecturer at Ambo Univ, expert in mordenite kinetics/ionic liquids. Goal: 150 applications. Question: ${text}` }] }] })
-          });
-          const data = await res.json();
-          addMessage(data.candidates[0].content.parts[0].text, "ai");
-        } catch (e) { addMessage("AI connection timed out. Please try again.", "ai"); }
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: `Context: MSc Thesis Mordenite kinetics. PIs: Head-Gordon, Leone. Logistics: yewilsawchanie@ email. Input: ${text}` }] }] })
+        });
+        const data = await res.json();
+        addMessage(data.candidates[0].content.parts[0].text, 'ai');
       }
     };
 
     function addMessage(text, role) {
-      const div = document.createElement("div");
-      div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
-      div.innerHTML = `<div class="max-w-[85%] p-3 rounded-2xl text-xs ${role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-200 border border-slate-700'}">${text}</div>`;
-      chatContainer.appendChild(div);
+      if (!chatHistories[activeLog]) chatHistories[activeLog] = [];
+      chatHistories[activeLog].push({ role, text });
+      renderChat();
+    }
+
+    function renderChat() {
+      const container = document.getElementById("chat-container");
+      container.innerHTML = (chatHistories[activeLog] || []).map(m => `
+        <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}">
+          <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${m.role === 'user' ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
+            ${m.text}
+          </div>
+        </div>
+      `).join('');
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
   </script>
