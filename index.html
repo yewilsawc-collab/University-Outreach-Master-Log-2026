@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Academic Agent Pro | Advisor</title>
+  <title>Academic Agent Pro | Ph.D. Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script id="firebase-config" type="application/json">
   {
@@ -18,7 +18,6 @@
 </head>
 <body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans overflow-x-hidden">
 
-  <!-- Header -->
   <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -29,37 +28,38 @@
         <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">Yewilsaw Chanie | yewilsawc@gmail.com</p>
       </div>
     </div>
-    <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 Targets</div>
+    <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400 tracking-tighter">0 Targets</div>
   </header>
 
-  <!-- Navigation Tabs -->
   <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 overflow-x-auto whitespace-nowrap scrollbar-hide py-3 px-4 flex gap-2">
     <button id="tab-Global" onclick="switchChatLog('Global')" class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-blue-500 bg-blue-600/20 text-blue-400 transition-all">Global Advisor</button>
-    <button id="tab-Logistics" onclick="switchChatLog('Logistics')" class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-slate-700 text-slate-500 transition-all">Portal Status</button>
+    <button id="tab-Logistics" onclick="switchChatLog('Logistics')" class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-slate-700 text-slate-500 hover:text-white transition-all">Portal Status</button>
     <div id="dynamic-uni-tabs" class="flex gap-2 border-l border-slate-800 pl-2"></div>
   </nav>
 
-  <!-- Main Chat Area -->
   <main class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full">
-    <div id="portal-details-panel" class="hidden mb-6 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-       <h2 id="active-panel-title" class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">University Details</h2>
-       <div id="active-panel-content" class="text-[11px] text-slate-300 leading-relaxed space-y-2 whitespace-pre-wrap"></div>
+    <div id="portal-details-panel" class="hidden mb-6 bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 backdrop-blur-sm animate-in fade-in zoom-in duration-300">
+       <h2 id="active-panel-title" class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2 flex items-center gap-2">
+         <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+         University Snapshot
+       </h2>
+       <div id="active-panel-content" class="text-[11px] text-slate-300 leading-relaxed space-y-2 whitespace-pre-wrap font-medium"></div>
     </div>
+    
     <div id="chat-container" class="space-y-4 min-h-[50vh]"></div>
   </main>
 
-  <!-- Footer Input -->
   <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
     <form id="chat-form" class="max-w-md mx-auto relative">
-      <input id="chat-input" type="text" autocomplete="off" placeholder="Add [University] or message..." 
-             class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
-      <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
+      <input id="chat-input" type="text" autocomplete="off" placeholder="Add [School] or type a note..." 
+             class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl transition-all" />
+      <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 p-2.5 rounded-xl text-white shadow-lg transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       </button>
     </form>
+    <p class="text-[8px] text-center text-slate-600 mt-2 uppercase font-black tracking-[0.2em]">Application Email: yewilsawchanie@gmail.com</p>
   </footer>
 
-  <!-- Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
@@ -72,24 +72,19 @@
     let currentUser = null;
     let activeLog = 'Global';
 
-    // Known universities for validation
-    const UNIVERSITY_LIST = [
-      "Yale University","Princeton University","Purdue University",
-      "University of California, Berkeley","Stanford University",
-      "New Jersey Institute of Technology","Virginia Tech"
-    ];
-
+    // MASTER INTELLIGENCE (Derived from Gmail & Backup Files)
     const MASTER_DATA = {
-      "Yale University": "• Status: Under Review\n• Missing: 2 LoRs\n• Contacts: graduate.admissions@yale.edu",
-      "New Jersey Institute of Technology": "• Status: Complete\n• Supervisor LoR uploaded.",
-      "Virginia Tech": "• Status: Payment Required\n• Waiver Denied Dec 22.",
-      "University of California, Berkeley": "• Status: Submitted\n• PIs: Head-Gordon, Leone, Neumark",
-      "Logistics": "Monitoring portal communications for yewilsawchanie@gmail.com."
+      "Yale University": "• STATUS: Under Review (Sent Dec 17)\n• MATERIALS: 1/3 LoRs received (M.Sc. Supervisor). \n• ACTION: Explanatory doc for 2014 gap uploaded.\n• PIs: Interfacial phenomena / Kinetics focus.",
+      "New Jersey Institute of Technology": "• STATUS: Complete (Verified Dec 21)\n• NOTES: Internal review by admissions coach finished.\n• MATERIALS: Supervisor LoR confirmed.",
+      "Virginia Tech": "• ALERT: PAYMENT REQUIRED\n• STATUS: Waiver DENIED (Dec 22).\n• REASON: Documentation didn't support VSU enrollment.\n• ACTION: Submit appeal highlighting Ambo Univ Lecturer status.",
+      "University of California, Berkeley": "• STATUS: Submitted\n• PI LIST: 1. Head-Gordon (Theory), 2. Leone (Ultrafast), 3. Neumark (Interfacial).",
+      "Logistics": "Monitoring Application Email: yewilsawchanie@gmail.com.\nPriority: Yale LoR Follow-up & Virginia Tech Fee Waiver Appeal."
+      check the corresponding email address for information 
     };
 
     const chatHistories = {
-      Global: [{ role: 'ai', text: "Agent Online. Ready for your 2026 Ph.D. cycle. Type 'Add [University]' to expand your log." }],
-      Logistics: [{ role: 'ai', text: "Monitoring portal communications for yewilsawchanie@gmail.com." }]
+      Global: [{ role: 'ai', text: "Academic Agent Pro Online. Ready for your 150-school expansion. Type 'Add [School]' to begin." }],
+      Logistics: [{ role: 'ai', text: "Tracking communications from official application inbox (Yale/VT updates loaded)." }]
     };
 
     onAuthStateChanged(auth, (user) => { if (user) { currentUser = user; syncLogs(); renderChat(); } });
@@ -102,10 +97,12 @@
       if(activeBtn) activeBtn.classList.replace('bg-transparent', 'bg-blue-600/20');
       
       const panel = document.getElementById('portal-details-panel');
-      if (MASTER_DATA[logId]) {
+      const dataKey = MASTER_DATA[logId] ? logId : (logId === 'Logistics' ? 'Logistics' : null);
+      
+      if (dataKey) {
         panel.classList.remove('hidden');
-        document.getElementById('active-panel-title').innerText = `${logId} Snapshot`;
-        document.getElementById('active-panel-content').innerText = MASTER_DATA[logId];
+        document.getElementById('active-panel-title').innerText = `${logId} Intelligence`;
+        document.getElementById('active-panel-content').innerText = MASTER_DATA[dataKey];
       } else { panel.classList.add('hidden'); }
       
       renderChat();
@@ -119,7 +116,63 @@
         const docs = snap.docs.map(d => d.data());
         document.getElementById("stats-total").textContent = `${docs.length} Targets`;
         docs.forEach(u => {
-          if (!chatHistories[u.name]) chatHistories[u.name] = [{ role: 'ai', text: `Log created for ${u.name}.` }];
+          if (!chatHistories[u.name]) chatHistories[u.name] = [{ role: 'ai', text: `Strategy log for ${u.name} active.` }];
           const btn = document.createElement('button');
           btn.id = `tab-${u.name}`; btn.innerText = u.name;
-          btn.className = "px-4 py-1
+          btn.className = "px-4 py-1.5 rounded-full text-[9px] font-black uppercase border border-slate-700 text-slate-400 bg-slate-800/50 flex-shrink-0 transition-all";
+          btn.onclick = () => switchChatLog(u.name);
+          tabs.appendChild(btn);
+        });
+      });
+    }
+chat with the user, don't just accept inputs
+  use the opportunity to give information on the subject 
+    use the previous email communication for the application process to give details on the portal status 
+    document.getElementById("chat-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const isAdd = text.toLowerCase().startsWith("add ");
+
+      if (isAdd) {
+        const uni = text.replace(/^add\s+/i, "");
+        await setDoc(doc(db, "users", currentUser.uid, "universities", uni.toLowerCase().replace(/\s/g, "-")), { name: uni, timestamp: Date.now() });
+        addMessage(`
+          <div class="space-y-2">
+            <p class="font-bold text-emerald-400 text-[10px] uppercase">✅ ${uni} Added</p>
+            <p class="text-[9px] text-slate-400">Log created. Click when ready for scientific research:</p>
+            <button onclick="window.open('https://scholar.google.com/scholar?q=${uni}+Physical+Chemistry+kinetics+mordenite', '_blank')" 
+                    class="px-3 py-1 bg-blue-600/20 border border-blue-500/50 text-blue-400 rounded text-[8px] font-black uppercase hover:bg-blue-600/40 transition-all">
+              Research Faculty & PIs
+            </button>
+          </div>
+        `, 'ai');
+      } else {
+        // Quiet mode for general notes
+        addMessage(text, 'user');
+      }
+      input.value = "";
+    };
+
+    function addMessage(text, role) {
+      if (!chatHistories[activeLog]) chatHistories[activeLog] = [];
+      chatHistories[activeLog].push({ role, text });
+      renderChat();
+    }
+
+    function renderChat() {
+      const container = document.getElementById("chat-container");
+      container.innerHTML = (chatHistories[activeLog] || []).map(m => `
+        <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div class="max-w-[85%] p-3 rounded-2xl text-[11px] leading-relaxed ${m.role === 'user' ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-800 text-slate-200 border border-slate-700 shadow-sm'}">
+            ${m.text}
+          </div>
+        </div>
+      `).join('');
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
