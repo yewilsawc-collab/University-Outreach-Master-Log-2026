@@ -145,6 +145,22 @@ onSnapshot(q, (snap) => {
       document.getElementById(`tab-${tab}`).classList.replace('text-slate-500', 'text-blue-400');
       document.getElementById(`tab-${tab}`).classList.replace('border-transparent', 'border-blue-500');
     };
+    const tabContainer = document.getElementById("tab-container"); // your tab wrapper
+const hammer = new Hammer(tabContainer);
+
+hammer.on("swipeleft", () => switchTab("next"));
+hammer.on("swiperight", () => switchTab("prev"));
+
+function switchTab(direction) {
+  const tabs = document.querySelectorAll(".tab");
+  const activeIndex = [...tabs].findIndex(tab => tab.classList.contains("active"));
+  let newIndex = direction === "next" ? activeIndex + 1 : activeIndex - 1;
+
+  if (newIndex >= 0 && newIndex < tabs.length) {
+    tabs[activeIndex].classList.remove("active");
+    tabs[newIndex].classList.add("active");
+  }
+}
 
     // MASTER DOWNLOAD
     window.exportAllData = () => {
