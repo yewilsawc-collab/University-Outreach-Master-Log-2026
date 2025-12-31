@@ -115,6 +115,24 @@
       }
     });
     signInAnonymously(auth);
+    // Listen to all messages from all anonymous users
+const q = query(collection(db, "anonymous_chat"), orderBy("timestamp", "asc"));
+
+onSnapshot(q, (snap) => {
+  const container = document.getElementById("chat-container");
+  container.innerHTML = snap.docs.map(doc => {
+    const data = doc.data();
+    const isMe = data.uid === auth.currentUser.uid;
+    return `
+      <div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-2">
+        <div class="p-2 rounded-lg text-xs ${isMe ? 'bg-blue-600' : 'bg-slate-800'}">
+          <span class="font-bold text-[9px] block text-slate-400">Researcher-${data.uid.slice(0,4)}</span>
+          ${data.text}
+        </div>
+      </div>`;
+  }).join('');
+});
+
 
     // TAB SWITCHER
     window.switchTab = (tab) => {
