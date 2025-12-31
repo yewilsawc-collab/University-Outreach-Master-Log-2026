@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="window.exportAllData()" title="Full System Backup" class="bg-blue-600/20 p-2 rounded-lg border border-blue-500/30 hover:bg-blue-600/40 transition-colors">
+      <button onclick="window.exportAllData()" class="bg-blue-600/20 p-2 rounded-lg border border-blue-500/30 hover:bg-blue-600/40 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       </button>
       <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400 tracking-tighter">0 Schools</div>
@@ -38,9 +38,9 @@
   </header>
 
   <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex">
-    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400 transition-all">University Log</button>
-    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500 transition-all">AI Advisor</button>
-    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500 transition-all">Data Vault</button>
+    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">University Log</button>
+    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">AI Advisor</button>
+    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Data Vault</button>
   </nav>
 
   <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
@@ -54,15 +54,8 @@
 
     <div id="vault-view" class="hidden space-y-6">
       <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-4">Form Filler Vault</h2>
+        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-4 text-center">Form Filler Vault</h2>
         <div class="space-y-3" id="vault-items"></div>
-      </div>
-      <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-        <h2 class="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-4">Thesis Optimizer</h2>
-        <input type="file" id="file-input" class="hidden" onchange="window.handleConversion(event)" />
-        <button onclick="document.getElementById('file-input').click()" class="w-full py-4 border-2 border-dashed border-slate-700 rounded-xl text-slate-500 text-xs font-bold hover:border-emerald-500/50 hover:text-emerald-400 transition-all">
-          Upload Thesis to Optimize
-        </button>
       </div>
     </div>
   </main>
@@ -76,106 +69,141 @@
       </button>
     </form>
   </footer>
- 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-// --- Firebase Init ---
 const config = JSON.parse(document.getElementById("firebase-config").textContent);
 const app = initializeApp(config);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let currentUser = null;
+const tabs = ['log', 'chat', 'vault'];
 
-// --- Intent Parser ---
-function parseInput(text) {
-  const lower = text.toLowerCase();
-  if (lower.includes("add")) return { action: "add", target: extractName(text) };
-  if (lower.includes("status")) return { action: "status", target: extractName(text) };
-  if (lower.includes("lookup")) return { action: "lookup", target: extractName(text) };
-  return { action: "chat", target: text };
+// --- SHARED DATA VAULT ---
+const vaultData = [
+  { label: "M.Sc. Thesis", text: "Kinetics study of Adsorption and desorption of Ionic Liquid, 1-butyl-3-methylimidazolium bromide into/out of Mordenite." },
+  { label: "Research Goal", text: "Transitioning from phenomenological modeling to quantum mechanical electronic structure theory." },
+  { label: "Technical Tools", text: "MATLAB, FT-IR, TGA, CHN-Elemental Analysis, OriginLab." },
+  { label: "Experience", text: "Lecturer at Ambo University, Addis Ababa University M.Sc. (3.34 GPA)." }
+];
+
+onAuthStateChanged(auth, (user) => {
+  if (user) { 
+    currentUser = user; 
+    initSystem(); 
+  }
+});
+signInAnonymously(auth);
+
+function initSystem() {
+  syncUniversities();
+  syncGlobalChat();
+  renderVault();
+  setupGestures();
 }
 
-function extractName(text) {
-  return text.replace(/^(add|status|lookup)\s+/i, "").trim();
+// --- GESTURES & TABS ---
+function setupGestures() {
+  const mc = new Hammer(document.getElementById("swipe-zone"));
+  mc.on("swipeleft", () => navigateTabs(1));
+  mc.on("swiperight", () => navigateTabs(-1));
 }
 
-// --- Firebase Check ---
-async function checkUniversity(uid, name) {
-  const ref = doc(db, "users", uid, "universities", name.toLowerCase());
-  const snap = await getDoc(ref);
-  return snap.exists() ? snap.data() : null;
+function navigateTabs(direction) {
+  const current = tabs.find(t => !document.getElementById(`${t}-view`).classList.contains('hidden'));
+  const idx = tabs.indexOf(current) + direction;
+  if (idx >= 0 && idx < tabs.length) window.switchTab(tabs[idx]);
 }
 
-// --- External Dataset Lookup ---
-async function externalLookup(name) {
-  const response = await fetch("/data/us_universities.json"); // ensure this file exists
-  const allUnis = await response.json();
-  return allUnis.find(u => u.name.toLowerCase().includes(name.toLowerCase()));
-}
+window.switchTab = (tab) => {
+  tabs.forEach(t => {
+    document.getElementById(`${t}-view`).classList.add('hidden');
+    document.getElementById(`tab-${t}`).classList.replace('text-blue-400', 'text-slate-500');
+    document.getElementById(`tab-${t}`).classList.replace('border-blue-500', 'border-transparent');
+  });
+  document.getElementById(`${tab}-view`).classList.remove('hidden');
+  document.getElementById(`tab-${tab}`).classList.replace('text-slate-500', 'text-blue-400');
+  document.getElementById(`tab-${tab}`).classList.replace('border-transparent', 'border-blue-500');
+};
 
-// --- Add University to Firebase ---
-async function addUniversity(uid, name, details = {}) {
-  await setDoc(doc(db, "users", uid, "universities", name.toLowerCase()), {
-    name,
-    timestamp: Date.now(),
-    status: "New",
-    ...details
+// --- REALTIME SYNC (UNI LOG + CHAT) ---
+function syncUniversities() {
+  const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+  onSnapshot(q, (snap) => {
+    const docs = snap.docs.map(d => d.data());
+    document.getElementById("stats-total").textContent = `${docs.length} Schools`;
+    document.getElementById("uni-list").innerHTML = docs.map(u => {
+      const scholarUrl = `https://scholar.google.com/scholar?q=${encodeURIComponent(u.name + " Physical Chemistry kinetics mordenite")}`;
+      return `
+      <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 shadow-lg">
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="text-xs font-black text-blue-400 uppercase">${u.name}</h3>
+          <a href="${scholarUrl}" target="_blank" class="text-[7px] font-black px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-widest">🔍 Research PIs</a>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="window.switchTab('chat')" class="bg-blue-600/20 text-blue-400 text-[8px] font-black px-2 py-1 rounded uppercase">AI Advisor</button>
+          <button onclick="window.switchTab('vault')" class="bg-slate-700/50 text-slate-300 text-[8px] font-black px-2 py-1 rounded uppercase">Vault Data</button>
+        </div>
+      </div>`;
+    }).join('');
   });
 }
 
-// --- Chat Form Integration ---
+function syncGlobalChat() {
+  const q = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
+  onSnapshot(q, (snap) => {
+    const container = document.getElementById("chat-container");
+    container.innerHTML = snap.docs.map(doc => {
+      const data = doc.data();
+      const isMe = data.uid === auth.currentUser.uid;
+      return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-2">
+        <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
+          <span class="text-[8px] font-black text-slate-400 block mb-1 uppercase">Researcher-${data.uid.slice(0,4)}</span>
+          ${data.text}
+        </div>
+      </div>`;
+    }).join('');
+    container.scrollTop = container.scrollHeight;
+  });
+}
+
+// --- INTENT PARSER & COMMANDS ---
 document.getElementById("chat-form").onsubmit = async (e) => {
   e.preventDefault();
   const input = document.getElementById("chat-input");
   const text = input.value.trim();
   if (!text) return;
 
-  const { action, target } = parseInput(text);
-  let reply = "";
+  let reply = text;
+  if (text.toLowerCase().startsWith("add ")) {
+    const target = text.replace(/^add\s+/i, "").trim();
+    const ref = doc(db, "users", currentUser.uid, "universities", target.toLowerCase().replace(/\s/g, "-"));
+    const existing = await getDoc(ref);
 
-  if (target && action !== "chat") {
-    const existing = await checkUniversity(currentUser.uid, target);
-
-    if (existing) {
-      reply = `✅ ${existing.name} is already in your log.\nStatus: ${existing.status}\nAdded: ${new Date(existing.timestamp).toLocaleDateString()}`;
+    if (existing.exists()) {
+      reply = `✅ ${target} is already in your University Log. Status: ${existing.data().status || 'Active'}`;
     } else {
-      const fresh = await externalLookup(target);
-      if (fresh) {
-        reply = `🔍 ${fresh.name} not yet in your log.\nLocation: ${fresh.city}, ${fresh.state}\nWould you like me to add it?`;
-        if (action === "add") {
-          await addUniversity(currentUser.uid, fresh.name, { location: `${fresh.city}, ${fresh.state}` });
-          reply += `\n✅ Added ${fresh.name} to your log.`;
-        }
-      } else {
-        reply = `❌ Could not find "${target}" in database.`;
-      }
+      await setDoc(ref, { name: target, timestamp: Date.now(), status: "New" });
+      reply = `🚀 Successfully Logged New Target: ${target}`;
     }
-  } else {
-    reply = text; // fallback: normal chat message
   }
 
-  // Push reply into chat
-  await addDoc(collection(db, "global_chat"), {
-    text: reply,
-    uid: currentUser.uid,
-    timestamp: Date.now()
-  });
-
+  await addDoc(collection(db, "global_chat"), { text: reply, uid: currentUser.uid, timestamp: Date.now() });
   input.value = "";
 };
 
-// --- Auth ---
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    currentUser = user;
-    // call your init functions here
-  }
-});
-signInAnonymously(auth);
+function renderVault() {
+  document.getElementById("vault-items").innerHTML = vaultData.map(item => `
+    <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-700/30">
+      <span class="text-[8px] font-black text-slate-500 uppercase block mb-1">${item.label}</span>
+      <p class="text-[10px] text-slate-300 leading-relaxed">${item.text}</p>
+      <button onclick="navigator.clipboard.writeText('${item.text}')" class="text-[8px] text-blue-400 font-bold mt-2 uppercase">Copy to Portal</button>
+    </div>`).join('');
+}
 </script>
 </body>
-</html>
-
+  </html>
+  
