@@ -51,7 +51,7 @@
       </div>
       
       <div id="vault-editor" class="space-y-4">
-        </div>
+      </div>
       
       <button onclick="window.saveVault()" class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-blue-500/20">Update Master Profile</button>
     </div>
@@ -91,6 +91,33 @@ function init() {
   syncChat();
   loadVault();
   setupSwipes();
+  // --- File Upload Handler ---
+document.getElementById("file-upload").addEventListener("change", async (event) => {
+  const files = event.target.files;
+  const list = document.getElementById("upload-list");
+  list.innerHTML = "";
+
+  for (const file of files) {
+    // Display file name in UI
+    const item = document.createElement("div");
+    item.textContent = `📄 ${file.name}`;
+    list.appendChild(item);
+
+    // Save metadata to Firestore
+    await addDoc(collection(db, "users", currentUser.uid, "uploads"), {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      timestamp: Date.now()
+    });
+
+    // Optional: upload file to Firebase Storage
+    // import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js";
+    // const storage = getStorage(app);
+    // const storageRef = ref(storage, `uploads/${currentUser.uid}/${file.name}`);
+    // await uploadBytes(storageRef, file);
+  }
+});
 }
 
 // --- VAULT UPDATE FEATURE ---
