@@ -29,13 +29,13 @@
         <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">Yewilsaw Chanie | Ph.D. 2026</p>
       </div>
     </div>
-    <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 Schools</div>
+    <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">23 Schools</div>
   </header>
 
   <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
-    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">Log</button>
+    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">University Log</button>
     <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Data Vault</button>
-    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Advisor</button>
+    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">AI Advisor</button>
   </nav>
 
   <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
@@ -47,12 +47,9 @@
     <div id="vault-view" class="hidden space-y-4">
       <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-xl mb-4">
         <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Vault Editor</h2>
-        <p class="text-[9px] text-slate-400 leading-tight">Update your core research profile. These details are used for your AI-generated SOP drafts.</p>
+        <p class="text-[9px] text-slate-400 leading-tight">Refine your research narrative for SOP generation.</p>
       </div>
-      
-      <div id="vault-editor" class="space-y-4">
-      </div>
-      
+      <div id="vault-editor" class="space-y-4"></div>
       <button onclick="window.saveVault()" class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-blue-500/20">Update Master Profile</button>
     </div>
 
@@ -62,41 +59,20 @@
   </main>
 
   <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
-    <form id="chat-form" class="max-w-md mx-auto relative">
-      <input id="chat-input" type="text" autocomplete="off" placeholder="Add school (e.g. 'add Yale')..." 
-             class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
-      <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
+    <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
+      <input type="file" id="chat-file" class="hidden" multiple />
+      <button type="button" onclick="document.getElementById('chat-file').click()" class="bg-slate-700 p-2.5 rounded-xl text-white">📎</button>
+      <input id="chat-input" type="text" autocomplete="off" placeholder="Message or 'add Yale'..." class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
+      <button type="submit" class="bg-blue-600 p-2.5 rounded-xl text-white">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       </button>
-      <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
-  <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
-    <!-- File Upload -->
-    <input type="file" id="chat-file" class="hidden" multiple />
-    <button type="button" onclick="document.getElementById('chat-file').click()" 
-            class="bg-slate-700 p-2.5 rounded-xl text-white hover:bg-slate-600">
-      📎
-    </button>
-
-    <!-- Text Input -->
-    <input id="chat-input" type="text" autocomplete="off" placeholder="Message or 'add Princeton'..." 
-           class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
-
-    <!-- Send Button -->
-    <button type="submit" class="bg-blue-600 p-2.5 rounded-xl text-white">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <line x1="22" y1="2" x2="11" y2="13"></line>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-      </svg>
-    </button>
-  </form>
-      </footer>
     </form>
   </footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
 const config = JSON.parse(document.getElementById("firebase-config").textContent);
 const app = initializeApp(config);
@@ -108,85 +84,76 @@ const tabs = ['log', 'vault', 'chat'];
 onAuthStateChanged(auth, (user) => { if (user) { currentUser = user; init(); } });
 signInAnonymously(auth);
 
-function init() {
-  syncUnis();
-  syncChat();
-  loadVault();
-  setupSwipes();
-  // --- File Upload Handler ---
-document.getElementById("file-upload").addEventListener("change", async (event) => {
-  const files = event.target.files;
-  const list = document.getElementById("upload-list");
-  list.innerHTML = "";
+function init() { syncUnis(); syncChat(); loadVault(); setupSwipes(); }
 
-  for (const file of files) {
-    // Display file name in UI
-    const item = document.createElement("div");
-    item.textContent = `📄 ${file.name}`;
-    list.appendChild(item);
-
-    // Save metadata to Firestore
-    await addDoc(collection(db, "users", currentUser.uid, "uploads"), {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      timestamp: Date.now()
-    });
-
-    // Optional: upload file to Firebase Storage
-    // import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js";
-    // const storage = getStorage(app);
-    // const storageRef = ref(storage, `uploads/${currentUser.uid}/${file.name}`);
-    // await uploadBytes(storageRef, file);
-  }
-});
-}
-
-// --- VAULT UPDATE FEATURE ---
-const defaultVault = [
-  { id: 'thesis', label: 'Thesis & Research', text: 'Kinetics of adsorption of ionic liquid into mordenite. Expertise in FT-IR, TGA, and kinetic modeling.' },
-  { id: 'goals', label: 'Academic Goals', text: 'Transitioning to quantum mechanical electronic structure theory and high-performance computing.' },
-  { id: 'skills', label: 'Technical Stack', text: 'MATLAB, Linux OS, CHN-Elemental Analysis, Surface & Materials Chemistry.' }
-];
-
-async function loadVault() {
-  const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
-  const data = vDoc.exists() ? vDoc.data().items : defaultVault;
-  
-  document.getElementById("vault-editor").innerHTML = data.map(i => `
-    <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-      <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${i.label}</label>
-      <textarea data-id="${i.id}" data-label="${i.label}" class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-3 text-[10px] text-slate-200 outline-none focus:border-blue-500" rows="3">${i.text}</textarea>
-      <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)" class="text-[8px] text-blue-400 font-bold mt-2 uppercase">Copy for Portal</button>
-    </div>
-  `).join('');
-}
-
-window.saveVault = async () => {
-  const inputs = document.querySelectorAll(".vault-input");
-  const items = Array.from(inputs).map(el => ({
-    id: el.dataset.id,
-    label: el.dataset.label,
-    text: el.value
-  }));
-  await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
-  alert("Data Vault Synchronized.");
+// --- SCHOOL INTEL & CONTACTS ---
+window.toggleExtra = (id) => {
+  document.getElementById(`extra-${id}`).classList.toggle('hidden');
 };
 
-// --- SYSTEM LOGIC ---
+window.saveSchoolData = async (id) => {
+  const data = {
+    email: document.getElementById(`em-${id}`).value,
+    faculty: document.getElementById(`fac-${id}`).value,
+    deadline: document.getElementById(`dl-${id}`).value,
+    notes: document.getElementById(`nt-${id}`).value
+  };
+  await updateDoc(doc(db, "users", currentUser.uid, "universities", id), data);
+  alert("School Intel Updated.");
+};
+
 function syncUnis() {
   const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
   onSnapshot(q, (snap) => {
     document.getElementById("stats-total").textContent = `${snap.docs.length} Schools`;
     document.getElementById("uni-list").innerHTML = snap.docs.map(d => {
       const u = d.data();
-      return `<div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
-        <div><h3 class="text-xs font-black text-blue-400 uppercase">${u.name}</h3><span class="text-[7px] text-emerald-400 font-bold uppercase">${u.tier || 'R1 Classified'}</span></div>
+      const id = d.id;
+      return `
+      <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+        <div class="flex justify-between items-center" onclick="window.toggleExtra('${id}')">
+          <div>
+            <h3 class="text-[11px] font-black text-blue-400 uppercase">${u.name}</h3>
+            <span class="text-[7px] text-emerald-400 font-bold uppercase">${u.tier || 'R1 Classified'}</span>
+          </div>
+          <svg class="text-slate-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div id="extra-${id}" class="hidden mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+          <input id="em-${id}" value="${u.email || ''}" class="w-full bg-slate-900 p-2 rounded text-[10px]" placeholder="Contact Email">
+          <input id="fac-${id}" value="${u.faculty || ''}" class="w-full bg-slate-900 p-2 rounded text-[10px]" placeholder="Faculty of Interest">
+          <input id="dl-${id}" value="${u.deadline || ''}" class="w-full bg-slate-900 p-2 rounded text-[10px]" placeholder="Deadline">
+          <textarea id="nt-${id}" class="w-full bg-slate-900 p-2 rounded text-[10px]" placeholder="Dept Specific Notes">${u.notes || ''}</textarea>
+          <button onclick="window.saveSchoolData('${id}')" class="w-full py-2 bg-blue-600/20 text-blue-400 text-[8px] font-black uppercase rounded border border-blue-600/30">Save Intel</button>
+        </div>
       </div>`;
     }).join('');
   });
 }
 
+// --- VAULT EDITOR LOGIC ---
+const defaultVault = [
+  { id: 'thesis', label: 'Research Narrative', text: 'Kinetics of adsorption of ionic liquid into mordenite.' },
+  { id: 'skills', label: 'Technical Stack', text: 'MATLAB, Linux, FT-IR, TGA, CHN-Elemental Analysis.' }
+];
+
+async function loadVault() {
+  const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+  const data = vDoc.exists() ? vDoc.data().items : defaultVault;
+  document.getElementById("vault-editor").innerHTML = data.map(i => `
+    <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+      <label class="text-[8px] font-black text-slate-500 uppercase block mb-2">${i.label}</label>
+      <textarea data-id="${i.id}" data-label="${i.label}" class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-3 text-[10px] text-slate-200 outline-none" rows="3">${i.text}</textarea>
+    </div>
+  `).join('');
+}
+
+window.saveVault = async () => {
+  const items = Array.from(document.querySelectorAll(".vault-input")).map(el => ({ id: el.dataset.id, label: el.dataset.label, text: el.value }));
+  await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
+  alert("Data Vault Synchronized.");
+};
+
+// --- CORE UTILS ---
 document.getElementById("chat-form").onsubmit = async (e) => {
   e.preventDefault();
   const input = document.getElementById("chat-input");
@@ -226,5 +193,4 @@ function syncChat() {
 }
 </script>
 </body>
-  </html>
-  
+</html>
