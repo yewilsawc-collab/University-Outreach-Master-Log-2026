@@ -68,6 +68,28 @@
       <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       </button>
+      <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
+  <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
+    <!-- File Upload -->
+    <input type="file" id="chat-file" class="hidden" multiple />
+    <button type="button" onclick="document.getElementById('chat-file').click()" 
+            class="bg-slate-700 p-2.5 rounded-xl text-white hover:bg-slate-600">
+      📎
+    </button>
+
+    <!-- Text Input -->
+    <input id="chat-input" type="text" autocomplete="off" placeholder="Message or 'add Princeton'..." 
+           class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
+
+    <!-- Send Button -->
+    <button type="submit" class="bg-blue-600 p-2.5 rounded-xl text-white">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </form>
+      </footer>
     </form>
   </footer>
 
