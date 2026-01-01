@@ -26,7 +26,7 @@
       </div>
       <div>
         <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
-        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter italic">Authenticating...</p>
+        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1">Authenticating...</p>
       </div>
     </div>
     <div class="flex gap-2">
@@ -35,10 +35,11 @@
   </header>
 
   <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
-    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Log</button>
-    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Vault</button>
-    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Advisor</button>
-    <button onclick="window.switchTab('accounts')" id="tab-accounts" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Accounts</button>
+    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Log</button>
+    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Vault</button>
+    <button onclick="window.switchTab('brainstorm')" id="tab-brainstorm" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Drafts</button>
+    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Advisor</button>
+    <button onclick="window.switchTab('accounts')" id="tab-accounts" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Accounts</button>
   </nav>
 
   <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
@@ -53,8 +54,12 @@
         <button onclick="window.saveVault()" class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg">Update Master Profile</button>
     </div>
 
+    <div id="brainstorm-view" class="hidden space-y-4">
+        <div id="brainstorm-list" class="space-y-4"></div>
+    </div>
+
     <div id="chat-view" class="hidden">
-        <div id="chat-container" class="space-y-4 mb-8"></div>
+        <div id="chat-container" class="space-y-4 mb-8 min-h-[400px]"></div>
     </div>
 
     <div id="accounts-view" class="hidden space-y-6">
@@ -77,7 +82,7 @@
       <input type="file" id="chat-file" class="hidden" multiple onchange="window.handleFileUpload(this.files)" />
       <button type="button" onclick="document.getElementById('chat-file').click()" class="bg-slate-800 border border-slate-700 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 text-xl font-bold shadow-xl">+</button>
       <div class="relative flex-1">
-        <input id="chat-input" type="text" autocomplete="off" placeholder="Add school or message..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none" />
+        <input id="chat-input" type="text" autocomplete="off" placeholder="Add school or message..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
         <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white"> ➤ </button>
       </div>
     </form>
@@ -95,9 +100,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 let currentUser = null;
-const tabs = ['log', 'vault', 'chat', 'accounts'];
+const tabs = ['log', 'vault', 'brainstorm', 'chat', 'accounts'];
 
-// --- AUTHENTICATION & INITIALIZATION ---
 onAuthStateChanged(auth, (user) => {
   if (user) {
     currentUser = user;
@@ -107,129 +111,16 @@ onAuthStateChanged(auth, (user) => {
   } else { signInAnonymously(auth); }
 });
 
-window.processAuth = async () => {
-  const email = document.getElementById("identity-email").value;
-  const pass = document.getElementById("identity-pass").value;
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-    window.switchTab('log');
-  } catch (e) { alert("Error: " + e.message); }
-};
-
-window.processSignUp = async () => {
-    const email = document.getElementById("identity-email").value;
-    const pass = document.getElementById("identity-pass").value;
-    try {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await sendEmailVerification(res.user);
-        alert("Account Created! Check email for verification.");
-        window.switchTab('log');
-    } catch (e) { alert(e.message); }
-};
-
-window.processLogout = () => { if(confirm("Log out?")) signOut(auth).then(() => location.reload()); };
-
-// --- FILE STORAGE HANDLER ---
-window.handleFileUpload = async (files) => {
-    if (!currentUser) return;
-    for (const file of files) {
-        try {
-            const fileRef = ref(storage, `users/${currentUser.uid}/uploads/${Date.now()}_${file.name}`);
-            const snapshot = await uploadBytes(fileRef, file);
-            const url = await getDownloadURL(snapshot.ref);
-            await addDoc(collection(db, "global_chat"), {
-                text: `📎 Document Linked: ${file.name}`,
-                fileUrl: url,
-                uid: currentUser.uid,
-                timestamp: Date.now()
-            });
-            alert(`Stored: ${file.name}`);
-        } catch (e) { alert("Upload error: " + e.message); }
-    }
-};
-
-// --- DATA VAULT (DYNAMIC) ---
-window.addVaultRow = () => {
-    const html = `
-    <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-      <input type="text" placeholder="Field Label" class="vault-label w-full mb-2 bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-blue-400 font-bold uppercase outline-none" />
-      <textarea class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="3"></textarea>
-    </div>`;
-    document.getElementById("vault-editor").insertAdjacentHTML("beforeend", html);
-};
-
-window.saveVault = async () => {
-    const labels = Array.from(document.querySelectorAll(".vault-label"));
-    const inputs = Array.from(document.querySelectorAll(".vault-input"));
-    const items = inputs.map((el, i) => ({ label: labels[i]?.value || "General", text: el.value }));
-    await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
-    alert("Vault Synchronized.");
-};
-
-async function loadVault() {
-    const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
-    const data = vDoc.exists() ? vDoc.data().items : [
-        { label: 'Thesis Narrative', text: 'Kinetics of adsorption of ionic liquid into mordenite.' },
-        { label: 'Technical Tools', text: 'MATLAB, FT-IR, TGA, CHN Analysis.' }
-    ];
-    document.getElementById("vault-editor").innerHTML = data.map(i => `
-    <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-      <input type="text" value="${i.label}" class="vault-label w-full mb-2 bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-blue-400 font-bold uppercase outline-none" />
-      <textarea class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="3">${i.text}</textarea>
-    </div>`).join('');
-}
-
-// --- UNIVERSITY LOG & COMMANDS ---
-window.deleteUni = async (id) => {
-    if(confirm("Remove this target school?")) await deleteDoc(doc(db, "users", currentUser.uid, "universities", id));
-};
-
-function syncUnis() {
-  const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
-  onSnapshot(q, (snap) => {
-    document.getElementById("uni-list").innerHTML = snap.docs.map(d => `
-      <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center group">
-        <div>
-            <h3 class="text-xs font-black text-blue-400 uppercase">${d.data().name}</h3>
-            <p class="text-[7px] text-emerald-400 font-bold uppercase">Ph.D. Tracking Active</p>
-        </div>
-        <button onclick="window.deleteUni('${d.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>`).join('');
-  });
-}
-
-// --- ADVISOR CHAT ---
-window.deleteChat = async (id) => { if(confirm("Delete message?")) await deleteDoc(doc(db, "global_chat", id)); };
-
-function syncChat() {
-  const q = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
-  onSnapshot(q, (snap) => {
-    document.getElementById("chat-container").innerHTML = snap.docs.map(doc => {
-      const d = doc.data();
-      const isMe = d.uid === currentUser.uid;
-      return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'} group">
-        <div class="max-w-[85%] p-3 rounded-2xl text-[11px] relative ${isMe ? 'bg-blue-600 shadow-blue-500/20 shadow-lg' : 'bg-slate-800 border border-slate-700'}">
-          ${d.text}
-          ${d.fileUrl ? `<a href="${d.fileUrl}" target="_blank" class="block mt-2 text-[9px] underline font-bold text-blue-200 uppercase">View Attachment</a>` : ''}
-          ${isMe ? `<button onclick="window.deleteChat('${doc.id}')" class="absolute -left-6 top-1/2 -translate-y-1/2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>` : ''}
-        </div>
-      </div>`;
-    }).join('');
-  });
-}
-
 // --- CORE SYSTEM CONTROLS ---
-function init() { syncUnis(); syncChat(); loadVault(); setupSwipes(); }
-
 window.switchTab = (tab) => {
   tabs.forEach(t => {
     document.getElementById(`${t}-view`).classList.add('hidden');
-    document.getElementById(`tab-${t}`).className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 " + (t === tab ? "border-blue-500 text-blue-400" : "border-transparent text-slate-500");
+    document.getElementById(`tab-${t}`).className = "flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 " + (t === tab ? "border-blue-500 text-blue-400" : "border-transparent text-slate-500");
   });
   document.getElementById(`${tab}-view`).classList.remove('hidden');
 };
+
+function init() { syncUnis(); syncChat(); loadVault(); syncBrainstorm(); setupSwipes(); window.switchTab('log'); }
 
 function setupSwipes() {
   const mc = new Hammer(document.getElementById("swipe-zone"));
@@ -237,6 +128,108 @@ function setupSwipes() {
   mc.on("swiperight", () => { const idx = tabs.indexOf(getActiveTab()); if(idx > 0) window.switchTab(tabs[idx-1]); });
 }
 function getActiveTab() { return tabs.find(t => !document.getElementById(`${t}-view`).classList.contains('hidden')); }
+
+// --- LOG & INTEL ---
+window.toggleIntel = (id) => document.getElementById(`intel-${id}`).classList.toggle('hidden');
+window.saveIntel = async (id) => {
+    const deadline = document.getElementById(`dl-${id}`).value;
+    const pi = document.getElementById(`pi-${id}`).value;
+    await updateDoc(doc(db, "users", currentUser.uid, "universities", id), { deadline, pi });
+    alert("Intel updated.");
+};
+window.deleteUni = async (id) => { if(confirm("Delete school?")) await deleteDoc(doc(db, "users", currentUser.uid, "universities", id)); };
+
+function syncUnis() {
+  const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+  onSnapshot(q, (snap) => {
+    document.getElementById("uni-list").innerHTML = snap.docs.map(d => {
+      const u = d.data();
+      return `
+      <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 space-y-3">
+        <div class="flex justify-between items-center">
+            <div>
+                <h3 class="text-xs font-black text-blue-400 uppercase">${u.name}</h3>
+                <p class="text-[7px] text-emerald-400 font-bold uppercase tracking-widest">Ph.D. Tracking Active</p>
+            </div>
+            <button onclick="window.deleteUni('${d.id}')" class="text-red-500 p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="window.toggleIntel('${d.id}')" class="text-[8px] font-black uppercase bg-slate-700 py-1.5 rounded">Application Intel</button>
+            <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(u.name + ' Physical Chemistry')}" target="_blank" class="text-[8px] font-black uppercase bg-blue-600/20 text-blue-400 py-1.5 rounded text-center">PI Search</a>
+        </div>
+        <div id="intel-${d.id}" class="hidden space-y-2 pt-2 border-t border-slate-700">
+            <input id="dl-${d.id}" value="${u.deadline || ''}" placeholder="Deadline" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-[10px]" />
+            <input id="pi-${d.id}" value="${u.pi || ''}" placeholder="PI of Interest" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-[10px]" />
+            <button onclick="window.saveIntel('${d.id}')" class="w-full bg-emerald-600 py-1.5 rounded text-[8px] font-black uppercase">Save</button>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+// --- VAULT ---
+window.addVaultRow = () => {
+    document.getElementById("vault-editor").insertAdjacentHTML("beforeend", `<div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50"><input type="text" placeholder="Field Name" class="vault-label w-full mb-2 bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-blue-400 font-bold uppercase outline-none" /><textarea class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="3"></textarea></div>`);
+};
+window.saveVault = async () => {
+    const labs = Array.from(document.querySelectorAll(".vault-label"));
+    const ins = Array.from(document.querySelectorAll(".vault-input"));
+    const items = ins.map((el, i) => ({ label: labs[i]?.value || "Bio", text: el.value }));
+    await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
+    alert("Vault Synchronized.");
+};
+async function loadVault() {
+    const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+    const data = vDoc.exists() ? vDoc.data().items : [{ label: 'Research Focus', text: 'Kinetics of adsorption of ionic liquid into mordenite.' }];
+    document.getElementById("vault-editor").innerHTML = data.map(i => `<div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50"><input type="text" value="${i.label}" class="vault-label w-full mb-2 bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-blue-400 font-bold uppercase outline-none" /><textarea class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="3">${i.text}</textarea></div>`).join('');
+}
+
+// --- BRAINSTORM ---
+window.saveSOP = async (id) => {
+    const sop = document.getElementById(`sop-${id}`).value;
+    await updateDoc(doc(db, "users", currentUser.uid, "universities", id), { sop });
+    alert("Draft saved.");
+};
+function syncBrainstorm() {
+    onSnapshot(query(collection(db, "users", currentUser.uid, "universities")), (snap) => {
+        document.getElementById("brainstorm-list").innerHTML = snap.docs.map(d => `
+        <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 space-y-2">
+            <h3 class="text-[10px] font-black text-blue-400 uppercase">${d.data().name} SOP Draft</h3>
+            <textarea id="sop-${d.id}" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-[10px] text-slate-300" rows="4" placeholder="Why this school?">${d.data().sop || ''}</textarea>
+            <button onclick="window.saveSOP('${d.id}')" class="w-full py-2 bg-blue-600 text-white text-[8px] font-black uppercase rounded shadow-lg">Save Draft Segment</button>
+        </div>`).join('');
+    });
+}
+
+// --- CHAT & FILES ---
+window.handleFileUpload = async (files) => {
+    for (const file of files) {
+        const fileRef = ref(storage, `users/${currentUser.uid}/uploads/${Date.now()}_${file.name}`);
+        const snap = await uploadBytes(fileRef, file);
+        const url = await getDownloadURL(snap.ref);
+        await addDoc(collection(db, "global_chat"), { text: `📎 Uploaded: ${file.name}`, fileUrl: url, uid: currentUser.uid, timestamp: Date.now() });
+    }
+};
+function syncChat() {
+  onSnapshot(query(collection(db, "global_chat"), orderBy("timestamp", "asc")), (snap) => {
+    const cont = document.getElementById("chat-container");
+    cont.innerHTML = snap.docs.map(doc => {
+      const d = doc.data();
+      const isMe = d.uid === currentUser.uid;
+      return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'}"><div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">${d.text}${d.fileUrl ? `<br><a href="${d.fileUrl}" target="_blank" class="underline text-[9px] font-bold text-blue-200">View File</a>`:''}</div></div>`;
+    }).join('');
+    cont.scrollTop = cont.scrollHeight;
+  });
+}
+
+// --- AUTH ---
+window.processAuth = async () => {
+  try { await signInWithEmailAndPassword(auth, document.getElementById("identity-email").value, document.getElementById("identity-pass").value); window.switchTab('log'); } catch (e) { alert(e.message); }
+};
+window.processSignUp = async () => {
+    try { const res = await createUserWithEmailAndPassword(auth, document.getElementById("identity-email").value, document.getElementById("identity-pass").value); await sendEmailVerification(res.user); alert("Verify email!"); } catch (e) { alert(e.message); }
+};
+window.processLogout = () => signOut(auth).then(() => location.reload());
 
 document.getElementById("chat-form").onsubmit = async (e) => {
   e.preventDefault();
@@ -246,13 +239,9 @@ document.getElementById("chat-form").onsubmit = async (e) => {
   if (text.toLowerCase().startsWith("add ")) {
     const name = text.replace(/^add\s+/i, "");
     await setDoc(doc(db, "users", currentUser.uid, "universities", name.toLowerCase().replace(/\s/g, "-")), { name, timestamp: Date.now() });
-    await addDoc(collection(db, "global_chat"), { text: `🚀 New Target Logged: ${name}`, uid: currentUser.uid, timestamp: Date.now() });
-  } else { 
-    await addDoc(collection(db, "global_chat"), { text, uid: currentUser.uid, timestamp: Date.now() }); 
-  }
+  } else { await addDoc(collection(db, "global_chat"), { text, uid: currentUser.uid, timestamp: Date.now() }); }
   input.value = "";
 };
 </script>
 </body>
-  </html>
-      
+</html>
