@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Academic Agent Pro | Final Build</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>Academic Agent Pro | Ph.D. Command Center</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
   <script id="firebase-config" type="application/json">
@@ -16,9 +19,14 @@
     "appId": "1:566149647802:web:490c7cc3d10b7cd7732183"
   }
   </script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
 <body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans overflow-x-hidden">
 
+  <!-- Header -->
   <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -26,204 +34,607 @@
       </div>
       <div>
         <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
-        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Initializing...</p>
+        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1">Initializing ...</p>
       </div>
     </div>
-    <div class="flex gap-2">
-       <button id="switch-acc-btn" onclick="window.switchTab('accounts')" class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-blue-400">Switch Account</button>
-       <button id="logout-btn" onclick="window.processLogout()" class="hidden bg-red-900/20 border border-red-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Logout</button>
+
+    <div class="flex items-center gap-2">
+      <button id="export-btn" onclick="window.exportAllData()" title="System Backup" class="bg-blue-600/20 p-2 rounded-lg border border-blue-500/30 hover:bg-blue-600/40 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      </button>
+      <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400 tracking-tighter">0 Schools</div>
+      <button id="auth-main-btn" onclick="window.openAuthModal()" class="bg-blue-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase shadow-lg shadow-blue-500/20">Sign In</button>
+      <button id="logout-btn" onclick="window.processLogout()" class="hidden bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-slate-400">Logout</button>
     </div>
   </header>
 
+  <!-- Auth modal -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-6">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
+      <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-2 text-center">Account Access</h2>
+      <p class="text-[9px] text-slate-400 text-center mb-4">Upgrade or sign in to secure your Ph.D. log.</p>
+      <div class="space-y-4">
+        <input id="auth-email" type="email" placeholder="Email Address" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
+        <input id="auth-pass" type="password" placeholder="Password" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
+        <div class="flex gap-2">
+          <button onclick="window.processSignIn()" class="flex-1 bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase">Sign In</button>
+          <button onclick="window.processSignUp()" class="flex-1 bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">Create</button>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="window.processLinkAccount()" class="flex-1 bg-blue-600/20 border border-blue-500/30 py-3 rounded-xl text-[10px] font-black uppercase">Link Current Guest</button>
+          <button onclick="window.resendVerification()" class="flex-1 bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">Resend Verification</button>
+        </div>
+        <button onclick="window.closeAuthModal()" class="w-full text-[8px] text-slate-500 font-bold uppercase py-2 text-center">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
   <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
-    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Log</button>
-    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Vault</button>
-    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Advisor</button>
-    <button onclick="window.switchTab('accounts')" id="tab-accounts" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Accounts</button>
+    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">Log</button>
+    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Advisor</button>
+    <button onclick="window.switchTab('files')" id="tab-files" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Docs</button>
+    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Vault</button>
+    <button onclick="window.switchTab('brainstorm')" id="tab-brainstorm" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Drafts</button>
+    <button onclick="window.switchTab('accounts')" id="tab-accounts" class="flex-1 min-w-[90px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Accounts</button>
   </nav>
 
+  <!-- Main -->
   <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
-    <div id="log-view" class="hidden space-y-4">
-        <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
+    <!-- Log view -->
+    <div id="log-view" class="space-y-4">
+      <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
     </div>
 
-    <div id="vault-view" class="hidden space-y-4">
-        <div id="vault-editor" class="space-y-4"></div>
-        <button onclick="window.saveVault()" class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg">Update Master Profile</button>
-    </div>
-
+    <!-- Chat view -->
     <div id="chat-view" class="hidden">
-        <div id="chat-container" class="space-y-4 mb-8"></div>
+      <div id="chat-container" class="space-y-4 mb-8 min-h-[60vh]"></div>
     </div>
 
+    <!-- Files view -->
+    <div id="files-view" class="hidden space-y-4">
+      <div class="bg-slate-800/60 p-6 rounded-xl border-2 border-dashed border-slate-700 text-center">
+        <input type="file" id="file-upload-input" class="hidden" onchange="window.handleFileUpload(event)" />
+        <button onclick="document.getElementById('file-upload-input').click()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all">Upload Documents</button>
+        <p class="text-[9px] text-slate-500 mt-3 font-bold uppercase tracking-tighter">SOP, Waiver Requests, or Thesis PDFs</p>
+      </div>
+      <div id="file-list" class="space-y-2"></div>
+    </div>
+
+    <!-- Vault view -->
+    <div id="vault-view" class="hidden space-y-6">
+      <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-xl mb-2">
+        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1 text-center">Vault editor</h2>
+        <p class="text-[9px] text-slate-400 leading-tight text-center">Update your core research profile. Used by SOP drafts and forms.</p>
+      </div>
+      <div id="vault-editor" class="space-y-4"></div>
+      <div class="flex gap-2">
+        <button onclick="window.addVaultRow()" class="flex-1 py-2 bg-slate-800 border border-slate-700 text-[9px] font-black uppercase rounded-xl text-blue-400">+ Add custom field</button>
+        <button onclick="window.saveVault()" class="flex-1 py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg">Update master profile</button>
+      </div>
+    </div>
+
+    <!-- Brainstorm view -->
+    <div id="brainstorm-view" class="hidden space-y-4">
+      <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-xl">
+        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">SOP brainstorming engine</h2>
+        <p class="text-[9px] text-slate-400 leading-tight">Draft school-specific “fit to theory,” location/department rationale, and outreach notes.</p>
+      </div>
+      <div id="brainstorm-list" class="space-y-4"></div>
+    </div>
+
+    <!-- Accounts view -->
     <div id="accounts-view" class="hidden space-y-6">
-        <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50">
-            <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4 text-center">Identity Switch</h2>
-            <div class="space-y-4">
-                <input id="identity-email" type="email" placeholder="Email Address" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
-                <input id="identity-pass" type="password" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
-                <button onclick="window.processAuth()" class="w-full bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/20">Sign In / Switch</button>
-                <button onclick="window.processSignUp()" class="w-full bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">Create New Identity</button>
-            </div>
+      <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 text-center">
+        <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4">Identity manager</h2>
+        <div class="space-y-4">
+          <input id="identity-email" type="email" placeholder="Email Address" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
+          <input id="identity-pass" type="password" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
+          <div class="flex gap-2">
+            <button onclick="window.processSignIn()" class="flex-1 bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/20">Sign in</button>
+            <button onclick="window.processSignUp()" class="flex-1 bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">Create</button>
+          </div>
         </div>
+      </div>
+      <div id="account-status" class="text-center p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+        <p class="text-[9px] text-emerald-400 font-bold uppercase">Current session active</p>
+      </div>
     </div>
   </main>
 
+  <!-- Footer chat -->
   <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
-    <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
-      <input type="file" id="chat-file" class="hidden" multiple onchange="window.handleFileUpload(this.files)" />
-      <button type="button" onclick="document.getElementById('chat-file').click()" class="bg-slate-800 border border-slate-700 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 text-xl font-bold shadow-xl">+</button>
-      <div class="relative flex-1">
-        <input id="chat-input" type="text" autocomplete="off" placeholder="Add school or message..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none" />
-        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">➤</button>
-      </div>
+    <form id="chat-form" class="max-w-md mx-auto relative">
+      <input id="chat-input" type="text" autocomplete="off" placeholder="Message or `add Princeton` ..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
+      <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
     </form>
   </footer>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js";
+  <!-- App -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, signOut, linkWithCredential, EmailAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, query, orderBy, addDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    import { getStorage, ref as sRef, uploadBytes, getDownloadURL, listAll, deleteObject } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js";
 
-const config = JSON.parse(document.getElementById("firebase-config").textContent);
-const app = initializeApp(config);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-let currentUser = null;
-const tabs = ['log', 'vault', 'chat', 'accounts'];
+    // Firebase init
+    const config = JSON.parse(document.getElementById("firebase-config").textContent);
+    const app = initializeApp(config);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-// --- AUTH & SWITCH ACCOUNT ---
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    currentUser = user;
-    document.getElementById("user-display").textContent = user.isAnonymous ? "Guest Session" : user.email;
-    document.getElementById("logout-btn").classList.toggle("hidden", user.isAnonymous);
-    init();
-  } else { signInAnonymously(auth); }
-});
+    // State
+    let currentUser = null;
+    const tabs = ["log", "chat", "files", "vault", "brainstorm", "accounts"];
 
-window.processAuth = async () => {
-  const email = document.getElementById("identity-email").value;
-  const pass = document.getElementById("identity-pass").value;
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-    window.switchTab('log');
-  } catch (e) { alert("Switch failed: " + e.message); }
-};
+    // Auth state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById("user-display").textContent = user.isAnonymous ? "Guest Session" : (user.email ?? "Linked Account");
+        document.getElementById("auth-main-btn").textContent = user.isAnonymous ? "Link Account" : (user.emailVerified ? "Verified" : "Verify Email");
+        document.getElementById("logout-btn").classList.toggle("hidden", user.isAnonymous);
+        init();
+      } else {
+        signInAnonymously(auth);
+      }
+    });
 
-window.processSignUp = async () => {
-    const email = document.getElementById("identity-email").value;
-    const pass = document.getElementById("identity-pass").value;
-    try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        alert("Account Created!");
-        window.switchTab('log');
-    } catch (e) { alert(e.message); }
-}
+    // Tab switching + gestures
+    window.switchTab = (tab) => {
+      tabs.forEach(t => {
+        document.getElementById(`${t}-view`).classList.add("hidden");
+        const btn = document.getElementById(`tab-${t}`);
+        btn.classList.replace("text-blue-400", "text-slate-500");
+        btn.classList.replace("border-blue-500", "border-transparent");
+      });
+      document.getElementById(`${tab}-view`).classList.remove("hidden");
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      activeBtn.classList.replace("text-slate-500", "text-blue-400");
+      activeBtn.classList.replace("border-transparent", "border-blue-500");
+    };
 
-window.processLogout = () => signOut(auth).then(() => location.reload());
-
-// --- FILE UPLOAD REPAIR ---
-window.handleFileUpload = async (files) => {
-    if (!currentUser) return;
-    for (const file of files) {
-        try {
-            const fileRef = ref(storage, `users/${currentUser.uid}/uploads/${Date.now()}_${file.name}`);
-            const snapshot = await uploadBytes(fileRef, file);
-            const url = await getDownloadURL(snapshot.ref);
-            
-            // Log to Advisor
-            await addDoc(collection(db, "global_chat"), {
-                text: `📎 Document Uploaded: ${file.name}`,
-                fileUrl: url,
-                uid: currentUser.uid,
-                timestamp: Date.now()
-            });
-            alert(`Uploaded: ${file.name}`);
-        } catch (e) { alert("Upload failed: " + e.message); }
+    function setupSwipes() {
+      const mc = new Hammer(document.getElementById("swipe-zone"));
+      mc.on("swipeleft", () => {
+        const current = tabs.find(t => !document.getElementById(`${t}-view`).classList.contains("hidden"));
+        const idx = tabs.indexOf(current);
+        if (idx < tabs.length - 1) window.switchTab(tabs[idx + 1]);
+      });
+      mc.on("swiperight", () => {
+        const current = tabs.find(t => !document.getElementById(`${t}-view`).classList.contains("hidden"));
+        const idx = tabs.indexOf(current);
+        if (idx > 0) window.switchTab(tabs[idx - 1]);
+      });
     }
-};
 
-// --- LOG DELETE & EDIT REPAIR ---
-window.deleteUni = async (id) => {
-    if(confirm("Remove this target school?")) {
-        await deleteDoc(doc(db, "users", currentUser.uid, "universities", id));
+    // Init
+    function init() {
+      syncUniversities();
+      syncGlobalChat();
+      syncFiles();
+      loadVault();
+      renderBrainstorm();
+      setupSwipes();
+      window.switchTab("log");
     }
-};
 
-function syncUnis() {
-  const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
-  onSnapshot(q, (snap) => {
-    document.getElementById("uni-list").innerHTML = snap.docs.map(d => `
-      <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center group">
-        <div>
-            <h3 class="text-xs font-black text-blue-400 uppercase">${d.data().name}</h3>
-            <p class="text-[7px] text-emerald-400 font-bold uppercase">Ph.D. Entry Tracking</p>
+    // University log: render + deep intel panels
+    function scholarUrlFor(name) {
+      const q = encodeURIComponent(`${name} Physical Chemistry mordenite kinetics`);
+      return `https://scholar.google.com/scholar?q=${q}`;
+    }
+
+    function renderUniversityCard(d) {
+      const u = d.data();
+      const id = d.id;
+      const scholarUrl = scholarUrlFor(u.name);
+      return `
+        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 shadow-lg">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <h3 class="text-xs font-black text-blue-400 uppercase">${u.name}</h3>
+              <span class="text-[7px] text-emerald-400 font-bold uppercase bg-emerald-400/10 px-1 rounded">${u.tier || 'Carnegie Classified'}</span>
+              <p class="text-[8px] text-slate-500 mt-1">${u.domain || ''}</p>
+            </div>
+            <div class="flex gap-2">
+              <a href="${scholarUrl}" target="_blank" class="text-[8px] font-black px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">PI Research</a>
+              <button onclick="window.deleteUni('${id}', '${u.name}')" class="text-slate-600 hover:text-red-400" title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button onclick="window.togglePanel('app-${id}')" class="text-[8px] font-black uppercase bg-slate-700/50 text-slate-300 px-2 py-1 rounded">Application intel</button>
+            <button onclick="window.togglePanel('contact-${id}')" class="text-[8px] font-black uppercase bg-slate-700/50 text-slate-300 px-2 py-1 rounded">Contact directory</button>
+            <button onclick="window.togglePanel('intel-${id}')" class="text-[8px] font-black uppercase bg-slate-700/50 text-slate-300 px-2 py-1 rounded">Dept & PI fit</button>
+            <button onclick="window.switchTab('chat')" class="text-[8px] font-black uppercase bg-blue-600/20 text-blue-400 px-2 py-1 rounded">AI advisor</button>
+          </div>
+
+          <!-- Application intel -->
+          <div id="app-${id}" class="hidden mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[8px] font-black text-slate-500 uppercase">Deadline</label>
+                <input id="dl-${id}" value="${u.deadline || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Jan 15">
+              </div>
+              <div>
+                <label class="text-[8px] font-black text-slate-500 uppercase">Fee waiver</label>
+                <input id="wav-${id}" value="${u.waiver || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Confirmed">
+              </div>
+            </div>
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase">Faculty of interest</label>
+              <input id="fac-${id}" value="${u.faculty || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Dr. Researcher Name">
+            </div>
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase">Specific dept notes</label>
+              <textarea id="nt-${id}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" rows="2" placeholder="Strength in theoretical methods ...">${u.notes || ''}</textarea>
+            </div>
+            <button onclick="window.saveAppInfo('${id}')" class="w-full py-2 bg-emerald-600/20 text-emerald-400 text-[8px] font-black uppercase rounded border border-emerald-600/30">Save application intel</button>
+          </div>
+
+          <!-- Contact directory -->
+          <div id="contact-${id}" class="hidden mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase">Admissions email</label>
+              <input id="email-${id}" value="${u.admEmail || ''}" type="email" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-blue-300" placeholder="gradadmissions@${u.name.toLowerCase().replace(/\s/g,'')}.edu">
+            </div>
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase">Graduate coordinator</label>
+              <input id="coord-${id}" value="${u.coordName || ''}" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Name of department contact">
+            </div>
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase">Phone / WhatsApp</label>
+              <input id="phone-${id}" value="${u.phone || ''}" type="text" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="+1 ...">
+            </div>
+            <button onclick="window.saveContact('${id}')" class="w-full py-2 bg-blue-600/20 text-blue-400 text-[8px] font-black uppercase rounded border border-blue-600/30">Save contact address</button>
+          </div>
+
+          <!-- Dept & PI fit -->
+          <div id="intel-${id}" class="hidden mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Department strength</label>
+              <textarea id="dept-${id}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" rows="2" placeholder="Cutting-edge research in heterogeneous systems ...">${u.deptStrength || ''}</textarea>
+            </div>
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Facility / environment</label>
+              <input id="facility-${id}" value="${u.facility || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Innovative technological environment">
+            </div>
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Location advantage</label>
+              <input id="loc-${id}" value="${u.locationNote || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Proximity to industrial research hubs">
+            </div>
+            <div>
+              <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">PI / faculty alignment</label>
+              <input id="pi-${id}" value="${u.piMatch || ''}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Lab specializing in Zeolite Kinetics">
+            </div>
+            <button onclick="window.saveIntel('${id}')" class="w-full py-2 bg-blue-600/20 text-blue-400 text-[8px] font-black uppercase rounded border border-blue-600/30">Save school intel</button>
+          </div>
         </div>
-        <button onclick="window.deleteUni('${d.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>`).join('');
-  });
-}
+      `;
+    }
 
-// --- SYSTEM CORE ---
-function init() { syncUnis(); syncChat(); loadVault(); setupSwipes(); }
+    function syncUniversities() {
+      const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snap) => {
+        document.getElementById("stats-total").textContent = `${snap.docs.length} Schools`;
+        document.getElementById("uni-list").innerHTML = snap.docs.map(renderUniversityCard).join("");
+      });
+    }
 
-window.switchTab = (tab) => {
-  tabs.forEach(t => {
-    document.getElementById(`${t}-view`).classList.add('hidden');
-    document.getElementById(`tab-${t}`).className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 " + (t === tab ? "border-blue-500 text-blue-400" : "border-transparent text-slate-500");
-  });
-  document.getElementById(`${tab}-view`).classList.remove('hidden');
-};
+    // Toggle panels
+    window.togglePanel = (id) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle("hidden");
+    };
 
-function setupSwipes() {
-  const mc = new Hammer(document.getElementById("swipe-zone"));
-  mc.on("swipeleft", () => { const idx = tabs.indexOf(getActiveTab()); if(idx < tabs.length-1) window.switchTab(tabs[idx+1]); });
-  mc.on("swiperight", () => { const idx = tabs.indexOf(getActiveTab()); if(idx > 0) window.switchTab(tabs[idx-1]); });
-}
-function getActiveTab() { return tabs.find(t => !document.getElementById(`${t}-view`).classList.contains('hidden')); }
+    // Save functions
+    window.saveAppInfo = async (id) => {
+      const data = {
+        deadline: document.getElementById(`dl-${id}`).value,
+        faculty: document.getElementById(`fac-${id}`).value,
+        waiver: document.getElementById(`wav-${id}`).value,
+        notes: document.getElementById(`nt-${id}`).value
+      };
+      await updateDoc(doc(db, "users", currentUser.uid, "universities", id), data);
+      alert("Application intel saved.");
+    };
 
-async function loadVault() {
-  const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
-  const data = vDoc.exists() ? vDoc.data().items : [{label:'Research', text:'Kinetics of adsorption of ionic liquids.'}];
-  document.getElementById("vault-editor").innerHTML = data.map(i => `
-    <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-      <label class="text-[8px] font-black text-slate-500 uppercase block mb-1">${i.label}</label>
-      <textarea class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="3">${i.text}</textarea>
-    </div>`).join('');
-}
+    window.saveContact = async (id) => {
+      const data = {
+        admEmail: document.getElementById(`email-${id}`).value,
+        coordName: document.getElementById(`coord-${id}`).value,
+        phone: document.getElementById(`phone-${id}`).value
+      };
+      await updateDoc(doc(db, "users", currentUser.uid, "universities", id), data);
+      alert("Contact address saved.");
+    };
 
-window.saveVault = async () => {
-  const items = Array.from(document.querySelectorAll(".vault-input")).map(el => ({ label: el.previousElementSibling.innerText, text: el.value }));
-  await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
-  alert("Vault Updated.");
-};
+    window.saveIntel = async (id) => {
+      const data = {
+        deptStrength: document.getElementById(`dept-${id}`).value,
+        facility: document.getElementById(`facility-${id}`).value,
+        locationNote: document.getElementById(`loc-${id}`).value,
+        piMatch: document.getElementById(`pi-${id}`).value
+      };
+      await updateDoc(doc(db, "users", currentUser.uid, "universities", id), data);
+      alert("University specific intel updated.");
+    };
 
-function syncChat() {
-  const q = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
-  onSnapshot(q, (snap) => {
-    document.getElementById("chat-container").innerHTML = snap.docs.map(doc => {
-      const isMe = doc.data().uid === currentUser.uid;
-      return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'}"><div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600 shadow-blue-500/20 shadow-lg' : 'bg-slate-800 border border-slate-700'}">${doc.data().text}</div></div>`;
-    }).join('');
-  });
-}
+    window.deleteUni = async (id, name) => {
+      if (confirm(`Remove ${name}?`)) {
+        await deleteDoc(doc(db, "users", currentUser.uid, "universities", id));
+      }
+    };
 
-document.getElementById("chat-form").onsubmit = async (e) => {
-  e.preventDefault();
-  const input = document.getElementById("chat-input");
-  const text = input.value.trim();
-  if(!text) return;
-  if (text.toLowerCase().startsWith("add ")) {
-    const name = text.replace(/^add\s+/i, "");
-    await setDoc(doc(db, "users", currentUser.uid, "universities", name.toLowerCase().replace(/\s/g, "-")), { name, timestamp: Date.now() });
-  } else { await addDoc(collection(db, "global_chat"), { text, uid: currentUser.uid, timestamp: Date.now() }); }
-  input.value = "";
-};
-</script>
+    // Brainstorm drafts
+    function renderBrainstorm() {
+      const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+      onSnapshot(q, (snap) => {
+        document.getElementById("brainstorm-list").innerHTML = snap.docs.map(d => {
+          const u = d.data();
+          return `
+            <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50 space-y-3">
+              <h3 class="text-[10px] font-black text-blue-400 uppercase tracking-tighter">${u.name} Draft</h3>
+              <div>
+                <label class="text-[7px] font-black text-slate-500 uppercase">Research fit (Kinetics to Theory)</label>
+                <textarea id="fit-${d.id}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="2" placeholder="How my mordenite kinetics background fits their electronic structure theory ...">${u.researchFit || ''}</textarea>
+              </div>
+              <div>
+                <label class="text-[7px] font-black text-slate-500 uppercase">Why this location & department?</label>
+                <textarea id="sop-${d.id}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="3" placeholder="Specific department strengths ...">${u.sopDraft || ''}</textarea>
+              </div>
+              <button onclick="window.saveDraft('${d.id}')" class="w-full py-2 bg-blue-600 text-white text-[8px] font-black uppercase rounded shadow-lg shadow-blue-500/20">Save drafting progress</button>
+            </div>
+          `;
+        }).join("");
+      });
+    }
+
+    window.saveDraft = async (id) => {
+      const sopDraft = document.getElementById(`sop-${id}`).value;
+      const researchFit = document.getElementById(`fit-${id}`).value;
+      await updateDoc(doc(db, "users", currentUser.uid, "universities", id), { sopDraft, researchFit });
+      alert("Draft segment saved.");
+    };
+
+    // Files: upload / list / delete
+    window.handleFileUpload = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file || !currentUser) return;
+      const fileRef = sRef(storage, `users/${currentUser.uid}/docs/${Date.now()}_${file.name}`);
+      await addDoc(collection(db, "global_chat"), { text: `Uploading: ${file.name} ...`, uid: currentUser.uid, timestamp: Date.now() });
+      const snap = await uploadBytes(fileRef, file);
+      await addDoc(collection(db, "global_chat"), { text: `File secured: ${file.name}`, uid: currentUser.uid, timestamp: Date.now() });
+      syncFiles();
+    };
+
+    async function syncFiles() {
+      if (!currentUser) return;
+      const folderRef = sRef(storage, `users/${currentUser.uid}/docs/`);
+      const res = await listAll(folderRef);
+      const fileList = document.getElementById("file-list");
+      const items = await Promise.all(res.items.map(async (item) => {
+        const url = await getDownloadURL(item);
+        return `
+          <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-blue-500/10 rounded-lg text-blue-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </div>
+              <span class="text-[10px] font-bold text-slate-300 truncate max-w-[150px]">${item.name}</span>
+            </div>
+            <div class="flex gap-2">
+              <a href="${url}" target="_blank" class="text-[9px] font-black text-blue-400 uppercase bg-blue-400/10 px-2 py-1 rounded">View</a>
+              <button onclick="window.deleteFile('${item.fullPath}')" class="text-[9px] font-black text-red-400 uppercase bg-red-400/10 px-2 py-1 rounded">Del</button>
+            </div>
+          </div>
+        `;
+      }));
+      fileList.innerHTML = items.join("") || '<p class="text-center text-slate-600 text-[10px] mt-4 font-bold uppercase">No files in cloud</p>';
+    }
+
+    window.deleteFile = async (path) => {
+      if (confirm("Delete this document?")) {
+        await deleteObject(sRef(storage, path));
+        syncFiles();
+      }
+    };
+
+    // Vault: load/save/add rows
+    const defaultVault = [
+      { id: 'thesis', label: 'Thesis & Research', text: 'Kinetics of adsorption of ionic liquid into mordenite. Expertise in FT-IR, TGA, and kinetic modeling.' },
+      { id: 'goals', label: 'Academic Goals', text: 'Transitioning to quantum mechanical electronic structure theory and high-performance computing.' },
+      { id: 'skills', label: 'Technical Stack', text: 'MATLAB, Linux OS, CHN-Elemental Analysis, Surface & Materials Chemistry.' }
+    ];
+
+    async function loadVault() {
+      const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+      const data = vDoc.exists() ? vDoc.data().items : defaultVault;
+      document.getElementById("vault-editor").innerHTML = data.map(i => `
+        <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+          <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2 block">${i.label}</label>
+          <textarea data-id="${i.id}" data-label="${i.label}" class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-3 text-[10px] text-slate-200 outline-none focus:border-blue-500" rows="3">${i.text}</textarea>
+          <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)" class="text-[8px] text-blue-400 font-bold mt-2 uppercase">Copy for portal</button>
+        </div>
+      `).join("");
+    }
+
+    window.addVaultRow = () => {
+      const container = document.getElementById("vault-editor");
+      const id = `custom-${Date.now()}`;
+      const html = `
+        <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+          <input type="text" placeholder="Field Name (e.g., Publications)" class="vault-label w-full mb-2 bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-blue-400 font-bold uppercase outline-none" />
+          <textarea data-id="${id}" data-label="" class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-slate-300" rows="3"></textarea>
+        </div>
+      `;
+      container.insertAdjacentHTML("beforeend", html);
+    };
+
+    window.saveVault = async () => {
+      const inputs = Array.from(document.querySelectorAll(".vault-input"));
+      const labels = Array.from(document.querySelectorAll(".vault-label"));
+      const items = inputs.map((el, i) => ({
+        id: el.dataset.id || `manual-${i}`,
+        label: labels[i]?.value || el.dataset.label || "Custom",
+        text: el.value
+      }));
+      await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
+      alert("Data vault synchronized.");
+    };
+
+    // Chat: global chat sync
+    function syncGlobalChat() {
+      const q = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
+      onSnapshot(q, (snap) => {
+        const container = document.getElementById("chat-container");
+        container.innerHTML = snap.docs.map(doc => {
+          const d = doc.data();
+          const isMe = d.uid === currentUser?.uid;
+          return `
+            <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
+              <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
+                ${d.text}
+              </div>
+            </div>
+          `;
+        }).join("");
+        container.scrollTop = container.scrollHeight;
+      });
+    }
+
+    // Chat form: add commands + authentic lookup (Hipo + Carnegie tag)
+    document.getElementById("chat-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (text.toLowerCase().startsWith("add ")) {
+        const targetName = text.replace(/^add\s+/i, "").trim();
+        await addDoc(collection(db, "global_chat"), { text: `Authenticating: ${targetName} ...`, uid: currentUser.uid, timestamp: Date.now() });
+
+        try {
+          const res = await fetch(`http://universities.hipolabs.com/search?name=${encodeURIComponent(targetName)}`);
+          const results = await res.json();
+          if (results.length > 0) {
+            const uni = results[0];
+            const r1Keywords = ["Berkeley","Yale","Stanford","Purdue","MIT","Columbia","Chicago","Princeton","UCLA","UCSB"];
+            const tier = r1Keywords.some(k => uni.name.includes(k)) ? "Carnegie R1" : "Carnegie R2";
+            const id = uni.name.toLowerCase().replace(/\s/g, "-");
+            await setDoc(doc(db, "users", currentUser.uid, "universities", id), {
+              name: uni.name,
+              domain: uni.domains?.[0] || "",
+              country: uni.country || "",
+              tier,
+              timestamp: Date.now()
+            });
+            await addDoc(collection(db, "global_chat"), { text: `Verified & Logged: ${uni.name} (${tier})`, uid: currentUser.uid, timestamp: Date.now() });
+          } else {
+            await addDoc(collection(db, "global_chat"), { text: `Could not find ${targetName} in global database.`, uid: currentUser.uid, timestamp: Date.now() });
+          }
+        } catch (err) {
+          await setDoc(doc(db, "users", currentUser.uid, "universities", targetName.toLowerCase().replace(/\s/g,"-")), { name: targetName, timestamp: Date.now() });
+          await addDoc(collection(db, "global_chat"), { text: `Manual log added for ${targetName}.`, uid: currentUser.uid, timestamp: Date.now() });
+        }
+      } else {
+        await addDoc(collection(db, "global_chat"), { text, uid: currentUser.uid, timestamp: Date.now() });
+      }
+      input.value = "";
+    };
+
+    // Export backup
+    window.exportAllData = async () => {
+      const unisSnap = await getDocs(collection(db, "users", currentUser.uid, "universities"));
+      const vaultSnap = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+      const backup = {
+        exportDate: new Date().toISOString(),
+        user: document.getElementById("user-display").textContent,
+        schools: unisSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+        vault: vaultSnap.exists() ? vaultSnap.data() : { items: [] }
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Academic_Agent_Backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    };
+
+    // Auth controls
+    window.openAuthModal = () => document.getElementById("auth-modal").classList.remove("hidden");
+    window.closeAuthModal = () => document.getElementById("auth-modal").classList.add("hidden");
+
+    window.processSignIn = async () => {
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-pass").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        window.closeAuthModal();
+        window.switchTab("log");
+        alert("Successfully logged in.");
+      } catch (e) { alert("Login failed: " + e.message); }
+    };
+
+    window.processSignUp = async () => {
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-pass").value;
+      try {
+        const res = await createUserWithEmailAndPassword(auth, email, pass);
+        await sendEmailVerification(res.user);
+        alert("Account created. Please verify your email.");
+      } catch (e) { alert("Registration failed: " + e.message); }
+    };
+
+    window.processLinkAccount = async () => {
+      const email = document.getElementById("auth-email").value;
+      const pass = document.getElementById("auth-pass").value;
+      try {
+        const credential = EmailAuthProvider.credential(email, pass);
+        const result = await linkWithCredential(auth.currentUser, credential);
+        await sendEmailVerification(result.user);
+        alert("Verification email sent. Please check your inbox.");
+        window.closeAuthModal();
+      } catch (e) {
+        if (e.code === "auth/email-already-in-use") {
+          if (confirm("Email already exists. Sign in to that account instead?")) {
+            await signInWithEmailAndPassword(auth, email, pass);
+            window.closeAuthModal();
+          }
+        } else {
+          alert(e.message);
+        }
+      }
+    };
+
+    window.resendVerification = async () => {
+      if (!auth.currentUser || auth.currentUser.isAnonymous) return alert("Sign in or link account first.");
+      await sendEmailVerification(auth.currentUser);
+      alert("Verification link resent.");
+    };
+
+    window.processLogout = async () => {
+      if (confirm("Sign out of current session?")) {
+        await signOut(auth);
+        location.reload();
+      }
+    };
+
+    // Bulk delete (optional UI integration)
+    window.processBulkDelete = async (ids = []) => {
+      if (!ids.length) return;
+      if (confirm(`Delete ${ids.length} schools? This cannot be undone.`)) {
+        const batch = writeBatch(db);
+        ids.forEach(id => batch.delete(doc(db, "users", currentUser.uid, "universities", id)));
+        await batch.commit();
+        alert("Selected schools deleted.");
+      }
+    };
+  </script>
 </body>
 </html>
