@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Academic Agent Pro | Verified Command</title>
+  <title>Academic Agent Pro | Ph.D. Verified</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
   <script id="firebase-config" type="application/json">
@@ -21,89 +21,194 @@
 
   <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center">
+      <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
         <span class="font-black text-white text-lg">Y</span>
       </div>
       <div>
         <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
-        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1">Guest Session</p>
+        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Guest Session</p>
       </div>
     </div>
     <div class="flex gap-2">
-      <button id="auth-btn" onclick="window.showAuthModal()" class="bg-blue-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase">Verify & Link</button>
+      <button onclick="window.downloadData()" class="bg-emerald-600/20 text-emerald-400 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase border border-emerald-500/30">Download</button>
+      <button id="auth-btn" onclick="window.handleAuthAction()" class="bg-blue-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase shadow-lg shadow-blue-500/20">Link Account</button>
     </div>
   </header>
 
   <div id="auth-modal" class="hidden fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-6">
     <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
       <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-2 text-center">Identity Verification</h2>
-      <p class="text-[9px] text-slate-400 text-center mb-4">A verification link will be sent to your inbox.</p>
+      <p class="text-[9px] text-slate-400 text-center mb-4">You will receive a link to verify your email.</p>
       <div class="space-y-4">
         <input id="auth-email" type="email" placeholder="Email Address" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs outline-none" />
         <input id="auth-pass" type="password" placeholder="Password" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-xs outline-none" />
-        <button onclick="window.processUpgrade()" class="w-full bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase">Send Verification Link</button>
+        <button onclick="window.processUpgrade()" class="w-full bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase">Verify & Sync Data</button>
         <button onclick="window.closeAuthModal()" class="w-full text-[8px] text-slate-500 font-bold uppercase py-2 text-center">Cancel</button>
       </div>
     </div>
   </div>
 
-  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex">
-    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 py-3 text-[10px] font-black uppercase border-b-2 border-blue-500 text-blue-400">Log</button>
-    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 py-3 text-[10px] font-black uppercase border-b-2 border-transparent text-slate-500">Advisor</button>
-    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 py-3 text-[10px] font-black uppercase border-b-2 border-transparent text-slate-500">Vault</button>
+  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
+    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">Log</button>
+    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Advisor</button>
+    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">Data Vault</button>
   </nav>
 
   <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
     <div id="log-view" class="space-y-4"><div id="uni-list" class="grid grid-cols-1 gap-3"></div></div>
     <div id="chat-view" class="hidden"><div id="chat-container" class="space-y-4 mb-8 min-h-[60vh]"></div></div>
-    <div id="vault-view" class="hidden space-y-4"><div id="vault-editor" class="space-y-4"></div><button onclick="window.saveVault()" class="w-full py-3 bg-blue-600 text-[10px] font-black uppercase rounded-xl">Update Profile</button></div>
+    <div id="vault-view" class="hidden space-y-4">
+      <div id="vault-editor" class="space-y-4"></div>
+      <button onclick="window.saveVault()" class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl">Update Master Profile</button>
+    </div>
   </main>
 
-  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a]">
+  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
     <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
-      <button type="button" onclick="document.getElementById('chat-file').click()" class="bg-slate-800 border border-slate-700 w-12 h-12 rounded-2xl text-blue-400 text-xl font-bold">+</button>
       <input type="file" id="chat-file" class="hidden" />
-      <input id="chat-input" type="text" autocomplete="off" placeholder="Message..." class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 text-sm text-white" />
-      <button type="submit" class="bg-blue-600 p-2.5 rounded-xl text-white">➤</button>
+      <button type="button" onclick="document.getElementById('chat-file').click()" class="bg-slate-800 border border-slate-700 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 text-xl font-bold">+</button>
+      <div class="relative flex-1">
+        <input id="chat-input" type="text" autocomplete="off" placeholder="Add school or message..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white outline-none" />
+        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">➤</button>
+      </div>
     </form>
   </footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, linkWithCredential, EmailAuthProvider, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, linkWithCredential, EmailAuthProvider, sendEmailVerification, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
 const config = JSON.parse(document.getElementById("firebase-config").textContent);
 const app = initializeApp(config);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let currentUser = null;
+const tabs = ['log', 'chat', 'vault'];
 
 onAuthStateChanged(auth, async (user) => { 
   if (user) { 
     currentUser = user; 
-    const isVerified = user.emailVerified;
-    document.getElementById("user-display").textContent = user.isAnonymous ? "Guest Session" : (isVerified ? user.email : user.email + " (Unverified)");
-    document.getElementById("auth-btn").textContent = user.isAnonymous ? "Verify & Link" : (isVerified ? "Verified" : "Resend Link");
+    const verified = user.emailVerified;
+    document.getElementById("user-display").textContent = user.isAnonymous ? "Guest Session" : (verified ? user.email : user.email + " (UNVERIFIED)");
+    document.getElementById("auth-btn").textContent = user.isAnonymous ? "Link Account" : (verified ? "Verified" : "RESEND LINK");
     init(); 
   } else { signInAnonymously(auth); }
 });
 
+// --- AUTH ACTIONS (Fixes 'email-already-in-use') ---
+window.handleAuthAction = async () => {
+  if (currentUser.isAnonymous) { window.showAuthModal(); }
+  else if (!currentUser.emailVerified) { await sendEmailVerification(currentUser); alert("Link resent!"); }
+};
+
+window.showAuthModal = () => document.getElementById("auth-modal").classList.remove('hidden');
+window.closeAuthModal = () => document.getElementById("auth-modal").classList.add('hidden');
+
 window.processUpgrade = async () => {
   const email = document.getElementById("auth-email").value;
   const pass = document.getElementById("auth-pass").value;
+  const credential = EmailAuthProvider.credential(email, pass);
   try {
-    const cred = EmailAuthProvider.credential(email, pass);
-    const result = await linkWithCredential(auth.currentUser, cred);
+    const result = await linkWithCredential(auth.currentUser, credential);
     await sendEmailVerification(result.user);
-    alert("Verification email sent to " + email + ". Please check your inbox to finalize linking.");
+    alert("Verification email sent!");
     window.closeAuthModal();
-  } catch (e) { alert(e.message); }
+  } catch (e) {
+    if (e.code === 'auth/email-already-in-use') {
+      if(confirm("Email already exists. Sign in to that account instead?")) {
+        await signInWithEmailAndPassword(auth, email, pass);
+        window.closeAuthModal();
+      }
+    } else { alert(e.message); }
+  }
 };
 
-// ... Rest of the Core Logic (syncUnis, loadVault, switchTab, Hammer Swipe) remains identical to the previous inclusive version ...
-// [Logic omitted for brevity but fully functional in the same file]
+// --- DOWNLOAD FEATURE ---
+window.downloadData = async () => {
+  const unis = await getDocs(collection(db, "users", currentUser.uid, "universities"));
+  const vault = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+  const backup = { 
+    exportDate: new Date().toISOString(),
+    schools: unis.docs.map(d => d.data()),
+    vault: vault.exists() ? vault.data().items : []
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `Ph.D._Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+};
+
+// --- REMAINING LOGIC FROM INDEX (3).HTML ---
+function init() { syncUnis(); syncChat(); loadVault(); setupSwipes(); }
+
+function syncUnis() {
+  const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+  onSnapshot(q, (snap) => {
+    document.getElementById("uni-list").innerHTML = snap.docs.map(d => `
+      <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50 flex justify-between items-center">
+        <div><h3 class="text-xs font-black text-blue-400 uppercase">${d.data().name}</h3><span class="text-[7px] text-emerald-400 font-bold uppercase">R1 Classified</span></div>
+      </div>`).join('');
+  });
+}
+
+async function loadVault() {
+  const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+  const items = vDoc.exists() ? vDoc.data().items : [{id:'thesis', label:'Research', text:'Kinetics of ionic liquid into mordenite.'}];
+  document.getElementById("vault-editor").innerHTML = items.map(i => `
+    <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
+      <label class="text-[8px] font-black text-slate-500 uppercase mb-1 block">${i.label}</label>
+      <textarea data-id="${i.id}" data-label="${i.label}" class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px]" rows="3">${i.text}</textarea>
+    </div>`).join('');
+}
+
+window.saveVault = async () => {
+  const items = Array.from(document.querySelectorAll(".vault-input")).map(el => ({ id: el.dataset.id, label: el.dataset.label, text: el.value }));
+  await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
+  alert("Vault Updated.");
+};
+
+window.switchTab = (tab) => {
+  tabs.forEach(t => {
+    document.getElementById(`${t}-view`).classList.add('hidden');
+    document.getElementById(`tab-${t}`).className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 " + (t === tab ? "border-blue-500 text-blue-400" : "border-transparent text-slate-500");
+  });
+  document.getElementById(`${tab}-view`).classList.remove('hidden');
+};
+
+function setupSwipes() {
+  const mc = new Hammer(document.getElementById("swipe-zone"));
+  mc.on("swipeleft", () => { const idx = tabs.indexOf(getActiveTab()); if(idx < tabs.length - 1) window.switchTab(tabs[idx+1]); });
+  mc.on("swiperight", () => { const idx = tabs.indexOf(getActiveTab()); if(idx > 0) window.switchTab(tabs[idx-1]); });
+}
+function getActiveTab() { return tabs.find(t => !document.getElementById(`${t}-view`).classList.contains('hidden')); }
+
+document.getElementById("chat-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const input = document.getElementById("chat-input");
+  const text = input.value.trim();
+  if(!text) return;
+  if (text.toLowerCase().startsWith("add ")) {
+    const name = text.replace(/^add\s+/i, "");
+    await setDoc(doc(db, "users", currentUser.uid, "universities", name.toLowerCase().replace(/\s/g, "-")), { name, timestamp: Date.now() });
+  } else {
+    await addDoc(collection(db, "global_chat"), { text, uid: currentUser.uid, timestamp: Date.now() });
+  }
+  input.value = "";
+};
+
+function syncChat() {
+  const q = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
+  onSnapshot(q, (snap) => {
+    document.getElementById("chat-container").innerHTML = snap.docs.map(doc => {
+      const d = doc.data();
+      const isMe = d.uid === currentUser.uid;
+      return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'}"><div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800'}">${d.text}</div></div>`;
+    }).join('');
+  });
+}
 </script>
 </body>
           </html>
-          
+    
