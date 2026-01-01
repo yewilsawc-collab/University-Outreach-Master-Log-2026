@@ -70,7 +70,9 @@
       <div class="relative flex-1">
         <input id="chat-input" type="text" autocomplete="off" placeholder="Add school or message..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white outline-none" />
         <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">➤</button>
-      </div>
+<input type="file" id="chat-file" class="hidden" />
+<button type="button" onclick="document.getElementById('chat-file').click()" 
+        class="bg-slate-800 border border-slate-700 w-12 h-12 rounded-2xl text-blue-400 text-xl font-bold">+</button>  </div>
     </form>
   </footer>
 
@@ -93,13 +95,38 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("user-display").textContent = user.isAnonymous ? "Guest Session" : (verified ? user.email : user.email + " (UNVERIFIED)");
     document.getElementById("auth-btn").textContent = user.isAnonymous ? "Link Account" : (verified ? "Verified" : "RESEND LINK");
     init(); 
-  } else { signInAnonymously(auth); }
+  } else { signInAnonymously(auth); 
+       document.getElementById("chat-file").addEventListener("change", async (event) => {
+  const files = event.target.files;
+  if (!files.length) return;
+
+  for (const file of files) {
+    // Show file name in chat
+    await addDoc(collection(db, "global_chat"), {
+      text: `+ Uploaded file: ${file.name}`,
+      uid: currentUser.uid,
+      timestamp: Date.now()
+    });
+
+    // Save metadata in Firestore
+    await addDoc(collection(db, "users", currentUser.uid, "uploads"), {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      timestamp: Date.now()
+    });
+
+    // Optional: upload actual file to Firebase Storage
+    // import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js";
+    // const storage = getStorage(app);
+    // const storageRef = ref(storage, `uploads/${currentUser.uid}/${file.name}`);
+    // await uploadBytes(storageRef, file);
+  }
+
+  // Reset input so you can select again later
+  event.target.value = "";
 });
 
-// --- AUTH ACTIONS (Fixes 'email-already-in-use') ---
-window.handleAuthAction = async () => {
-  if (currentUser.isAnonymous) { window.showAuthModal(); }
-  else if (!currentUser.emailVerified) { await sendEmailVerification(currentUser); alert("Link resent!"); }
 };
 
 window.showAuthModal = () => document.getElementById("auth-modal").classList.remove('hidden');
