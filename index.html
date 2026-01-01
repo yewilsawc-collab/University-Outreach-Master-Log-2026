@@ -37,6 +37,8 @@
         <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1">Initializing ...</p>
       </div>
     </div>
+    <button onclick="window.switchAccount()" class="bg-slate-700 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-slate-300">Switch Account</button>
+`
 
     <div class="flex items-center gap-2">
       <button id="export-btn" onclick="window.exportAllData()" title="System Backup" class="bg-blue-600/20 p-2 rounded-lg border border-blue-500/30 hover:bg-blue-600/40 transition-colors">
@@ -502,9 +504,9 @@
               <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
                 ${d.text}
               </div>
-            </div>
-          `;
-        }).join("");
+              ${isMe ? <button onclick="window.deleteChat('${doc.id}')" class="text-red-400 text-[10px] font-bold">✕</button> : ''}
+    </div>
+          join("");
         container.scrollTop = container.scrollHeight;
       });
     }
@@ -515,7 +517,17 @@
       const input = document.getElementById("chat-input");
       const text = input.value.trim();
       if (!text) return;
-
+<form id="chat-form" class="relative max-w-md mx-auto">
+  <input id="chat-input" type="text" placeholder="Message or add Princeton ..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 pl-12 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
+  <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
+    <svg ... />
+  </button>
+  <button type="button" onclick="document.getElementById('chat-file-input').click()" class="absolute left-2 top-1/2 -translate-y-1/2 text-blue-400">
+    <svg ... /> <!-- Upload icon -->
+  </button>
+  <input type="file" id="chat-file-input" class="hidden" onchange="window.handleFileUpload(event)" />
+</form>
+`
       if (text.toLowerCase().startsWith("add ")) {
         const targetName = text.replace(/^add\s+/i, "").trim();
         await addDoc(collection(db, "global_chat"), { text: `Authenticating: ${targetName} ...`, uid: currentUser.uid, timestamp: Date.now() });
@@ -580,6 +592,9 @@
         alert("Successfully logged in.");
       } catch (e) { alert("Login failed: " + e.message); }
     };
+    window.deleteChat = async (id) => {
+  await deleteDoc(doc(db, "global_chat", id));
+};
 
     window.processSignUp = async () => {
       const email = document.getElementById("auth-email").value;
@@ -611,12 +626,27 @@
         }
       }
     };
+        window.handleFileUpload = async (e) => {
+  const file = e.target.files?.[0];
+  if (!file || !currentUser) return;
+  const fileRef = sRef(storage, users/${currentUser.uid}/docs/${Date.now()}_${file.name});
+  await addDoc(collection(db, "global_chat"), { text: Uploading: ${file.name} ..., uid: currentUser.uid, timestamp: Date.now() });
+  await uploadBytes(fileRef, file);
+  await addDoc(collection(db, "global_chat"), { text: ✅ File uploaded: ${file.name}, uid: currentUser.uid, timestamp: Date.now() });
+  syncFiles();
+};
+`
 
     window.resendVerification = async () => {
       if (!auth.currentUser || auth.currentUser.isAnonymous) return alert("Sign in or link account first.");
       await sendEmailVerification(auth.currentUser);
       alert("Verification link resent.");
     };
+    window.switchAccount = async () => {
+  await signOut(auth);
+  window.openAuthModal();
+};
+`
 
     window.processLogout = async () => {
       if (confirm("Sign out of current session?")) {
@@ -638,3 +668,6 @@
   </script>
 </body>
 </html>
+
+
+
