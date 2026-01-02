@@ -374,6 +374,8 @@
             <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
               <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
                 ${d.text}
+                <button onclick="window.deleteMessage('${docSnap.id}')" class="ml-2 text-[8px] text-red-500 opacity-50 hover:opacity-100">Delete</button>
+
               </div>
             </div>
           `;
