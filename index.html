@@ -72,6 +72,8 @@
     <div id="log-view" class="space-y-4">
       <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
     </div>
+    <input type="text" oninput="window.filterUnis(this.value)" placeholder="Quick search universities..." 
+       class="w-full bg-slate-900 border border-slate-700 p-3 mb-4 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
 
     <!-- Chat -->
     <div id="chat-view" class="hidden">
@@ -419,6 +421,39 @@ function syncChat() {
         container.scrollTop = container.scrollHeight;
       });
     }
+    // --- NEW UTILITIES ---
+
+// 1. Delete Chat Message
+window.deleteMessage = async (id) => {
+  if (confirm("Remove this log entry?")) {
+    await deleteDoc(doc(db, "global_chat", id));
+  }
+};
+
+// 2. Export University Data (Download Button Logic)
+window.exportAllData = async () => {
+  const q = query(collection(db, "users", currentUser.uid, "universities"));
+  const snap = await getDocs(q);
+  const data = snap.docs.map(d => d.data());
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Ph.D._Application_Backup_${new Date().toLocaleDateString()}.json`;
+  a.click();
+};
+
+// 3. Search Bar Logic
+window.filterUnis = (query) => {
+  const list = document.getElementById("uni-list");
+  const cards = list.getElementsByTagName("div");
+  for (let card of cards) {
+    const text = card.innerText.toLowerCase();
+    card.style.display = text.includes(query.toLowerCase()) ? "block" : "none";
+  }
+};
+
+<button onclick="window.exportAllData()" class="bg-blue-600/20 border border-blue-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-blue-400">Download Log</button>
 
     // File upload handler (logs uploads to chat)
     function wireFileUpload() {
@@ -519,3 +554,6 @@ function syncChat() {
   </script>
 </body>
 </html>
+
+
+
