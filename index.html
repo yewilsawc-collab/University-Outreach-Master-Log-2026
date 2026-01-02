@@ -21,54 +21,23 @@
     "appId": "1:566149647802:web:490c7cc3d10b7cd7732183"
   }
   </script>
-  </script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-    body { font-family: 'Inter', sans-serif; background-color: #050a15; color: white; overflow: hidden; }
-    .wvu-blue { background-color: #002855; }
-    .wvu-gold-text { color: #eaaa00; }
-    .wvu-gold-bg { background-color: #eaaa00; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    #swipe-zone { touch-action: pan-y !important; }
-    .active-tab { border-bottom: 2px solid #eaaa00; color: #eaaa00 !important; }
-    .pane-item.active { color: #eaaa00; border-color: #eaaa00; background: rgba(234, 170, 0, 0.1); }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-  <header class="wvu-blue p-5 border-b-2 border-[#eaaa00] m-4 rounded-3xl flex justify-between items-center shadow-2xl">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 wvu-gold-bg rounded-xl flex items-center justify-center shadow-lg"><span class="font-black text-[#002855] text-lg">Y</span></div>
-      <div>
-        <h1 class="text-xl font-black tracking-tighter wvu-gold-text uppercase leading-none">Messaging Pro</h1>
-        <p id="user-display" class="text-[9px] text-white/60 font-bold uppercase mt-1 tracking-widest">Loading Account...</p>
-      </div>
+  <header class="blue p-5 border-b-2 border-[#eaaa00] m-4 rounded-3xl flex justify-between items-center shadow-2xl">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 gold-bg rounded-xl flex items-center justify-center shadow-lg">
+      <span class="font-black text-[#002855] text-lg">Y</span>
     </div>
-  </header>
-
-  <nav class="bg-[#050a15] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
-    <button onclick="window.switchTab('chats')" id="tab-chats" class="flex-1 min-w-[80px] py-4 text-[9px] font-black uppercase tracking-widest text-slate-500">Chats</button>
-    <button onclick="window.switchTab('ai')" id="tab-ai" class="flex-1 min-w-[80px] py-4 text-[9px] font-black uppercase tracking-widest text-slate-500">AI</button>
-    <button onclick="window.switchTab('notes')" id="tab-notes" class="flex-1 min-w-[80px] py-4 text-[9px] font-black uppercase tracking-widest text-slate-500">Notes</button>
-    <button onclick="window.switchTab('accounts')" id="tab-accounts" class="flex-1 min-w-[80px] py-4 text-[9px] font-black uppercase tracking-widest text-slate-500">Accounts</button>
-  </nav>
-
-  <div id="pane-bar-container" class="bg-slate-900/50 border-b border-slate-800 px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar">
-    <div id="chat-panes" class="flex gap-2">
-        <button onclick="window.setPane('all')" class="pane-item active px-4 py-2 rounded-xl text-[8px] font-black uppercase border border-slate-700">All</button>
-        <button onclick="window.setPane('group')" class="pane-item px-4 py-2 rounded-xl text-[8px] font-black uppercase border border-slate-700 text-slate-500">Groups</button>
-        <button onclick="window.setPane('dm')" class="pane-item px-4 py-2 rounded-xl text-[8px] font-black uppercase border border-slate-700 text-slate-500">DMs</button>
-    </div>
-    <div id="account-panes" class="hidden flex gap-2">
-        <button onclick="window.setAccountView('profile')" id="pane-profile" class="pane-item active px-4 py-2 rounded-xl text-[8px] font-black uppercase border border-slate-700">Active Profile</button>
-        <button onclick="window.setAccountView('switch')" id="pane-switch" class="pane-item px-4 py-2 rounded-xl text-[8px] font-black uppercase border border-slate-700 text-slate-500">Switch Account</button>
+    <div>
+      <h1 class="text-xs font-black tracking-widest gold-text uppercase leading-none">Academic Agent Pro</h1>
+      <p class="text-[9px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">Yewilsaw Chanie | Ph.D. Physical Chem 2026</p>
     </div>
   </div>
-
-  <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full overflow-y-auto no-scrollbar">
-</head>
-<body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans overflow-x-hidden">
-
+  <div class="flex gap-2">
+    <button onclick="window.exportAllData()" class="gold-bg text-[#002855] px-3 py-1.5 rounded-lg text-[9px] font-black uppercase shadow-lg">Download</button>
+    <button onclick="window.processLogout()" class="bg-red-900/40 border border-red-500/50 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Exit</button>
+  </div>
+  </header>
+  
+  
   <!-- Header -->
   <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
     <div class="flex items-center gap-3">
@@ -284,13 +253,11 @@ window.exportAllData = async () => {
     function getActiveTab() {
       return tabs.find(t => !document.getElementById(`${t}-view`).classList.contains("hidden"));
     }
-    window.switchTab = (tab) => {
-      tabs.forEach(t => {
-        document.getElementById(`${t}-view`).classList.add("hidden");
-        const btn = document.getElementById(`tab-${t}`);
-        btn.className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 " +
-                        (t === tab ? "border-blue-500 text-blue-400" : "border-transparent text-slate-500");
-      });
+    // Replace the old button class logic with:
+const btn = document.getElementById(`tab-${t}`);
+btn.className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest " +
+                (t === tab ? "active-tab" : "text-slate-500 border-b-2 border-transparent");
+     });
       document.getElementById(`${tab}-view`).classList.remove("hidden");
     };
    <input id="uni-search" type="text" oninput="window.filterUnis(this.value)" placeholder="Search targets..." 
@@ -624,6 +591,8 @@ window.filterUnis = (query) => {
   </script>
 </body>
 </html>
+
+
 
 
 
