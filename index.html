@@ -38,7 +38,8 @@
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 gold-bg rounded-xl flex items-center justify-center shadow-lg">
       <span class="font-black text-[#002855] text-lg">Y</span>
-    </div>
+   <span class="text-[7px] text-emerald-400 font-bold uppercase bg-emerald-400/10 px-1 rounded">${u.tier || "Carnegie Classified"}</span>
+       </div>
     <div>
       <h1 class="text-xs font-black tracking-widest gold-text uppercase leading-none">Academic Agent Pro</h1>
       <p class="text-[9px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">Guest User</p>
@@ -76,13 +77,12 @@
 
     <!-- University log -->
     <div id="log-view" class="space-y-4">
-      <input type="text" oninput="window.filterUnis(this.value)" placeholder="Search universities..." 
+      <input type="text" oninput="window.filterUnis(this.value)" placeholder="Search universities" 
        class="w-full bg-slate-900 border border-slate-700 p-3 mb-4 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
       <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
     </div>
-    <input type="text" oninput="window.filterUnis(this.value)" placeholder="Quick search universities..." 
-       class="w-full bg-slate-900 border border-slate-700 p-3 mb-4 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
-
+    <scripttype="module">
+   <span class="text-[7px] font-bold uppercase px-2 py-1 rounded gold-bg text-[#002855]">Carnegie R1</span>
 </button>
     <!-- Chat -->
     <div id="chat-view" class="hidden">
@@ -144,9 +144,7 @@
     </form>
   </footer>
 
-  <!-- App logic -->
-  <script type="module">
-   <span class="text-[7px] font-bold uppercase px-2 py-1 rounded gold-bg text-[#002855]">Carnegie R1</span> 
+  <!-- App logic --> 
     // Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
@@ -185,11 +183,6 @@
       try {
         await signInWithEmailAndPassword(auth, email, pass)
 
-        window.switchTab("log");
-      } catch (e) {
-        alert("Switch failed: " + e.message);
-      }
-    };
     window.processSignUp = async () => {
       const email = document.getElementById("identity-email").value;
       const pass = document.getElementById("identity-pass").value;
@@ -212,17 +205,7 @@ window.exportAllData = async () => {
   a.download = `Academic_Agent_Log_${new Date().toLocaleDateString()}.json`;
   a.click();
 };
-    window.filterUnis = (query) => {
-  const cards = document.querySelectorAll('#uni-list > div');
-  cards.forEach(card => {
-    const name = card.querySelector('h3').innerText.toLowerCase();
-    card.style.display = name.includes(query.toLowerCase()) ? 'block' : 'none';
-  });
-};
- <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
-        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
-  Copy to Portal
-</button>   
+    
     // Init
     function init() {
       syncUnis();
@@ -239,9 +222,12 @@ window.switchTab = (tab) => {
     btn.className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest " +
                     (t === tab ? "active-tab" : "text-slate-500 border-b-2 border-transparent");
   });
-  document.getElementById(${tab}-view).classList.remove("hidden");
+  document.getElementById('${tab}-view).classList.remove("hidden");
 };
-
+      } catch (e) {
+        alert("Switch failed: " + e.message);
+      }
+    };
     // Swipe navigation
     function setupSwipes() {
       const mc = new Hammer(document.getElementById("swipe-zone"));
@@ -259,21 +245,6 @@ window.switchTab = (tab) => {
     }
     
 
-// Search Logic: Filters
-window.filterUnis = (query) => {
-  const list = document.getElementById("uni-list");
-  if (!list) return;
-
-  // We look for every university card (div) inside the list
-  const cards = list.querySelectorAll("div.bg-slate-800\\/60"); 
-  
-  cards.forEach(card => {
-    const text = card.innerText.toLowerCase();
-    // Show card if name matches search, otherwise hide it
-    card.style.display = text.includes(query.toLowerCase()) ? "block" : "none";
-  });
-};
-
     // University list: sync and render (with intel + contacts + delete)
     function syncUnis() {
       if (!currentUser) return;
@@ -289,8 +260,7 @@ window.filterUnis = (query) => {
               <div class="flex justify-between items-start mb-2">
                 <div>
                   <h3 class="text-[11px] font-black text-blue-400 uppercse">${u.name}</h3>
-                  <span class="text-[7px] text-emerald-400 font-bold uppercase bg-emerald-400/10 px-1 rounded">${u.tier || "Carnegie Classified"}</span>
-                </div>
+                  </div>
                 <div class="flex gap-3">
                   <a href="${scholarUrl}" target="_blank"
                      class="text-[8px] font-black px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-widest">PI Research</a>
@@ -420,9 +390,6 @@ window.filterUnis = (query) => {
     };
     <button onclick="navigator.clipboard.writeText('${i.text}')" 
   class="text-[8px] text-[#eaaa00] font-bold mt-2 uppercase">Copy to Portal</button>
-<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
-        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
-  Copy to Portal
 </button>
 <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
         class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
@@ -612,6 +579,5 @@ window.filterUnis = (query) => {
   </script>
 </body>
 </html>
-
 
 
