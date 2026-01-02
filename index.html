@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Academic Agent Pro | Ph.D. Command Center</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Academic Agent Pro</title>
 
+  <!-- UI -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 
+  <!-- Firebase config: replace with your own if needed -->
   <script id="firebase-config" type="application/json">
   {
     "apiKey": "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
@@ -17,87 +20,143 @@
     "messagingSenderId": "566149647802",
     "appId": "1:566149647802:web:490c7cc3d10b7cd7732183"
   }
-  </script>
-
+    </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-    body { font-family: 'Inter', sans-serif; background-color: #050a15; color: white; overflow-x: hidden; }
+    body { font-family: 'Inter', sans-serif; background-color: #050a15; color: white; overflow: hidden; }
+    .blue { background-color: #002855; }
     .gold-text { color: #eaaa00; }
     .gold-bg { background-color: #eaaa00; }
-    .active-tab { border-bottom: 2px solid #eaaa00; color: #eaaa00 !important; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
+    #swipe-zone { touch-action: pan-y !important; }
+    .active-tab { border-bottom: 2px solid #eaaa00; color: #eaaa00 !important; }
+    .pane-item.active { color: #eaaa00; border-color: #eaaa00; background: rgba(234, 170, 0, 0.1); }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
-
-  <header class="bg-[#002855] p-5 border-b-2 border-[#eaaa00] m-4 rounded-3xl flex justify-between items-center shadow-2xl">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 gold-bg rounded-xl flex items-center justify-center">
-        <span class="font-black text-[#002855] text-lg">Y</span>
-      </div>
-      <div>
-        <h1 class="text-xs font-black tracking-widest gold-text uppercase leading-none">Academic Agent Pro</h1>
-        <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Yewilsaw Chanie | Ph.D. Physical Chem 2026</p>
-      </div>
+  <header class="blue p-5 border-b-2 border-[#eaaa00] m-4 rounded-3xl flex justify-between items-center shadow-2xl">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 gold-bg rounded-xl flex items-center justify-center shadow-lg">
+      <span class="font-black text-[#002855] text-lg">Y</span>
     </div>
-    <div class="flex gap-2">
-      <button onclick="window.exportAllData()" class="gold-bg text-[#002855] px-3 py-1.5 rounded-lg text-[9px] font-black uppercase">Download</button>
-      <button onclick="window.processLogout()" class="bg-red-900/40 border border-red-500/50 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Exit</button>
+    <div>
+      <h1 class="text-xs font-black tracking-widest gold-text uppercase leading-none">Academic Agent Pro</h1>
+      <p class="text-[9px] text-slate-400 font-bold uppercase mt-1 tracking-tighter">Guest User</p>
     </div>
+  </div>
+  <div class="flex gap-2">
+    <button onclick="window.exportAllData()" class="gold-bg text-[#002855] px-3 py-1.5 rounded-lg text-[9px] font-black uppercase shadow-lg">Download</button>
+    <button onclick="window.processLogout()" class="bg-red-900/40 border border-red-500/50 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Logout</button>
+  </div>
   </header>
-
-  <nav class="sticky top-0 z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
-    <button onclick="window.switchTab('log')" id="tab-log" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase active-tab">Log</button>
-    <button onclick="window.switchTab('chat')" id="tab-chat" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase text-slate-500">AI Advisor</button>
-    <button onclick="window.switchTab('vault')" id="tab-vault" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase text-slate-500">Vault</button>
-    <button onclick="window.switchTab('accounts')" id="tab-accounts" class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase text-slate-500">Accounts</button>
+  
+        
+  <!-- Tabs -->
+  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
+    <button onclick="window.switchTab('log')" id="tab-log"
+            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">
+      University Log
+    </button>
+    <button onclick="window.switchTab('chat')" id="tab-chat"
+            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
+      AI Advisor
+    </button>
+    <button onclick="window.switchTab('vault')" id="tab-vault"
+            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
+      Data Vault
+    </button>
+    <button onclick="window.switchTab('accounts')" id="tab-accounts"
+            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
+      Accounts
+    </button>
   </nav>
 
-  <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full">
+  <!-- Main: swipe zone -->
+  <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
 
+    <!-- University log -->
     <div id="log-view" class="space-y-4">
-      <div class="flex justify-between items-center"><span id="stats-total" class="text-[10px] font-bold text-slate-500">0 SCHOOLS</span></div>
-      <input type="text" oninput="window.filterUnis(this.value)" placeholder="Search 150+ universities..." class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none" />
+      <input type="text" oninput="window.filterUnis(this.value)" placeholder="Search universities..." 
+       class="w-full bg-slate-900 border border-slate-700 p-3 mb-4 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
       <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
     </div>
+    <input type="text" oninput="window.filterUnis(this.value)" placeholder="Quick search universities..." 
+       class="w-full bg-slate-900 border border-slate-700 p-3 mb-4 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
 
+</button>
+    <!-- Chat -->
     <div id="chat-view" class="hidden">
-      <div id="chat-container" class="space-y-4 mb-8 min-h-[50vh] overflow-y-auto"></div>
+      <div id="chat-container" class="space-y-4 mb-8 min-h-[60vh]"></div>
     </div>
 
+</button>
+    <!-- Vault -->
     <div id="vault-view" class="hidden space-y-4">
-      <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-2xl">
-        <h2 class="text-[10px] font-black uppercase text-blue-400">Research Master Vault</h2>
+      <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-2xl mb-4">
+        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Vault editor</h2>
+        <p class="text-[9px] text-slate-400 leading-tight">Update profile.</p>
       </div>
       <div id="vault-editor" class="space-y-4"></div>
-      <button onclick="window.saveVault()" class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl">Sync Profile</button>
+      <button onclick="window.saveVault()"
+              class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-blue-500/20">Update</button>
     </div>
-
-    <div id="accounts-view" class="hidden">
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">Copy</button>
+    <!-- Accounts -->
+    <div id="accounts-view" class="hidden space-y-6">
       <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50">
-        <div id="user-display" class="text-center text-[10px] text-emerald-400 font-bold mb-4 uppercase">Session: Guest</div>
+        <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4 text-center">Add or switch account</h2>
         <div class="space-y-4">
-          <input id="identity-email" type="email" placeholder="Email" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs" />
-          <input id="identity-pass" type="password" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs" />
-          <button onclick="window.processAuth()" class="w-full bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase">Sign In</button>
+          <input id="identity-email" type="email" placeholder="Email address"
+                 class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
+          <input id="identity-pass" type="password" placeholder="Password"
+                 class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
+          <div class="flex gap-2">
+            <button onclick="window.processAuth()" class="flex-1 bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/20">
+              Sign in / Switch
+            </button>
+            <button onclick="window.processSignUp()" class="flex-1 bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">
+              Create new account</button>
+          </div>
         </div>
+      </div>
+      <div id="account-status" class="text-center p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+        <p class="text-[9px] text-emerald-400 font-bold uppercase">Current session active</p>
       </div>
     </div>
   </main>
 
-  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-[#050a15]/90 backdrop-blur-md">
-    <form id="chat-form" class="max-w-md mx-auto flex items-center gap-2">
-      <button type="button" onclick="document.getElementById('chat-file').click()" class="bg-slate-800 w-12 h-12 rounded-2xl text-blue-400 font-bold">+</button>
-      <input type="file" id="chat-file" class="hidden" />
-      <input id="chat-input" type="text" placeholder="Add school (e.g. 'add Yale')..." class="flex-1 bg-slate-800 border border-slate-700 rounded-2xl py-4 px-5 text-sm outline-none" />
-      <button type="submit" class="bg-blue-600 p-3 rounded-xl text-white">➤</button>
+  <!-- Footer: chat composer -->
+  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
+    <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
+      <input type="file" id="chat-file" class="hidden" multiple />
+      <button type="button"
+              onclick="document.getElementById('chat-file').click()"
+              class="bg-slate-800/80 border border-slate-700 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 text-xl font-bold shadow-xl">+</button>
+      <div class="relative flex-1">
+        <input id="chat-input" type="text" autocomplete="off"
+               placeholder="Add school (e.g., 'add Yale') or message..."
+               class="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none" />
+        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
+          ➤
+        </button>
+      </div>
     </form>
   </footer>
 
+  <!-- App logic -->
   <script type="module">
+   <span class="text-[7px] font-bold uppercase px-2 py-1 rounded gold-bg text-[#002855]">Carnegie R1</span> 
+    // Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, query, orderBy, addDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    import {
+      getAuth, signInAnonymously, onAuthStateChanged, signOut,
+      signInWithEmailAndPassword, createUserWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+    import {
+      getFirestore, doc, setDoc, getDoc, updateDoc, collection,
+      onSnapshot, query, orderBy, addDoc, deleteDoc, getDocs
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
     const config = JSON.parse(document.getElementById("firebase-config").textContent);
     const app = initializeApp(config);
@@ -107,122 +166,452 @@
     let currentUser = null;
     const tabs = ["log", "chat", "vault", "accounts"];
 
+    // Auth state
     onAuthStateChanged(auth, (user) => {
-      currentUser = user;
       if (user) {
-        document.getElementById("user-display").textContent = `Session: ${user.isAnonymous ? "Guest" : user.email}`;
+        currentUser = user;
+        document.getElementById("user-display").textContent = user.isAnonymous ? "Guest session" : user.email;
+        document.getElementById("logout-btn").classList.toggle("hidden", user.isAnonymous);
         init();
       } else {
         signInAnonymously(auth);
       }
     });
 
+    // Accounts: auth/sign up/logout
+    window.processAuth = async () => {
+      const email = document.getElementById("identity-email").value;
+      const pass = document.getElementById("identity-pass").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass)
+
+        window.switchTab("log");
+      } catch (e) {
+        alert("Switch failed: " + e.message);
+      }
+    };
+    window.processSignUp = async () => {
+      const email = document.getElementById("identity-email").value;
+      const pass = document.getElementById("identity-pass").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        alert("Account created!");
+        window.switchTab("log");
+      } catch (e) {
+        alert(e.message);
+      }
+    };
+    window.processLogout = () => signOut(auth).then(() => location.reload());
+window.exportAllData = async () => {
+  const q = query(collection(db, "users", currentUser.uid, "universities"));
+  const snap = await getDocs(q);
+  const data = snap.docs.map(d => d.data());
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type : 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Academic_Agent_Log_${new Date().toLocaleDateString()}.json`;
+  a.click();
+};
+    window.filterUnis = (query) => {
+  const cards = document.querySelectorAll('#uni-list > div');
+  cards.forEach(card => {
+    const name = card.querySelector('h3').innerText.toLowerCase();
+    card.style.display = name.includes(query.toLowerCase()) ? 'block' : 'none';
+  });
+};
+ <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>   
+    // Init
     function init() {
       syncUnis();
       syncChat();
       loadVault();
+      setupSwipes();
+      wireFileUpload();
+      window.switchTab("log");
     }
+window.switchTab = (tab) => {
+  tabs.forEach(t => {
+    document.getElementById('${t}-view).classList.add("hidden");
+    const btn = document.getElementById(tab-${t});
+    btn.className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest " +
+                    (t === tab ? "active-tab" : "text-slate-500 border-b-2 border-transparent");
+  });
+  document.getElementById(${tab}-view).classList.remove("hidden");
+};
 
-    window.switchTab = (tab) => {
-      tabs.forEach(t => {
-        document.getElementById(`${t}-view`).classList.toggle("hidden", t !== tab);
-        document.getElementById(`tab-${t}`).className = `flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase ${t === tab ? "active-tab" : "text-slate-500"}`;
+    // Swipe navigation
+    function setupSwipes() {
+      const mc = new Hammer(document.getElementById("swipe-zone"));
+      mc.on("swipeleft", () => {
+        const idx = tabs.indexOf(getActiveTab());
+        if (idx < tabs.length - 1) window.switchTab(tabs[idx + 1]);
       });
-    };
+      mc.on("swiperight", () => {
+        const idx = tabs.indexOf(getActiveTab());
+        if (idx > 0) window.switchTab(tabs[idx - 1]);
+      });
+    }
+    function getActiveTab() {
+      return tabs.find(t => !document.getElementById(`${t}-view`).classList.contains("hidden"));
+    }
+    
 
+// Search Logic: Filters
+window.filterUnis = (query) => {
+  const list = document.getElementById("uni-list");
+  if (!list) return;
+
+  // We look for every university card (div) inside the list
+  const cards = list.querySelectorAll("div.bg-slate-800\\/60"); 
+  
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    // Show card if name matches search, otherwise hide it
+    card.style.display = text.includes(query.toLowerCase()) ? "block" : "none";
+  });
+};
+
+    // University list: sync and render (with intel + contacts + delete)
     function syncUnis() {
       if (!currentUser) return;
-      const q = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
-      onSnapshot(q, (snap) => {
-        document.getElementById("stats-total").textContent = `${snap.docs.length} SCHOOLS`;
-        document.getElementById("uni-list").innerHTML = snap.docs.map(docSnap => {
-          const u = docSnap.data();
-          const id = docSnap.id;
+      const qUnis = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+      onSnapshot(qUnis, (snap) => {
+        document.getElementById("stats-total").textContent = `${snap.docs.length} Schools`;
+        document.getElementById("uni-list").innerHTML = snap.docs.map(d => {
+          const u = d.data();
+          const id = d.id;
+          const scholarUrl = `https://scholar.google.com/scholar?q=${encodeURIComponent(u.name + " Physical Chemistry mordenite kinetics")}`;
           return `
             <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-              <div class="flex justify-between items-start">
-                <h3 class="text-[11px] font-black text-blue-400 uppercase">${u.name}</h3>
-                <button onclick="window.deleteUni('${id}')" class="text-slate-500">✕</button>
+              <div class="flex justify-between items-start mb-2">
+                <div>
+                  <h3 class="text-[11px] font-black text-blue-400 uppercse">${u.name}</h3>
+                  <span class="text-[7px] text-emerald-400 font-bold uppercase bg-emerald-400/10 px-1 rounded">${u.tier || "Carnegie Classified"}</span>
+                </div>
+                <div class="flex gap-3">
+                  <a href="${scholarUrl}" target="_blank"
+                     class="text-[8px] font-black px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-widest">PI Research</a>
+                  <button onclick="window.deleteUni('${id}','${u.name}')"
+                          class="text-slate-600 hover:text-red-400" title="Delete">${trashIcon()}</button>
+                </div>
               </div>
-              <div class="mt-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
-                <p class="text-[8px] text-yellow-500 font-bold uppercase">Waiver: ${u.waiverStatus || 'Pending'}</p>
-                <p class="text-[9px] ${u.waiverStatus === 'Confirmed' ? 'text-emerald-400' : 'text-red-400'} mt-1">
-                  ${u.waiverStatus === 'Confirmed' ? '✓ Ready for recommenders' : '⚠ Hold recommender info'}
-                </p>
+
+              <div class="flex items-center gap-2 text-[9px]">
+                <button onclick="window.toggleSection('intel-${id}')"
+                        class="bg-slate-700/40 text-slate-300 px-2 py-1 rounded font-black uppercase">School Intel</button>
+                <button onclick="window.toggleSection('contact-${id}')"
+                        class="bg-slate-700/40 text-slate-300 px-2 py-1 rounded font-black uppercase">Contacts</button>
               </div>
-            </div>`;
+
+              <div id="intel-${id}" class="hidden mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+                <div class="space-y-1">
+                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Department strength</label>
+                  <textarea id="dept-${id}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" rows="2"
+                            placeholder="e.g. Cutting-edge research in heterogeneous systems ...">${u.deptStrength || ""}</textarea>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Facility / environment</label>
+                  <input id="fac-${id}" value="${u.facility || ""}" type="text"
+                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="e.g. Innovative environment" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Location advantage</label>
+                  <input id="loc-${id}" value="${u.locationNote || ""}" type="text"
+                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="e.g. Proximity to research hubs" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">PI / faculty alignment</label>
+                  <input id="pi-${id}" value="${u.piMatch || ""}" type="text"
+                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="e.g. Lab specializing in..." />
+                </div>
+                <button onclick="window.saveIntel('${id}')"
+                        class="w-full py-2 bg-blue-600/20 text-blue-400 text-[8px] font-black uppercase rounded border border-blue-600/30">Save school intel</button>
+              </div>
+
+              <div id="contact-${id}" class="hidden mt-4 pt-4 border-t border-slate-700/50 space-y-3">
+                <div>
+                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Admissions email</label>
+                  <input id="email-${id}" value="${u.admEmail || ""}" type="email"
+                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-blue-300"
+                         placeholder="gradadmissions@${u.name.toLowerCase().replace(/\s/g,'')}.edu" />
+                </div>
+                <div>
+                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Graduate coordinator</label>
+                  <input id="coord-${id}" value="${u.coordName || ""}" type="text"
+                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="Name of department contact" />
+                </div>
+                <div>
+                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Phone / WhatsApp</label>
+                  <input id="phone-${id}" value="${u.phone || ""}" type="text"
+                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="+1 ..." />
+                </div>
+                <button onclick="window.saveContact('${id}')"
+                        class="w-full py-2 bg-blue-600/20 text-blue-400 text-[8px] font-black uppercase rounded border border-blue-600/30">Save contact address</button>
+              </div>
+            </div>
+          `;
+          <div class="mt-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded">
+  <p class="text-[8px] text-yellow-500 font-bold uppercase">Waiver Status: ${u.waiverStatus || 'Pending'}</p>
+  ${u.waiverStatus === 'Confirmed' ? 
+    `<p class="text-[9px] text-emerald-400 mt-1">✓ Safe to enter recommender details.</p>` : 
+    `<p class="text-[9px] text-red-400 mt-1">⚠ Hold recommender details (Waiver Pending).</p>`}
+</div>
         }).join("");
       });
     }
 
+    window.toggleSection = (id) => {
+      const el = document.getElementById(id);
+      el.classList.toggle("hidden");
+    };
+    window.saveIntel = async (id) => {
+      const data = {
+        deptStrength: document.getElementById(`dept-${id}`)?.value || "",
+        facility: document.getElementById(`fac-${id}`)?.value || "",
+        locationNote: document.getElementById(`loc-${id}`)?.value || "",
+        piMatch: document.getElementById(`pi-${id}`)?.value || ""
+      };
+      await updateDoc(doc(db, "users", currentUser.uid, "universities", id), data);
+      alert("University specific intel updated!");
+    };
+    window.saveContact = async (id) => {
+      const data = {
+        admEmail: document.getElementById(`email-${id}`)?.value || "",
+        coordName: document.getElementById(`coord-${id}`)?.value || "",
+        phone: document.getElementById(`phone-${id}`)?.value || ""
+      };
+      await updateDoc(doc(db, "users", currentUser.uid, "universities", id), data);
+      alert("Contact address saved.");
+    };
+    window.deleteUni = async (id, name) => {
+      if (confirm(`Remove ${name}?`)) {
+        await deleteDoc(doc(db, "users", currentUser.uid, "universities", id));
+        await addDoc(collection(db, "global_chat"), {
+          text: `Entry deleted: ${name}`, uid: currentUser.uid, timestamp: Date.now()
+        });
+      }
+    };
+
+    // Vault: load/update
     async function loadVault() {
       if (!currentUser) return;
-      const v = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
-      const items = v.exists() ? v.data().items : [
-        { id: "thesis", label: "Research Narrative", text: "Kinetics of adsorption of ionic liquid into mordenite." },
-        { id: "tech", label: "Technical Stack", text: "MATLAB, Linux, FT-IR, TGA." }
+      const vDoc = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+      const items = vDoc.exists() ? vDoc.data().items : [
+        { id: "thesis", label: "Research narrative", text: "Kinetics of adsorption of ionic liquid into mordenite." },
+        { id: "skills", label: "Technical stack", text: "MATLAB, Linux, FT-IR, TGA, CHN-Elemental Analysis." }
       ];
       document.getElementById("vault-editor").innerHTML = items.map(i => `
         <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/50">
-          <label class="text-[8px] text-slate-500 uppercase font-bold">${i.label}</label>
-          <textarea class="vault-input w-full bg-slate-900 mt-2 p-2 text-[10px] rounded" rows="3">${i.text}</textarea>
-          <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)" class="mt-2 text-[8px] text-yellow-500 font-bold uppercase">Copy to Portal</button>
-        </div>`).join("");
+          <label class="text-[8px] font-black text-slate-500 uppercase block mb-2">${i.label}</label>
+          <textarea data-id="${i.id}" data-label="${i.label}"
+                    class="vault-input w-full bg-slate-900 border border-slate-700 rounded p-3 text-[10px] text-slate-200 outline-none" rows="3">${i.text}</textarea>
+        </div>
+      `).join("");
     }
-
     window.saveVault = async () => {
-      const items = Array.from(document.querySelectorAll(".vault-input")).map((el, idx) => ({
-        id: idx, label: el.previousElementSibling.innerText, text: el.value
+      const items = Array.from(document.querySelectorAll(".vault-input")).map(el => ({
+        id: el.dataset.id, label: el.dataset.label, text: el.value
       }));
       await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
-      alert("Vault Updated!");
+      alert("Data vault synchronized.");
     };
+    <button onclick="navigator.clipboard.writeText('${i.text}')" 
+  class="text-[8px] text-[#eaaa00] font-bold mt-2 uppercase">Copy to Portal</button>
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>                
+              // Chat: sync and composer
+function syncChat() {
+  const qChat = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
+  onSnapshot(qChat, (snap) => {
+    const container = document.getElementById("chat-container");
+    container.innerHTML = snap.docs.map(docSnap => {
+      const d = docSnap.data();
+      const isMe = d.uid === (auth.currentUser?.uid);
+      return `
+        <div class="flex ${isMe ? 'justify-end' : 'justify-start'} group mb-2">
+          <div class="max-w-[85%] p-3 rounded-2xl text-[11px] relative ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
+            ${d.text}
+            ${isMe ? `<button onclick="window.deleteMessage('${docSnap.id}')" class="ml-2 text-red-300 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>` : ''}
+          </div>
+        </div>
+      `;
+    }).join("");
+    container.scrollTop = container.scrollHeight;
+  });
+  }
+// --- ADMINISTRATIVE UTILITIES ---
 
-    window.exportAllData = async () => {
-      const snap = await getDocs(collection(db, "users", currentUser.uid, "universities"));
-      const data = snap.docs.map(d => d.data());
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-      a.download = `Application_Log_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-    };
+// Delete Logic
+window.deleteMessage = async (id) => {
+  if (confirm("Permanently delete this message?")) {
+    await deleteDoc(doc(db, "global_chat", id));
+  }
+};
 
-    window.deleteUni = async (id) => {
-      if (confirm("Delete this school?")) await deleteDoc(doc(db, "users", currentUser.uid, "universities", id));
-    };
+// Download Button Logic (JSON Backup)
+window.exportAllData = async () => {
+  if (!currentUser) return;
+  const q = query(collection(db, "users", currentUser.uid, "universities"));
+  const snap = await getDocs(q);
+  const data = snap.docs.map(d => d.data());
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Academic_Agent_Backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+};
 
-    window.filterUnis = (q) => {
-      const cards = document.querySelectorAll("#uni-list > div");
-      cards.forEach(c => c.style.display = c.innerText.toLowerCase().includes(q.toLowerCase()) ? "block" : "none");
-    };
+// Search Logic
+window.filterUnis = (query) => {
+  const list = document.getElementById("uni-list");
+  const cards = list.children;
+  for (let card of cards) {
+    card.style.display = card.innerText.toLowerCase().includes(query.toLowerCase()) ? "block" : "none";
+  }
+};
+// 1. Delete Chat Message
+window.deleteMessage = async (id) => {
+  if (confirm("Remove this log entry?")) {
+    await deleteDoc(doc(db, "global_chat", id));
+  }
+};
 
-    document.getElementById("chat-form").onsubmit = async (e) => {
-      e.preventDefault();
-      const input = document.getElementById("chat-input");
-      if (!input.value.trim() || !currentUser) return;
-      const text = input.value;
+// 2. Export University Data (Download Button Logic)
+window.exportAllData = async () => {
+  const q = query(collection(db, "users", currentUser.uid, "universities"));
+  const snap = await getDocs(q);
+  const data = snap.docs.map(d => d.data());
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Ph.D._Application_Backup_${new Date().toLocaleDateString()}.json`;
+  a.click();
+};
 
-      if (text.toLowerCase().startsWith("add ")) {
-        const name = text.replace(/^add\s+/i, "");
-        const id = name.toLowerCase().replace(/\s+/g, "-");
-        await setDoc(doc(db, "users", currentUser.uid, "universities", id), {
-          name, timestamp: Date.now(), waiverStatus: "Pending"
-        });
-      }
-      await addDoc(collection(db, "global_chat"), { text, uid: currentUser.uid, timestamp: Date.now() });
-      input.value = "";
-    };
+// 3. Search Bar Logic
+window.filterUnis = (query) => {
+  const list = document.getElementById("uni-list");
+  const cards = list.getElementsByTagName("div");
+  for (let card of cards) {
+    const text = card.innerText.toLowerCase();
+    card.style.display = text.includes(query.toLowerCase()) ? "block" : "none";
+  }
+};
 
-    function syncChat() {
-      const q = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
-      onSnapshot(q, (snap) => {
-        const container = document.getElementById("chat-container");
-        container.innerHTML = snap.docs.map(d => `<div class="p-3 text-[11px] rounded-xl ${d.data().uid === currentUser.uid ? 'bg-blue-600 ml-auto' : 'bg-slate-800 mr-auto'} max-w-[80%] mb-2">${d.data().text}</div>`).join("");
-        container.scrollTop = container.scrollHeight;
+<button onclick="window.exportAllData()" class="bg-blue-600/20 border border-blue-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-blue-400">Download Log</button>
+<div class="mb-4">
+  <input type="text" id="search-unis" placeholder="Search 150+ universities..."
+         class="w-full bg-[#001f3f] border border-[#eaaa00] text-white placeholder-slate-400 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#eaaa00]" />
+</div>
+    // File upload handler (logs uploads to chat)
+    function wireFileUpload() {
+      const f = document.getElementById("chat-file");
+      f.addEventListener("change", async (e) => {
+        if (!currentUser) return;
+        for (const file of e.target.files) {
+          await addDoc(collection(db, "global_chat"), {
+            text: `Document uploaded: ${file.name}`,
+            uid: currentUser.uid,
+            timestamp: Date.now()
+          });
+          alert(`Uploaded: ${file.name}`);
+        }
       });
     }
 
-    window.processLogout = () => signOut(auth).then(() => location.reload());
+    // Intent parser: add university via chat (with authentic lookup)
+    document.getElementById("chat-form").onsubmit = async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (text.toLowerCase().startsWith("add ")) {
+        const target = text.replace(/^add\s+/i, "").trim();
+        // Feedback
+        await addDoc(collection(db, "global_chat"), {
+          text: `Authenticating: ${target} ...`,
+          uid: currentUser.uid, timestamp: Date.now()
+        });
+
+        try {
+          const res = await fetch(`https://universities.hipolabs.com/search?name=${encodeURIComponent(target)}`);
+          const results = await res.json();
+          if (Array.isArray(results) && results.length > 0) {
+            const uni = results[0];
+            const id = uni.name.toLowerCase().replace(/\s/g, "-");
+            const ref = doc(db, "users", currentUser.uid, "universities", id);
+            const exists = await getDoc(ref);
+            const r1Keywords = ["Berkeley", "Yale", "Stanford", "Purdue", "MIT", "Columbia", "Chicago", "Princeton", "UCLA", "UCSB"];
+            const tier = r1Keywords.some(k => uni.name.includes(k)) ? "Carnegie R1" : "Carnegie R2";
+
+            if (exists.exists()) {
+              await addDoc(collection(db, "global_chat"), {
+                text: `${uni.name} is already in your log.`,
+                uid: currentUser.uid, timestamp: Date.now()
+              });
+            } else {
+              await setDoc(ref, {
+                name: uni.name,
+                domain: Array.isArray(uni.domains) ? uni.domains[0] : "",
+                tier,
+                timestamp: Date.now()
+              });
+              await addDoc(collection(db, "global_chat"), {
+                text: `Authenticated & Logged: ${uni.name} (${tier})`,
+                uid: currentUser.uid, timestamp: Date.now()
+              });
+            }
+          } else {
+            await addDoc(collection(db, "global_chat"), {
+              text: `Could not find ${target} in global databases.`,
+              uid: currentUser.uid, timestamp: Date.now()
+            });
+          }
+        } catch (err) {
+          // Fallback manual log
+          const id = target.toLowerCase().replace(/\s/g, "-");
+          await setDoc(doc(db, "users", currentUser.uid, "universities", id), {
+            name: target, timestamp: Date.now()
+          });
+          await addDoc(collection(db, "global_chat"), {
+            text: `Manual log added for ${target}.`,
+            uid: currentUser.uid, timestamp: Date.now()
+          });
+        }
+      } else {
+        await addDoc(collection(db, "global_chat"), {
+          text, uid: currentUser.uid, timestamp: Date.now()
+        });
+      }
+
+      input.value = "";
+    };
+
+    // Helpers
+    function trashIcon() {
+      return `
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1
+          2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      `;
+    }
   </script>
 </body>
 </html>
+
+
+
