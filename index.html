@@ -32,7 +32,7 @@
       </div>
       <div>
         <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
-        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Initializing...</p>
+        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Guest User</p>
       </div>
     </div>
 
@@ -40,6 +40,7 @@
       <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 Schools</div>
       <button id="logout-btn" onclick="window.processLogout()" class="hidden bg-red-900/20 border border-red-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Logout</button>
     </div>
+   <button onclick="window.exportAllData()" class="bg-blue-600/20 border border-blue-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-blue-400">Download</button> 
 <button onclick="window.exportAllData()" class="bg-blue-600/20 border border-blue-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-blue-400">Export</button>
     </div>
   </div>
@@ -71,6 +72,8 @@
 
     <!-- University log -->
     <div id="log-view" class="space-y-4">
+      <input type="text" oninput="window.filterUnis(this.value)" placeholder="Search 150+ universities..." 
+       class="w-full bg-slate-900 border border-slate-700 p-3 mb-4 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
       <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
     </div>
     <input type="text" oninput="window.filterUnis(this.value)" placeholder="Quick search universities..." 
@@ -394,7 +397,8 @@ window.exportAllData = async () => {
       alert("Data vault synchronized.");
     };
 
-                // Chat: sync and composer
+                
+              // Chat: sync and composer
 function syncChat() {
   const qChat = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
   onSnapshot(qChat, (snap) => {
@@ -403,27 +407,47 @@ function syncChat() {
       const d = docSnap.data();
       const isMe = d.uid === (auth.currentUser?.uid);
       return `
-        <div class="flex ${isMe ? 'justify-end' : 'justify-start'} group">
+        <div class="flex ${isMe ? 'justify-end' : 'justify-start'} group mb-2">
           <div class="max-w-[85%] p-3 rounded-2xl text-[11px] relative ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
             ${d.text}
-            ${isMe ? `<button onclick="window.deleteMessage('${docSnap.id}')" class="text-[8px] text-red-300 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>` : ''}
+            ${isMe ? `<button onclick="window.deleteMessage('${docSnap.id}')" class="ml-2 text-red-300 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>` : ''}
           </div>
         </div>
       `;
     }).join("");
     container.scrollTop = container.scrollHeight;
   });
-}
-      };
-              </div>
-            </div>
-          `;
-        }).join("");
-        container.scrollTop = container.scrollHeight;
-      });
-    }
-    // --- NEW UTILITIES ---
+  }
+// --- ADMINISTRATIVE UTILITIES ---
 
+// Delete Logic
+window.deleteMessage = async (id) => {
+  if (confirm("Permanently delete this message?")) {
+    await deleteDoc(doc(db, "global_chat", id));
+  }
+};
+
+// Download Button Logic (JSON Backup)
+window.exportAllData = async () => {
+  if (!currentUser) return;
+  const q = query(collection(db, "users", currentUser.uid, "universities"));
+  const snap = await getDocs(q);
+  const data = snap.docs.map(d => d.data());
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Academic_Agent_Backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+};
+
+// Search Logic
+window.filterUnis = (query) => {
+  const list = document.getElementById("uni-list");
+  const cards = list.children;
+  for (let card of cards) {
+    card.style.display = card.innerText.toLowerCase().includes(query.toLowerCase()) ? "block" : "none";
+  }
+};
 // 1. Delete Chat Message
 window.deleteMessage = async (id) => {
   if (confirm("Remove this log entry?")) {
