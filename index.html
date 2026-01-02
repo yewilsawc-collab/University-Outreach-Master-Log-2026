@@ -69,12 +69,18 @@
     </div>
     <input type="text" oninput="window.filterUnis(this.value)" placeholder="Quick search universities..." 
        class="w-full bg-slate-900 border border-slate-700 p-3 mb-4 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
-
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>
     <!-- Chat -->
     <div id="chat-view" class="hidden">
       <div id="chat-container" class="space-y-4 mb-8 min-h-[60vh]"></div>
     </div>
-
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>
     <!-- Vault -->
     <div id="vault-view" class="hidden space-y-4">
       <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-2xl mb-4">
@@ -87,7 +93,10 @@
         Update master profile
       </button>
     </div>
-
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>
     <!-- Accounts -->
     <div id="accounts-view" class="hidden space-y-6">
       <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50">
@@ -133,6 +142,7 @@
 
   <!-- App logic -->
   <script type="module">
+   <span class="text-[7px] font-bold uppercase px-2 py-1 rounded gold-bg text-[#002855]">Carnegie R1</span> 
     // Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import {
@@ -169,7 +179,8 @@
       const email = document.getElementById("identity-email").value;
       const pass = document.getElementById("identity-pass").value;
       try {
-        await signInWithEmailAndPassword(auth, email, pass);
+        await signInWithEmailAndPassword(auth, email, pass)
+
         window.switchTab("log");
       } catch (e) {
         alert("Switch failed: " + e.message);
@@ -204,7 +215,10 @@ window.exportAllData = async () => {
     card.style.display = name.includes(query.toLowerCase()) ? 'block' : 'none';
   });
 };
-    
+ <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>   
     // Init
     function init() {
       syncUnis();
@@ -214,6 +228,16 @@ window.exportAllData = async () => {
       wireFileUpload();
       window.switchTab("log");
     }
+window.switchTab = (tab) => {
+  tabs.forEach(t => {
+    document.getElementById(${t}-view).classList.add("hidden");
+    const btn = document.getElementById(tab-${t});
+    btn.className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest " +
+                    (t === tab ? "active-tab" : "text-slate-500 border-b-2 border-transparent");
+  });
+  document.getElementById(${tab}-view).classList.remove("hidden");
+};
+`
 
     // Swipe navigation
     function setupSwipes() {
@@ -385,8 +409,14 @@ btn.className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase trac
       await setDoc(doc(db, "users", currentUser.uid, "profile", "vault"), { items });
       alert("Data vault synchronized.");
     };
-
-                
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>
+<button onclick="navigator.clipboard.writeText(this.previousElementSibling.value)"
+        class="mt-2 bg-[#eaaa00] text-[#002855] px-3 py-1 rounded text-[9px] font-bold uppercase shadow">
+  Copy to Portal
+</button>                
               // Chat: sync and composer
 function syncChat() {
   const qChat = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
@@ -468,7 +498,10 @@ window.filterUnis = (query) => {
 };
 
 <button onclick="window.exportAllData()" class="bg-blue-600/20 border border-blue-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-blue-400">Download Log</button>
-
+<div class="mb-4">
+  <input type="text" id="search-unis" placeholder="Search 150+ universities..."
+         class="w-full bg-[#001f3f] border border-[#eaaa00] text-white placeholder-slate-400 p-3 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#eaaa00]" />
+</div>
     // File upload handler (logs uploads to chat)
     function wireFileUpload() {
       const f = document.getElementById("chat-file");
@@ -568,7 +601,6 @@ window.filterUnis = (query) => {
   </script>
 </body>
 </html>
-
 
 
 
