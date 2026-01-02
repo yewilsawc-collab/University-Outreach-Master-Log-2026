@@ -200,6 +200,14 @@ window.exportAllData = async () => {
   a.download = `Academic_Agent_Log_${new Date().toLocaleDateString()}.json`;
   a.click();
 };
+    window.filterUnis = (query) => {
+  const cards = document.querySelectorAll('#uni-list > div');
+  cards.forEach(card => {
+    const name = card.querySelector('h3').innerText.toLowerCase();
+    card.style.display = name.includes(query.toLowerCase()) ? 'block' : 'none';
+  });
+};
+    
     // Init
     function init() {
       syncUnis();
