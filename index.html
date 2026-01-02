@@ -391,24 +391,27 @@ window.exportAllData = async () => {
       alert("Data vault synchronized.");
     };
 
-    // Chat: sync and composer
-    function syncChat() {
-      const qChat = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
-      onSnapshot(qChat, (snap) => {
-        const container = document.getElementById("chat-container");
-        container.innerHTML = snap.docs.map(docSnap => {
-          const d = docSnap.data();
-          const isMe = d.uid === (auth.currentUser?.uid);
-          return `
-            <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-              <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
-                ${d.text}
-                <button onclick="window.deleteMessage('${docSnap.id}')" class="ml-2 text-[8px] text-red-500 opacity-50 hover:opacity-100">Delete</button>
-window.deleteMessage = async (msgId) => {
-  if(confirm("Delete this message?")) {
-    await deleteDoc(doc(db, "global_chat", msgId));
-  }
-};
+                // Chat: sync and composer
+function syncChat() {
+  const qChat = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
+  onSnapshot(qChat, (snap) => {
+    const container = document.getElementById("chat-container");
+    container.innerHTML = snap.docs.map(docSnap => {
+      const d = docSnap.data();
+      const isMe = d.uid === (auth.currentUser?.uid);
+      return `
+        <div class="flex ${isMe ? 'justify-end' : 'justify-start'} group">
+          <div class="max-w-[85%] p-3 rounded-2xl text-[11px] relative ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
+            ${d.text}
+            ${isMe ? `<button onclick="window.deleteMessage('${docSnap.id}')" class="text-[8px] text-red-300 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>` : ''}
+          </div>
+        </div>
+      `;
+    }).join("");
+    container.scrollTop = container.scrollHeight;
+  });
+}
+      };
               </div>
             </div>
           `;
