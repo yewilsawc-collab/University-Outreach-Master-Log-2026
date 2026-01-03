@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Academic Agent Pro | Ph.D. Command Center</title>
+  <title>Academic Agent Pro</title>
 
   <!-- UI -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,7 +16,7 @@
     "apiKey": "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
     "authDomain": "university-outreach-log.firebaseapp.com",
     "projectId": "university-outreach-log",
-    "storageBucket": "university-outreach-log.firebasestorage.app",
+    "storageBucket": "university-outreach-log.appspot.com",
     "messagingSenderId": "566149647802",
     "appId": "1:566149647802:web:490c7cc3d10b7cd7732183"
   }
@@ -32,13 +32,15 @@
       </div>
       <div>
         <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
-        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Initializing...</p>
+        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Guest user</p>
       </div>
     </div>
 
     <div class="flex items-center gap-2">
       <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 Schools</div>
       <button id="logout-btn" onclick="window.processLogout()" class="hidden bg-red-900/20 border border-red-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Logout</button>
+      <button id="Download-btn" onclick="window.processLogout()" class="hidden bg-red-900/20 border border-red-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Download</button>
+<button id="Switch Account-btn" onclick="window.processLogout()" class="hidden bg-red-900/20 border border-red-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Switch Account</button>
     </div>
   </header>
 
@@ -46,7 +48,7 @@
   <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
     <button onclick="window.switchTab('log')" id="tab-log"
             class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">
-      University Log
+      Log
     </button>
     <button onclick="window.switchTab('chat')" id="tab-chat"
             class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
@@ -65,9 +67,9 @@
   <!-- Main: swipe zone -->
   <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
 
-    <!-- University log -->
+    <!-- log -->
     <div id="log-view" class="space-y-4">
-      <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
+      <div id="list" class="grid grid-cols-1 gap-3"></div>
     </div>
 
     <!-- Chat -->
@@ -78,20 +80,20 @@
     <!-- Vault -->
     <div id="vault-view" class="hidden space-y-4">
       <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-2xl mb-4">
-        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Vault editor</h2>
-        <p class="text-[9px] text-slate-400 leading-tight">Update your core research profile. These details support SOP drafts and portal fills.</p>
+        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Editor</h2>
+        <p class="text-[9px] text-slate-400 leading-tight">Update your profile</p>
       </div>
-      <div id="vault-editor" class="space-y-4"></div>
+      <div id="Editor" class="space-y-4"></div>
       <button onclick="window.saveVault()"
               class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-blue-500/20">
-        Update master profile
+        Update profile
       </button>
     </div>
 
     <!-- Accounts -->
     <div id="accounts-view" class="hidden space-y-6">
       <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50">
-        <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4 text-center">Add or switch account</h2>
+        <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4 text-center">Add account</h2>
         <div class="space-y-4">
           <input id="identity-email" type="email" placeholder="Email address"
                  class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
@@ -99,16 +101,16 @@
                  class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
           <div class="flex gap-2">
             <button onclick="window.processAuth()" class="flex-1 bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/20">
-              Sign in / Switch
+              Sign in
             </button>
             <button onclick="window.processSignUp()" class="flex-1 bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">
-              Create new
+              Create new Account
             </button>
           </div>
         </div>
       </div>
       <div id="account-status" class="text-center p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-        <p class="text-[9px] text-emerald-400 font-bold uppercase">Current secure session active</p>
+        <p class="text-[9px] text-emerald-400 font-bold uppercase">Current session active</p>
       </div>
     </div>
   </main>
@@ -122,7 +124,7 @@
               class="bg-slate-800/80 border border-slate-700 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 text-xl font-bold shadow-xl">+</button>
       <div class="relative flex-1">
         <input id="chat-input" type="text" autocomplete="off"
-               placeholder="Add school (e.g., 'add Yale') or message..."
+               placeholder="Add school (e.g., 'add Yale') or message"
                class="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none" />
         <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
           ➤
@@ -190,11 +192,12 @@
 
     // Init
     function init() {
-      syncUnis();
+      syncLog();
       syncChat();
       loadVault();
       setupSwipes();
       wireFileUpload();
+      wireDownload();
       window.switchTab("log");
     }
 
@@ -223,13 +226,13 @@
       document.getElementById(`${tab}-view`).classList.remove("hidden");
     };
 
-    // University list: sync and render (with intel + contacts + delete)
+    //list: sync and render (with intel + contacts + delete)
     function syncUnis() {
       if (!currentUser) return;
-      const qUnis = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
-      onSnapshot(qUnis, (snap) => {
+      const qLog = query(collection(db, "users", currentUser.uid, "universities"), orderBy("timestamp", "desc"));
+      onSnapshot(qLog, (snap) => {
         document.getElementById("stats-total").textContent = `${snap.docs.length} Schools`;
-        document.getElementById("uni-list").innerHTML = snap.docs.map(d => {
+        document.getElementById("list").innerHTML = snap.docs.map(d => {
           const u = d.data();
           const id = d.id;
           const scholarUrl = `https://scholar.google.com/scholar?q=${encodeURIComponent(u.name + " Physical Chemistry mordenite kinetics")}`;
@@ -398,6 +401,46 @@
       });
     }
 
+    // Download handler (logs uploads to chat)
+    window.exportAllData = async () => {
+    try {
+        if (!currentUser) return;
+        
+        // 1. Fetch all university data from your personal log
+        const s = await getDocs(collection(db, "users", currentUser.uid, "universities"));
+        const uniData = s.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        // 2. Fetch your Research Vault profile
+        const v = await getDoc(doc(db, "users", currentUser.uid, "profile", "vault"));
+        const vaultData = v.exists() ? v.data().items : [];
+
+        // 3. Combine data into one backup object
+        const backup = {
+            exportDate: new Date().toISOString(),
+            user: currentUser.email,
+            universities: uniData,
+            researchVault: vaultData
+        };
+
+        // 4. Create a Blob and trigger a browser download
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `PhD_Application_Backup_${new Date().toLocaleDateString()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert("Backup successful! File saved to your downloads.");
+    } catch (error) {
+        console.error("Export failed:", error);
+        alert("Failed to export data: " + error.message);
+    }
+};
+
+    
     // Intent parser: add university via chat (with authentic lookup)
     document.getElementById("chat-form").onsubmit = async (e) => {
       e.preventDefault();
