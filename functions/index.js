@@ -1,13 +1,25 @@
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const { GoogleGenerativeAI } = require("@google-generative-ai/generative-ai");
+const fetch = require("node-fetch");
 
-admin.initializeApp();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+exports.geminiProxy = functions.https.onRequest(async (req, res) => {
+    try {
+        const { prompt } = req.body;
 
-exports.askAI = functions.https.onCall(async (data, context) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const result = await model.generateContent(data.prompt);
-  return { text: result.response.text() };
+        // Call Gemini API with your API key
+        const geminiRes = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + process.env.GEMINI_API_KEY, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ role: "user", parts: [{ text: prompt }] }]
+            })
+        });
+
+        const data = await geminiRes.json();
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini.";
+
+        res.json({ reply });
+    } catch (err) {
+        console.error("Gemini proxy error:", err);
+        res.status(500).json({ reply: "Error contacting Gemini." });
+    }
 });
-
