@@ -1,24 +1,27 @@
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+// ai.js
+// Calls Gemini AI through your Firebase Function or proxy endpoint
 
-// Initialize Realtime Database
-const db = getDatabase();
-const chatRef = ref(db, "phd_chat_logs");
+export async function getGeminiResponse(userText) {
+    try {
+        // Replace with your Firebase Function or proxy URL
+        const response = await fetch("/gemini-proxy", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ prompt: userText })
+        });
 
-// Function to send a message
-export async function sendUserMessage(text) {
-    // 1. Push user message to Firebase
-    await push(chatRef, {
-        sender: "Yewilsaw",
-        text: text,
-        timestamp: Date.now()
-    });
+        if (!response.ok) {
+            throw new Error(`Gemini API error: ${response.status}`);
+        }
 
-    // 2. Trigger Gemini response (You can ask Gemini/Copilot to process this)
-    console.log("Gemini is analyzing your request about mordenite kinetics...");
+        const data = await response.json();
+
+        // Expecting { reply: "..." } from your backend
+        return data.reply || "Gemini could not generate a response.";
+    } catch (err) {
+        console.error("Gemini request failed:", err);
+        return "⚠️ Error: Unable to connect to Gemini.";
+    }
 }
-
-// Listen for messages and update the UI in real-time
-onChildAdded(chatRef, (snapshot) => {
-    const message = snapshot.val();
-    renderMessageToScreen(message.text, message.sender);
-});
