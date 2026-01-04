@@ -1,9 +1,0 @@
-{
-  "hosting": {
-    "public": ".",
-    "ignore": ["firebase.json", "/.", "/node_modules/*"],
-    "rewrites": [
-      { "source": "!{/css/,/js/,/assets/,/manifest.webmanifest,/sw.js}", "destination": "/index.html" }
-    ]
-  }
-}
