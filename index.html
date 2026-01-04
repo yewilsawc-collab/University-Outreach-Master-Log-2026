@@ -12,10 +12,10 @@
   <header>
     <h1>ACADEMIC AGENT PRO</h1>
     <p>GUEST User</p>
+    <button id="toggle-theme">Toggle Dark Mode</button>
   </header>
 
   <nav>
-    <button id="toggle-theme">Toggle Dark Mode</button>
     <button>LOG</button>
     <button>ADVISOR</button>
     <button>FILES</button>
@@ -24,11 +24,22 @@
   </nav>
 
   <main>
-    <div id="chat-log"></div>
-    <input id="chat-input" placeholder="Command (e.g. 'add Yale')" />
-    <button id="send-btn">Send</button>
-  </main>
+    <div class="status-block">DEADLINE: JAN 01</div>
+    <div class="status-block">MAJOR CODE: 1439</div>
+    <div class="status-block">STATUS: READY</div>
 
+    <div class="ai-message">
+      Welcome
+    </div>
+
+    <button class="action">Add NJIT</button>
+
+    <div class="input-row">
+      <input type="text" placeholder="Ask about Vanderbilt waiver" />
+      <button class="action">Send</button>
+    </div>
+  </main>
+</body>
   <!-- Import JS modules -->
   <script type="module" src="js/chat.js"></script>
   <script type="module" src="js/ai.js"></script>
@@ -36,3 +47,4 @@
   <script type="module" src="js/ui.js"></script>
 </body>
   </html>
+
