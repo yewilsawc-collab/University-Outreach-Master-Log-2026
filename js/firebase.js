@@ -1,10 +1,15 @@
-js/app.js
-js/ui.js
-js/ai.js
-js/theme.js
-js/analytics.js
-js/performance.js
-js/crashlytics.js
-js/remoteconfig.js
-js/featureflags.js
-js/dashboard.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+  authDomain: "university-outreach-log.firebaseapp.com",
+  projectId: "university-outreach-log",
+  storageBucket: "university-outreach-log.firebasestorage.app",
+  messagingSenderId: "566149647802",
+  appId: "1:566149647802:web:490c7cc3d10b7cd7732183"
+};
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+
