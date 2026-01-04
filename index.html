@@ -4,11 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Advanced Web App</title>
-  <meta name="description" content="Modern, accessible, performant web app with Firebase & Gemini." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <title>Academic Agent Pro</title>
+  <meta name="description" content="Academic workflow assistant with Firebase & Gemini." />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0a2540" />
   <meta name="color-scheme" content="light dark" />
@@ -21,16 +18,15 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header" role="banner">
+    <h1>ACADEMIC AGENT PRO</h1>
+    <p>Guest Mode (Securing Data...)</p>
     <nav class="nav" aria-label="Primary">
-      <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu">
-        <span class="visually-hidden">Menu</span>
-        <svg aria-hidden="true" focusable="false" width="24" height="24"><use href="#icon-menu"></use></svg>
-      </button>
       <div id="nav-menu" class="nav__menu" role="menu">
-        <a role="menuitem" href="/" class="nav__link is-active">Home</a>
-        <a role="menuitem" href="/features" class="nav__link">Features</a>
-        <a role="menuitem" href="/docs" class="nav__link">Docs</a>
-        <a role="menuitem" href="/contact" class="nav__link">Contact</a>
+        <a role="menuitem" href="/log" class="nav__link is-active">LOG</a>
+        <a role="menuitem" href="/advisor" class="nav__link">ADVISOR</a>
+        <a role="menuitem" href="/files" class="nav__link">FILES</a>
+        <a role="menuitem" href="/vault" class="nav__link">VAULT</a>
+        <a role="menuitem" href="/aud" class="nav__link">AUD</a>
       </div>
     </nav>
     <div class="auth">
@@ -39,113 +35,53 @@
       <span id="user-info" class="auth__user" aria-live="polite"></span>
     </div>
   </header>
-EOF
 
-cat > "$APP_DIR/css/base.css" << 'EOF'
-:root {
-  --bg: #0b1020;
-  --bg-contrast: #f9fafb;
-  --text: #101828;
-  --text-invert: #f9fafb;
-  --primary: #0a2540;
-  --accent: #ffd166;
-  --card: #ffffff;
-  --muted: #667085;
-}
-*,
-*::before,
-*::after { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  margin: 0;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-  color: var(--text);
-  background: var(--bg-contrast);
-  line-height: 1.5;
-}
-a { color: var(--primary); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.container { max-width: 960px; margin: 0 auto; padding: 1rem; }
-.skip-link { position: absolute; left: -9999px; }
-.skip-link:focus { left: 1rem; top: 1rem; background: var(--accent); color: #111; padding: 0.5rem 1rem; }
-.visually-hidden { position: absolute; left: -9999px; }
-EOF
-
-cat > "$APP_DIR/css/components.css" << 'EOF'
-.site-header, .site-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.75rem 1rem; background: var(--card); border-bottom: 1px solid #eee;
-}
-.nav__menu { display: flex; gap: 1rem; }
-.nav__link { padding: 0.25rem 0.5rem; border-radius: 6px; }
-.nav__link.is-active { background: #eef2ff; }
-.auth { display: flex; gap: 0.5rem; align-items: center; }
-.hero { background: linear-gradient(90deg, #eef2ff, #fff); padding: 2rem 1.5rem; border-radius: 12px; margin: 1rem 0; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
-.card { background: var(--card); border: 1px solid #eee; border-radius: 12px; padding: 1rem; }
-.label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-.input, textarea { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #ccc; border-radius: 6px; }
-.btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
-.btn--primary { background: var(--primary); color: var(--text-invert); }
-.btn--secondary { background: #f3f4f6; }
-.status { margin: 0.5rem 0; }
-.status--online { color: green; }
-.status--offline { color: red; }
-.code-block { background: #0b1020; color: #f0f6fc; padding: 0.75rem; border-radius: 8px; overflow: auto; }
-.card h2 { margin-top: 0; font-size: 1.25rem; }
-.list { list-style: none; padding: 0; margin: 0.5rem 0; }
-.list__item { padding: 0.25rem 0; border-bottom: 1px solid #eee; }
-EOF
-
-cat > "$APP_DIR/css/theme.css" << 'EOF'
-/* Dark mode */
-html.dark {
-  --bg-contrast: #0b1020;
-  --text: #f9fafb;
-  --card: #1e293b;
-}
-EOF
-
-cat > "$APP_DIR/assets/favicon.svg" << 'EOF'
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#0a2540"/><text x="32" y="38" font-size="24" text-anchor="middle" fill="#ffd166">A</text></svg>
-EOF
-
-cat > "$APP_DIR/assets/icon-192.png" << 'EOF'
-(this is a placeholder; replace with a real 192x192 PNG)
-EOF
-
-cat > "$APP_DIR/assets/icon-512.png" << 'EOF'
-(this is a placeholder; replace with a real 512x512 PNG)
-EOF
-
-cat >> "$APP_DIR/index.html" << 'EOF'
   <main id="main" class="container" role="main">
     <section class="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title">Build faster with Firebase & Gemini</h1>
-      <p>Auth, realtime data, hosting, and AI-powered interactions out of the box.</p>
-      <button id="try-ai" class="btn btn--primary" aria-describedby="ai-desc">Ask Gemini</button>
-      <span id="ai-desc" class="visually-hidden">Opens AI assistant prompt</span>
+      <h1 id="hero-title">Manage your academic outreach</h1>
+      <p>Track schools, advisors, files, and deadlines with AI-powered support.</p>
     </section>
 
     <section class="grid">
       <article class="card">
-        <h2>Realtime notes</h2>
-        <form id="note-form">
-          <label for="note-input" class="label">Your note</label>
-          <textarea id="note-input" class="input" rows="3" placeholder="Type a note..."></textarea>
+        <h2>LOG</h2>
+        <form id="log-form">
+          <label for="log-input" class="label">Add School</label>
+          <input id="log-input" class="input" placeholder="e.g. Add Yale" />
           <button type="submit" class="btn btn--primary">Save</button>
         </form>
-        <ul id="notes-list" class="list"></ul>
+        <ul id="log-list" class="list"></ul>
       </article>
 
       <article class="card">
-        <h2>AI assistant</h2>
-        <form id="ai-form">
-          <label for="ai-input" class="label">Prompt</label>
-          <input id="ai-input" class="input" placeholder="Ask anything..." />
+        <h2>ADVISOR</h2>
+        <form id="advisor-form">
+          <label for="advisor-input" class="label">Ask Advisor</label>
+          <input id="advisor-input" class="input" placeholder="Ask about deadlines..." />
           <button type="submit" class="btn btn--primary">Generate</button>
         </form>
-        <pre id="ai-output" class="code-block" aria-live="polite"></pre>
+        <pre id="advisor-output" class="code-block" aria-live="polite"></pre>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>FILES</h2>
+        <form id="file-form">
+          <label for="file-upload" class="label">Upload Document</label>
+          <input type="file" id="file-upload" class="input" />
+          <button type="submit" class="btn btn--primary">Upload</button>
+        </form>
+      </article>
+
+      <article class="card">
+        <h2>VAULT</h2>
+        <p>Secure storage for sensitive academic documents.</p>
+      </article>
+
+      <article class="card">
+        <h2>AUD</h2>
+        <p>Audit trail of all actions and submissions.</p>
       </article>
     </section>
 
@@ -157,21 +93,14 @@ cat >> "$APP_DIR/index.html" << 'EOF'
   </main>
 
   <footer class="site-footer">
-    <p>&copy; <span id="year"></span> Advanced Web App</p>
+    <p>&copy; <span id="year"></span> Academic Agent Pro</p>
     <p>
-      <a href="https://github.com/your-org/your-repo" rel="noopener">GitHub</a> ·
+      <a href="https://github.com/your-org/academic-agent-pro" rel="noopener">GitHub</a> ·
       <a href="/privacy" rel="noopener">Privacy</a> ·
       <a href="/terms" rel="noopener">Terms</a>
     </p>
   </footer>
 
-  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <symbol id="icon-menu" viewBox="0 0 24 24">
-      <path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/>
-    </symbol>
-  </svg>
-
   <script type="module" src="/js/app.js"></script>
 </body>
-  </html>
-  
+            </html>
