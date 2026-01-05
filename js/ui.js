@@ -1,9 +1,9 @@
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const auth = getAuth();
-const tabOrder = ['log', 'advisor', 'files', 'vault']; 
+const tabOrder = ['log', 'advisor', 'vault'];
 
-// --- 1. THE GATEKEEPER & INITIALIZATION ---
+// --- LAYER & TIERED ACCESS ---
 onAuthStateChanged(auth, (user) => {
     const publicLayer = document.getElementById('layer-public');
     const privateLayer = document.getElementById('layer-private');
@@ -12,64 +12,43 @@ onAuthStateChanged(auth, (user) => {
         publicLayer.classList.add('d-none');
         privateLayer.classList.remove('d-none');
         
-        // Security Tier: Hide Vault from Guests
+        // Tiered Access: Hide Vault for Guests
         const vaultTab = document.querySelector('[data-tab="vault"]');
-        if (user.isAnonymous) {
-            vaultTab.style.display = 'none';
-        } else {
-            vaultTab.style.display = 'block';
-        }
-        switchTab('log'); // Default start
+        vaultTab.style.display = user.isAnonymous ? 'none' : 'block';
+        switchTab('log');
     } else {
         publicLayer.classList.remove('d-none');
         privateLayer.classList.add('d-none');
     }
 });
 
-// --- 2. TAB & INDICATOR LOGIC ---
+// --- TAB & INDICATOR ENGINE ---
 function switchTab(tabId) {
-    // Update Buttons
-    document.querySelectorAll('.nav-link').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabId);
-    });
-    // Update Content
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.toggle('d-none', content.id !== `tab-${tabId}`);
-    });
-    // Update Visual Indicator Dots
-    document.querySelectorAll('.dot').forEach(dot => {
-        dot.classList.toggle('active', dot.dataset.target === tabId);
-    });
+    document.querySelectorAll('.nav-link').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.toggle('d-none', content.id !== `tab-${tabId}`));
+    document.querySelectorAll('.dot').forEach(dot => dot.classList.toggle('active', dot.dataset.target === tabId));
 }
 
-document.querySelectorAll('.nav-link').forEach(button => {
-    button.addEventListener('click', () => switchTab(button.dataset.tab));
-});
+document.querySelectorAll('.nav-link').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
-// --- 3. SWIPE GESTURE MANAGER ---
-let touchstartX = 0;
-let touchendX = 0;
-
-function handleGesture() {
-    const activeBtn = document.querySelector('.nav-link.active');
-    if (!activeBtn) return;
-    
-    const currentTab = activeBtn.dataset.tab;
-    let currentIndex = tabOrder.indexOf(currentTab);
-
-    // Swipe Left (Next Tab)
-    if (touchendX < touchstartX - 70) {
-        if (currentIndex < tabOrder.length - 1) switchTab(tabOrder[currentIndex + 1]);
-    }
-    // Swipe Right (Previous Tab)
-    if (touchendX > touchstartX + 70) {
-        if (currentIndex > 0) switchTab(tabOrder[currentIndex - 1]);
-    }
-}
-
-document.getElementById('layer-private').addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
+// --- SWIPE GESTURES ---
+let startX = 0;
+document.getElementById('layer-private').addEventListener('touchstart', e => startX = e.touches[0].clientX);
 document.getElementById('layer-private').addEventListener('touchend', e => {
-    touchendX = e.changedTouches[0].screenX;
-    handleGesture();
+    let endX = e.changedTouches[0].clientX;
+    let currentIndex = tabOrder.indexOf(document.querySelector('.nav-link.active').dataset.tab);
+    if (startX - endX > 70 && currentIndex < tabOrder.length - 1) switchTab(tabOrder[currentIndex + 1]);
+    if (endX - startX > 70 && currentIndex > 0) switchTab(tabOrder[currentIndex - 1]);
 });
 
+// --- AUTH ACTIONS ---
+document.getElementById('show-auth-ui').addEventListener('click', () => {
+    document.getElementById('landing-content').classList.add('d-none');
+    document.getElementById('auth-container').classList.remove('d-none');
+});
+document.getElementById('email-login-btn').addEventListener('click', () => {
+    signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
+});
+document.getElementById('guest-login-btn').addEventListener('click', () => signInAnonymously(auth));
+document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).then(() => window.location.reload()));
+    
