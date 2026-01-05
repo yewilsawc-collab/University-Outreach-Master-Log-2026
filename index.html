@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Academic Agent Pro | Independent Build</title>
   <style>
     :root {
@@ -23,14 +20,15 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow: hidden; / app manages scroll internally /
+      overflow: hidden; 
     }
 
-    / PUBLIC LAYER /
+    /* PUBLIC LAYER */
     #layer-public {
       display: flex; flex-direction: column; align-items: center;
       justify-content: center; min-height: 100vh; padding: 2rem;
       background: radial-gradient(circle at top right, #1e1b4b, var(--bg));
+      box-sizing: border-box;
     }
 
     .hero-graphic {
@@ -47,9 +45,10 @@
       padding: 2.5rem; border-radius: 30px;
       width: 100%; max-width: 360px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      box-sizing: border-box;
     }
 
-    .input-group { margin-bottom: 1.2rem; }
+    .input-group { margin-bottom: 1.2rem; text-align: left; width: 100%; }
     label {
       display: block; font-size: 0.7rem; text-transform: uppercase;
       margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 800;
@@ -73,7 +72,7 @@
       margin-top: 1.5rem; cursor: pointer;
     }
 
-    / APP DASHBOARD /
+    /* APP DASHBOARD */
     #layer-app {
       display: none; height: 100vh; flex-direction: column;
     }
@@ -82,30 +81,33 @@
       display: flex; flex-direction: row; align-items: center;
       gap: 0.5rem;
       background: var(--panel); border-bottom: 1px solid var(--border);
-      padding: 0 1rem;
+      padding: 0 1rem; height: 64px; box-sizing: border-box;
     }
     .nav-item {
       flex: 1; padding: 1.2rem 0; text-align: center;
-      font-size: 0.75rem; font-weight: uppercase;
+      font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
       color: var(--text-muted); cursor: pointer; user-select: none;
+      border-bottom: 3px solid transparent;
     }
     .nav-item.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+    
     #logoutBtn {
-      flex: 0; padding: 0.8rem 1rem; border-radius: 10px;
+      padding: 0.5rem 0.8rem; border-radius: 8px;
       border: 1px solid var(--border);
       color: var(--text); cursor: pointer;
-      background: #0b1223;
+      background: #0b1223; font-size: 0.7rem; font-weight: bold;
     }
-    #logoutBtn:hover { background: #0a1020; }
 
     .content-scroller {
       flex: 1; display: flex; flex-direction: row;
-      overflow-x: scroll; overflow-y: hidden;
+      overflow-x: auto; overflow-y: hidden;
       scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
     }
+    .content-scroller::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
     .view-section {
-      flex: 0 0 100vw; height: calc(100vh - 64px);
+      flex: 0 0 100%; width: 100%; height: 100%;
       scroll-snap-align: start;
       padding: 2rem; box-sizing: border-box;
       overflow-y: auto;
@@ -115,17 +117,23 @@
       border-left: 4px solid var(--java-accent);
       background: rgba(245, 158, 11, 0.05);
       padding: 1.5rem; border-radius: 0 20px 20px 0; margin: 1rem 0;
+      text-align: left;
     }
 
     .hidden { display: none !important; }
+
+    /* Custom Graphic Placeholder */
+    .visual-box {
+      background: var(--panel); padding: 2rem; border-radius: 20px; 
+      border: 1px dashed var(--border); margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
 
-  <!-- PUBLIC LOGIN -->
   <section id="layer-public">
     <div class="hero-graphic">A</div>
-    <h1 style="margin-bottom: 0.5rem;">Academic Agent</h1>
+    <h1 style="margin: 0 0 0.5rem 0;">Academic Agent</h1>
     <p style="color: var(--text-muted); margin-bottom: 2rem;">Independent Ph.D. Management Suite</p>
 
     <div class="login-card">
@@ -144,61 +152,42 @@
     </div>
   </section>
 
-  <!-- APP DASHBOARD -->
   <section id="layer-app">
     <nav class="nav-bar">
       <div class="nav-item active" data-index="0">Uni Log</div>
-      <div class="nav-item" data-index="1">Data Vault</div>
-      <div class="nav-item" data-index="2">Java Core</div>
+      <div class="nav-item" data-index="1">Vault</div>
+      <div class="nav-item" data-index="2">Java</div>
       <button id="logoutBtn">Logout</button>
     </nav>
 
     <div class="content-scroller" id="mainScroller">
-      <!-- University Log -->
       <div class="view-section" id="view-log">
-        <h2 style="font-size: 1.8rem; font-weight: 900;">University Log</h2>
-
-        <div style="background: var(--panel); padding: 2rem; border-radius: 20px; border: 1px dashed var(--border); margin-bottom:1rem;">
-          <p style="color: var(--text-muted);">Add notes and files below. Swipe to switch tabs.</p>
+        <h2 style="font-size: 1.8rem; font-weight: 900; margin-top: 0;">University Log</h2>
+        <div class="visual-box">
+          <p style="color: var(--text-muted); margin: 0;">Add notes or files regarding your PhD applications below.</p>
         </div>
 
-        <!-- Input + Upload -->
         <form id="logForm" style="display:flex; gap:0.5rem; flex-wrap: wrap;">
-          <input
-            type="text"
-            id="logInput"
-            placeholder="Write a note..."
-            style="flex:1 1 260px; padding:0.8rem; border-radius:12px; border:1px solid var(--border); background:#020617; color:white;"
-          />
-          <input
-            type="file"
-            id="logFile"
-            style="flex:1 1 220px; color:var(--text-muted);"
-          />
-          <button
-            type="submit"
-            style="padding:0.8rem 1.2rem; border:none; border-radius:12px; background:var(--primary); color:white; font-weight:700;"
-          >
-            Add
-          </button>
+          <input type="text" id="logInput" placeholder="Write a note..." style="flex:2 1 200px;" />
+          <input type="file" id="logFile" style="flex:1 1 150px; font-size: 0.7rem; padding-top: 0.8rem;" />
+          <button type="submit" class="btn-enter" style="width: auto; padding: 0 1.5rem;">Add</button>
         </form>
 
-        <div id="logEntries" style="margin-top:1rem;"></div>
+        <div id="logEntries" style="margin-top:1.5rem;"></div>
       </div>
 
-      <!-- Data Vault -->
       <div class="view-section" id="view-vault">
-        <h2 style="font-size: 1.8rem; font-weight: 900;">Data Vault</h2>
+        <h2 style="font-size: 1.8rem; font-weight: 900; margin-top: 0;">Data Vault</h2>
         <div class="java-feature">
           <h3 style="color: var(--java-accent); margin: 0;">M.Sc. Thesis Data</h3>
-          <p style="font-size: 0.9rem;">Kinetics of adsorption of ionic liquids into mordenite.</p>
+          <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Kinetics of adsorption of ionic liquids into mordenite.</p>
         </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Centralized repository for research narratives and characterization results (FT-IR, TGA).</p>
       </div>
 
-      <!-- Java Core -->
       <div class="view-section" id="view-java">
-        <h2 style="font-size: 1.8rem; font-weight: 900;">Java Development</h2>
-        <ul style="color: var(--text-muted); line-height: 1.8;">
+        <h2 style="font-size: 1.8rem; font-weight: 900; margin-top: 0;">Java Development</h2>
+        <ul style="color: var(--text-muted); line-height: 1.8; text-align: left;">
           <li><b>JVM Architecture:</b> Bytecode execution.</li>
           <li><b>Strict Typing:</b> Robust error handling.</li>
           <li><b>Multithreading:</b> High-performance computing.</li>
@@ -208,7 +197,6 @@
   </section>
 
   <script>
-    // Elements
     const publicLayer = document.getElementById("layer-public");
     const appLayer = document.getElementById("layer-app");
     const scroller = document.getElementById("mainScroller");
@@ -216,16 +204,12 @@
     const guestLink = document.getElementById("guestLink");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // Auth
+    // Fix 1: Backticks in console.log and logic
     document.getElementById("authForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-
-      if (!email || !password) {
-        alert("Please enter both email and password.");
-        return;
-      }
+      if (!email || !password) return;
       unlockApp(email);
     });
 
@@ -234,20 +218,16 @@
     function unlockApp(user) {
       publicLayer.classList.add("hidden");
       appLayer.style.display = "flex";
-      console.log(Session Started: ${user});
+      console.log(`Session Started: ${user}`);
       scrollToView(0);
-      updateNav(0);
     }
 
-    // Logout
     logoutBtn.addEventListener("click", () => {
       appLayer.style.display = "none";
       publicLayer.classList.remove("hidden");
       document.getElementById("authForm").reset();
-      console.log("Session Ended");
     });
 
-    // Nav handlers
     navItems.forEach((item) => {
       item.addEventListener("click", () => {
         const index = Number(item.getAttribute("data-index"));
@@ -255,31 +235,17 @@
       });
     });
 
-    // Swipe / Scroll sync
-    let startX = 0;
-    scroller.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].pageX;
-    });
-
-    scroller.addEventListener("touchend", (e) => {
-      const endX = e.changedTouches[0].pageX;
-      const walk = startX - endX;
-      if (Math.abs(walk) > 50) {
-        const direction = walk > 0 ? 1 : -1;
-        const currentIndex = Math.round(scroller.scrollLeft / window.innerWidth);
-        const nextIndex = Math.max(0, Math.min(2, currentIndex + direction));
-        scrollToView(nextIndex);
-      }
-    });
-
+    // Fix 2: Native Scroll Sync
     scroller.addEventListener("scroll", () => {
-      const index = Math.round(scroller.scrollLeft / window.innerWidth);
+      const index = Math.round(scroller.scrollLeft / scroller.clientWidth);
       updateNav(index);
     });
 
     function scrollToView(index) {
-      scroller.scrollTo({ left: index * window.innerWidth, behavior: "smooth" });
-      updateNav(index);
+      scroller.scrollTo({ 
+        left: index * scroller.clientWidth, 
+        behavior: "smooth" 
+      });
     }
 
     function updateNav(index) {
@@ -288,39 +254,32 @@
       });
     }
 
-    // Keep widths aligned on resize/orientation change
-    window.addEventListener("resize", () => {
-      const currentIndex = Math.round(scroller.scrollLeft / window.innerWidth);
-      scrollToView(currentIndex);
-    });
-
-    // University Log: input + upload
+    // Fix 3: Log Entry template literals
     document.getElementById("logForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const text = document.getElementById("logInput").value.trim();
       const file = document.getElementById("logFile").files[0];
 
-      if (!text && !file) {
-        alert("Please enter text or select a file.");
-        return;
-      }
+      if (!text && !file) return;
 
       const entryDiv = document.createElement("div");
-      entryDiv.style.margin = "0.5rem 0";
-      entryDiv.style.padding = "1rem";
-      entryDiv.style.background = "var(--panel)";
-      entryDiv.style.border = "1px solid var(--border)";
-      entryDiv.style.borderRadius = "12px";
+      entryDiv.style.cssText = "margin: 0.5rem 0; padding: 1rem; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; text-align: left;";
 
       entryDiv.innerHTML = `
-        ${text ? <p>${text}</p> : ""}
-        ${file ? <p style="color:var(--text-muted)">Uploaded: ${file.name}</p> : ""}
+        ${text ? `<p style="margin:0;">${text}</p>` : ""}
+        ${file ? `<p style="color:var(--text-muted); font-size:0.75rem; margin-top:0.4rem;">📎 ${file.name}</p>` : ""}
       `;
 
-      document.getElementById("logEntries").appendChild(entryDiv);
+      const entriesContainer = document.getElementById("logEntries");
+      entriesContainer.insertBefore(entryDiv, entriesContainer.firstChild);
       document.getElementById("logForm").reset();
+    });
+
+    window.addEventListener("resize", () => {
+      const index = Math.round(scroller.scrollLeft / scroller.clientWidth);
+      scrollToView(index);
     });
   </script>
 </body>
 </html>
-`
+
