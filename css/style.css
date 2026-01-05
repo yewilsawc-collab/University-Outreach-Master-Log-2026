@@ -84,4 +84,36 @@ nav button.active {
   padding: 5px 10px;
   font-weight: bold;
 }
+/* Indicator Dots */
+.dot {
+    width: 8px;
+    height: 8px;
+    background: var(--blue-light);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+}
 
+.dot.active {
+    background: var(--gold);
+    width: 20px; /* Stretched effect for active tab */
+    border-radius: 4px;
+    opacity: 1;
+}
+
+/* Smooth Tab Transitions */
+.tab-content {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Fix for mobile horizontal overflow */
+#layer-private {
+    overflow-x: hidden;
+    touch-action: pan-y;
+  }
+  
