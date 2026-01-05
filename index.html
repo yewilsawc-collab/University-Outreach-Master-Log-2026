@@ -8,115 +8,93 @@
 </head>
 <body class="bg-dark text-light">
 
-  <!-- Public Layer -->
   <div id="layer-public" class="container-fluid min-vh-100 d-flex flex-column">
-    <header class="p-3 d-flex justify-content-between align-items-center">
-      <h1 class="h4 text-primary m-0">ACADEMIC AGENT PRO</h1>
-      <button id="login-trigger" class="btn btn-outline-primary btn-sm">Sign In / Guest Access</button>
+    <header class="p-3 d-flex justify-content-between align-items-center bg-blue">
+      <h1 class="h4 text-gold m-0">ACADEMIC AGENT PRO</h1>
+      <button id="login-trigger" class="btn btn-gold btn-sm">Researcher Login</button>
     </header>
 
     <main class="flex-grow-1 d-flex align-items-center justify-content-center px-4">
       <div class="text-center" style="max-width: 800px;">
-        <h2 class="display-5 fw-bold mb-3">Surface & Materials Chemistry</h2>
-        <p class="lead text-secondary mb-4">
+        <h2 class="display-5 fw-bold mb-3 text-gold">Surface & Materials Chemistry</h2>
+        <p class="lead text-light mb-4">
           Investigating the structure, reactivity, and assembly mechanisms of materials—building a foundation for advanced studies in interfacial phenomena.
         </p>
-        <div class="row text-start g-4 mb-5">
+        <div class="row text-start g-4 mb-5 border-top border-gold pt-4">
           <div class="col-md-6">
-            <h3 class="h6 text-primary">RESEARCH FOCUS</h3>
-            <p class="small text-muted">Kinetics of adsorption of ionic liquids into mordenite. Expertise in FT-IR, TGA, and MATLAB.</p>
+            <h3 class="h6 text-gold">RESEARCH FOCUS</h3>
+            <p class="small">Kinetics of adsorption of ionic liquids into mordenite. Expertise in FT-IR, TGA, and MATLAB modeling.</p>
           </div>
           <div class="col-md-6">
-            <h3 class="h6 text-primary">GOAL</h3>
-            <p class="small text-muted">Integrating experimental chemistry with theoretical methods for a Ph.D. in Physical Chemistry (2026).</p>
+            <h3 class="h6 text-gold">GOAL</h3>
+            <p class="small">Integrating experimental chemistry with theoretical methods for a Ph.D. in Physical Chemistry (2026).</p>
           </div>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- Private Layer -->
   <div id="layer-private" class="d-none">
-    <header class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center">
+    <header class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center bg-blue">
       <div class="d-flex align-items-center">
-        <div id="user-avatar" class="avatar-circle bg-primary me-2 text-white d-flex align-items-center justify-content-center" style="width:35px; height:35px; border-radius:50%;">Y</div>
+        <div class="avatar-circle bg-gold text-blue fw-bold me-2 d-flex align-items-center justify-content-center" style="width:35px; height:35px; border-radius:50%;">Y</div>
         <div>
-          <h1 class="h6 mb-0" id="user-display-name">DASHBOARD</h1>
-          <small id="auth-status-text" class="text-success" style="font-size: 10px;">Authenticated Mode</small>
+          <h1 class="h6 mb-0 text-white">DASHBOARD</h1>
+          <small id="auth-status-text" class="text-gold" style="font-size: 10px;">Authenticated Mode</small>
         </div>
       </div>
       <div class="d-flex gap-2">
-        <button id="theme-toggle" class="btn btn-sm btn-outline-secondary">🌙</button>
-        <button id="logout-btn" class="btn btn-sm btn-danger">Sign Out</button>
+        <button id="toggle-theme" class="btn btn-outline-gold btn-sm">🌙</button>
+        <button id="logout-btn" class="btn btn-danger btn-sm">Sign Out</button>
       </div>
     </header>
 
-    <nav class="nav nav-tabs border-bottom border-secondary px-3 bg-secondary-dark">
-      <button class="nav-link active py-2" data-tab="log">LOG</button>
-      <button class="nav-link py-2" data-tab="advisor">ADVISOR</button>
-      <button class="nav-link py-2" data-tab="files">FILES</button>
-      <button class="nav-link py-2" data-tab="vault">VAULT</button>
-      <button class="nav-link py-2" data-tab="aud">AUD</button>
+    <nav class="nav nav-tabs border-bottom border-gold bg-blue-light">
+      <button class="nav-link active" data-tab="log">LOG</button>
+      <button class="nav-link" data-tab="advisor">ADVISOR</button>
+      <button class="nav-link" data-tab="files">FILES</button>
+      <button class="nav-link" data-tab="vault">VAULT</button>
     </nav>
 
     <main class="p-3">
-      <!-- LOG Tab -->
       <section id="tab-log" class="tab-content">
-        <div class="card bg-secondary-dark border-secondary p-3 mb-3">
-          <label class="form-label small text-muted">Add School Outreach</label>
+        <div class="card bg-dark border-secondary p-3 mb-3">
+          <label class="form-label small text-gold">Add School Outreach</label>
           <div class="d-flex gap-2">
-            <input type="text" id="school-input" class="form-control bg-dark text-white border-secondary" placeholder="e.g., NJIT, Yale...">
-            <button id="save-school" class="btn btn-primary">Save</button>
+            <input type="text" id="school-input" class="form-control bg-black text-white border-secondary" placeholder="e.g., NJIT, Yale...">
+            <button id="save-school" class="btn btn-gold">Save</button>
           </div>
         </div>
         <div id="log-display" class="small text-muted italic">No schools logged yet...</div>
       </section>
 
-      <!-- ADVISOR Tab -->
       <section id="tab-advisor" class="tab-content d-none">
-        <div class="card bg-secondary-dark border-secondary p-3">
-          <textarea id="ai-input" class="form-control bg-dark text-white border-secondary mb-2" rows="3" placeholder="Ask Gemini about mordenite kinetics..."></textarea>
-          <button id="ask-ai" class="btn btn-info w-100">Generate Advice</button>
-          <div id="ai-response" class="mt-3 p-2 bg-black rounded small border border-secondary" style="min-height: 50px;"></div>
+        <div id="chat-log" class="bg-black border border-secondary p-3 mb-2 rounded" style="height: 300px; overflow-y: auto;"></div>
+        <div class="input-group">
+          <input type="text" id="chat-input" class="form-control bg-dark text-white border-secondary" placeholder="Ask Gemini about mordenite kinetics...">
+          <button id="send-chat" class="btn btn-gold">Send</button>
         </div>
       </section>
 
-      <!-- FILES Tab -->
       <section id="tab-files" class="tab-content d-none">
-        <div class="card bg-secondary-dark p-3 mb-3">
-          <h3 class="h6">Academic Documents</h3>
-          <input type="file" id="file-input" class="form-control form-control-sm bg-dark text-white border-secondary mb-2">
-          <button id="upload-btn" class="btn btn-primary w-100">Upload to Vault</button>
+        <div class="card bg-dark border-secondary p-3">
+          <h3 class="h6 text-gold">Upload Recommendations</h3>
+          <input type="file" id="file-input" class="form-control bg-dark text-white mb-2">
+          <button id="upload-btn" class="btn btn-gold w-100">Upload to Private Vault</button>
         </div>
-        <div id="file-list" class="list-group list-group-flush border border-secondary rounded"></div>
-      </section>
-
-      <!-- VAULT Tab -->
-      <section id="tab-vault" class="tab-content d-none">
-        <div class="card bg-secondary-dark p-3">
-          <h3 class="h6">Secure Vault</h3>
-          <p class="small text-muted">Encrypted storage for sensitive academic documents and audit logs.</p>
-        </div>
-      </section>
-
-      <!-- AUD Tab -->
-      <section id="tab-aud" class="tab-content d-none">
-        <div class="card bg-secondary-dark p-3">
-          <h3 class="h6">Audit Trail</h3>
-          <ul id="audit-list" class="list-group list-group-flush border border-secondary rounded">
-            <li class="list-group-item small text-muted">No activity yet...</li>
-          </ul>
-        </div>
+        <div id="file-list" class="mt-3"></div>
       </section>
     </main>
   </div>
 
-  <footer class="p-3 text-center small text-muted border-top border-secondary">
+  <footer class="p-3 text-center small text-muted border-top border-secondary mt-auto">
     <span>Status: <strong id="connection-status" class="text-success">Online</strong></span>
     <p class="mt-1">© 2026 Academic Agent Pro</p>
   </footer>
 
   <script type="module" src="js/firebase.js"></script>
   <script type="module" src="js/ui.js"></script>
+  <script type="module" src="js/chat.js"></script>
 </body>
-    </html>
+</html>
+
