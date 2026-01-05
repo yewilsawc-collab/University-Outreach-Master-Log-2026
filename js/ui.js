@@ -35,15 +35,6 @@ if (localStorage.getItem("theme") === "dark") {
   document.documentElement.classList.add("dark");
 }
 
-// Tab Switching
-document.querySelectorAll(".nav-link").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".nav-link").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.add("d-none"));
-    btn.classList.add("active");
-    document.getElementById(`tab-${btn.dataset.tab}`).classList.remove("d-none");
-  });
-});
 // Swipe detection for tab navigation
 let touchStartX = 0;
 let touchEndX = 0;
@@ -69,4 +60,18 @@ document.addEventListener("touchstart", (e) => {
 document.addEventListener("touchend", (e) => {
   touchEndX = e.changedTouches[0].screenX;
   handleSwipe();
+});
+// Tab switching logic
+document.querySelectorAll(".nav-link").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    // Remove active state from all tabs
+    document.querySelectorAll(".nav-link").forEach((b) => b.classList.remove("active"));
+    // Hide all tab contents
+    document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.add("d-none"));
+
+    // Activate clicked tab
+    btn.classList.add("active");
+    const targetId = `tab-${btn.dataset.tab}`;
+    document.getElementById(targetId)?.classList.remove("d-none");
+  });
 });
