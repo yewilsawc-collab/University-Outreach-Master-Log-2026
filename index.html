@@ -6,108 +6,137 @@
   <title>Academic Agent Pro | Gateway</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-    .hidden { display: none; }
+    /* Custom utility for glassmorphism as seen in your original code */
+    .glass { 
+      background: rgba(15, 23, 42, 0.8); 
+      backdrop-filter: blur(12px); 
+      border: 1px solid rgba(51, 65, 85, 0.5); 
+    }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body class="bg-[#020617] text-slate-200 font-sans overflow-x-hidden">
 
-  <section id="public-layer" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-    <div class="max-w-3xl space-y-8 animate-in fade-in zoom-in duration-700">
-      <div class="inline-block px-4 py-1.5 mb-4 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest">
-        Next-Gen Ph.D. Admissions Command
-      </div>
+  <section id="public-layer" class="min-h-screen flex flex-col items-center justify-center p-6 transition-all duration-500">
+    <div class="max-w-4xl w-full text-center space-y-12">
       
-      <h1 class="text-5xl md:text-7xl font-black tracking-tighter text-white leading-none">
-        ACADEMIC <span class="text-blue-500">AGENT</span> PRO
-      </h1>
-      
-      <p class="text-slate-400 text-lg md:text-xl max-w-xl mx-auto font-medium">
-        The centralized ecosystem for managing university logs, research narratives, and faculty outreach in one secure vault.
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-8">
-        <div class="glass p-5 rounded-2xl text-left">
-          <div class="text-blue-400 font-black text-xs uppercase mb-2">01. University Log</div>
-          <p class="text-[11px] text-slate-400">Track R1 institutions, faculty interest, and application deadlines in real-time.</p>
+      <div class="space-y-4">
+        <div class="inline-block px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest">
+          Ph.D. Application Command Center
         </div>
-        <div class="glass p-5 rounded-2xl text-left">
-          <div class="text-indigo-400 font-black text-xs uppercase mb-2">02. Data Vault</div>
-          <p class="text-[11px] text-slate-400">Securely store research narratives, TGA/FT-IR data, and technical stacks.</p>
-        </div>
-        <div class="glass p-5 rounded-2xl text-left">
-          <div class="text-emerald-400 font-black text-xs uppercase mb-2">03. AI Advisor</div>
-          <p class="text-[11px] text-slate-400">Integrated assistant to help draft communications and organize your profile.</p>
-        </div>
+        <h1 class="text-6xl md:text-8xl font-black tracking-tighter text-white leading-none">
+          ACADEMIC <span class="text-blue-500">AGENT</span>
+        </h1>
+        <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
+          A secure, centralized ecosystem for tracking university outreach, managing research kinetics data, and organizing your academic vault.
+        </p>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-        <button onclick="enterApp('guest')" class="px-8 py-4 bg-white text-black font-black uppercase text-xs rounded-xl hover:bg-blue-500 hover:text-white transition-all">
-          Explore as Guest
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass p-8 rounded-3xl text-left hover:border-blue-500/50 transition-colors">
+          <div class="w-10 h-10 bg-blue-600 rounded-lg mb-4 flex items-center justify-center text-white font-bold">L</div>
+          <h3 class="font-bold text-white mb-2">University Log</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Dynamic tracking of R1 institutions, faculty contacts, and deadlines via real-time Firestore sync.</p>
+        </div>
+        <div class="glass p-8 rounded-3xl text-left hover:border-indigo-500/50 transition-colors">
+          <div class="w-10 h-10 bg-indigo-600 rounded-lg mb-4 flex items-center justify-center text-white font-bold">V</div>
+          <h3 class="font-bold text-white mb-2">Data Vault</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Centralized repository for research narratives, publication lists, and technical skills like FT-IR & MATLAB.</p>
+        </div>
+        <div class="glass p-8 rounded-3xl text-left hover:border-emerald-500/50 transition-colors">
+          <div class="w-10 h-10 bg-emerald-600 rounded-lg mb-4 flex items-center justify-center text-white font-bold">A</div>
+          <h3 class="font-bold text-white mb-2">AI Advisor</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Integrated command bar to automate school entries and provide instant research intel.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <button onclick="toggleLayer('app')" class="w-full sm:w-auto px-10 py-4 bg-blue-600 text-white font-black uppercase text-xs rounded-2xl shadow-lg shadow-blue-900/40 hover:scale-105 transition-transform">
+          Login as Guest
         </button>
-        <button onclick="enterApp('auth')" class="px-8 py-4 border border-slate-700 font-black uppercase text-xs rounded-xl hover:bg-slate-800 transition-all">
-          Sign In with Email
+        <button onclick="toggleLayer('app')" class="w-full sm:w-auto px-10 py-4 border border-slate-700 font-black uppercase text-xs rounded-2xl hover:bg-slate-800 transition-colors">
+          Email Sign In
         </button>
       </div>
     </div>
   </section>
 
-  <section id="app-layer" class="hidden min-h-screen flex flex-col">
-    <header class="p-4 border-b border-slate-800 flex justify-between items-center bg-[#0f172a]">
-      <span class="font-black text-xs tracking-widest text-blue-400">AGENT PRO / DASHBOARD</span>
-      <button onclick="location.reload()" class="text-[10px] text-slate-500 font-bold uppercase underline">Exit Session</button>
+  <section id="app-layer" class="hidden min-h-screen flex flex-col bg-[#0f172a] animate-in fade-in slide-in-from-bottom-4 duration-700">
+    
+    <header class="p-4 border-b border-slate-800 flex justify-between items-center bg-[#0f172a]/80 backdrop-blur-md sticky top-0 z-50">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-xs text-white">Y</div>
+        <span class="font-black text-[10px] tracking-[0.2em] text-blue-400 uppercase">Dashboard Active</span>
+      </div>
+      <button onclick="toggleLayer('public')" class="text-[9px] font-black uppercase tracking-widest px-4 py-2 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
+        Logout / Exit
+      </button>
     </header>
 
-    <main class="flex-1 p-6 max-w-5xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <div class="lg:col-span-8 space-y-4">
-        <div class="flex justify-between items-end">
-          <h2 class="text-xl font-black tracking-tight">University Log</h2>
-          <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Active Entries</span>
+    <main class="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <div class="lg:col-span-8 space-y-6">
+        <div class="flex justify-between items-center">
+          <h2 class="text-2xl font-black tracking-tight text-white">University Log</h2>
+          <div class="flex gap-2">
+             <span class="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[9px] font-bold text-blue-400 uppercase">Real-time Sync</span>
+          </div>
         </div>
-        <div class="glass min-h-[400px] rounded-3xl p-6 relative overflow-hidden">
-          <p class="text-slate-500 text-xs italic">No universities added yet. Use the command bar below.</p>
+        
+        <div class="glass min-h-[500px] rounded-[2rem] p-8 border-dashed border-slate-700 flex flex-col items-center justify-center text-center">
+          <div class="w-16 h-16 bg-slate-800 rounded-full mb-4 flex items-center justify-center text-slate-600 text-2xl">+</div>
+          <p class="text-slate-500 text-sm max-w-xs">Your log is currently empty. Use the command bar below to add your first institution.</p>
         </div>
       </div>
 
       <aside class="lg:col-span-4 space-y-6">
-        <div class="glass p-6 rounded-3xl border-blue-500/20">
-          <h3 class="text-xs font-black uppercase text-blue-400 mb-4 tracking-widest">Session Identity</h3>
-          <div id="session-type" class="text-sm font-bold">Authenticated as <span class="text-white">Guest</span></div>
-          <p class="text-[10px] text-slate-500 mt-2">Data will be cleared upon refresh in Guest Mode.</p>
-        </div>
-        
-        <div class="glass p-6 rounded-3xl">
-          <h3 class="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest">Data Vault</h3>
-          <ul class="text-[11px] space-y-2 text-slate-300">
-            <li class="flex items-center gap-2">● Research Narratives</li>
-            <li class="flex items-center gap-2">● CV / Publications</li>
-            <li class="flex items-center gap-2 text-slate-500 italic">● No documents uploaded</li>
-          </ul>
+        <div class="glass p-6 rounded-[2rem] border-blue-500/30">
+          <h3 class="text-[10px] font-black uppercase text-blue-400 mb-4 tracking-widest">Master Vault</h3>
+          <div class="space-y-3">
+            <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-800">
+              <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Thesis Topic</p>
+              <p class="text-xs text-slate-300 font-medium leading-relaxed">Kinetics of adsorption of ionic liquids into mordenite...</p>
+            </div>
+            <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-800">
+              <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Skills Stack</p>
+              <p class="text-xs text-slate-300">MATLAB, Linux, FT-IR, TGA, CHN Analysis</p>
+            </div>
+          </div>
         </div>
       </aside>
     </main>
 
-    <footer class="p-4 bg-slate-900/50 backdrop-blur-md">
-      <div class="max-w-2xl mx-auto relative">
-        <input type="text" placeholder="Type 'add [University Name]' to update log..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 px-6 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
+    <footer class="sticky bottom-0 p-4 bg-gradient-to-t from-[#0f172a] to-transparent">
+      <div class="max-w-2xl mx-auto relative group">
+        <input type="text" placeholder="Add school (e.g., 'add MIT') or ask Advisor..." 
+               class="w-full bg-slate-800/90 border border-slate-700 rounded-2xl py-5 px-8 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl transition-all group-hover:border-slate-500" />
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+          <kbd class="hidden sm:inline-block px-2 py-1 bg-slate-700 text-[10px] rounded text-slate-400">ENTER</kbd>
+        </div>
       </div>
     </footer>
   </section>
 
   <script>
-    function enterApp(mode) {
-      document.getElementById('public-layer').classList.add('hidden');
-      document.getElementById('app-layer').classList.remove('hidden');
-      
-      const sessionLabel = document.querySelector('#session-type span');
-      if (mode === 'auth') {
-        sessionLabel.innerText = "Authorized User";
-        sessionLabel.className = "text-blue-400";
+    /**
+     * Logic to swap between layers.
+     * In the real app, this would be triggered by Firebase Auth states.
+     */
+    function toggleLayer(target) {
+      const publicLayer = document.getElementById('public-layer');
+      const appLayer = document.getElementById('app-layer');
+
+      if (target === 'app') {
+        publicLayer.classList.add('hidden');
+        appLayer.classList.remove('hidden');
+        window.scrollTo(0, 0);
       } else {
-        sessionLabel.innerText = "Guest Voyager";
+        appLayer.classList.add('hidden');
+        publicLayer.classList.remove('hidden');
+        window.scrollTo(0, 0);
       }
     }
   </script>
 </body>
-        </html>
-
+  </html>
+      
