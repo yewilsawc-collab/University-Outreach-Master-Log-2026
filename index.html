@@ -1,214 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Academic Agent Pro | Independent Build</title>
-    <style>
-        /* CORE DESIGN SYSTEM (No Frameworks) */
-        :root {
-            --primary: #2563eb;
-            --bg: #020617;
-            --panel: #0f172a;
-            --border: #1e293b;
-            --text: #f1f5f9;
-            --text-muted: #64748b;
-            --java-accent: #f59e0b;
-        }
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>Academic Agent Pro | Independent Build</title>
+  <style>
+    /* CORE DESIGN SYSTEM (No Frameworks) */
+    :root {
+      --primary: #2563eb;
+      --bg: #020617;
+      --panel: #0f172a;
+      --border: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #64748b;
+      --java-accent: #f59e0b;
+    }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* Controlled by layers */
-        }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; /* prevent body scroll; app handles its own scrolls */
+    }
 
-        /* LAYER 1: PUBLIC */
-        #layer-public {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; min-height: 100vh; padding: 2rem;
-            background: radial-gradient(circle at top right, #1e1b4b, var(--bg));
-        }
+    /* LAYER 1: PUBLIC */
+    #layer-public {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      background: radial-gradient(circle at top right, #1e1b4b, var(--bg));
+    }
 
-        .hero-graphic {
-            width: 80px; height: 80px; background: var(--primary);
-            border-radius: 20px; margin-bottom: 2rem;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 2rem; box-shadow: 0 0 30px rgba(37, 99, 235, 0.4);
-        }
+    .hero-graphic {
+      width: 80px;
+      height: 80px;
+      background: var(--primary);
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 2rem;
+      box-shadow: 0 0 30px rgba(37, 99, 235, 0.4);
+    }
 
-        .login-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            padding: 2.5rem; border-radius: 30px;
-            width: 100%; max-width: 360px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
+    .login-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      border-radius: 30px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
 
-        .input-group { margin-bottom: 1.2rem; }
-        label { display: block; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 800; }
-        
-        input {
-            width: 100%; background: #020617; border: 1px solid var(--border);
-            padding: 1rem; border-radius: 12px; color: white; outline: none;
-            box-sizing: border-box; transition: border 0.3s;
-        }
-        input:focus { border-color: var(--primary); }
+    .input-group { margin-bottom: 1.2rem; }
 
-        .btn-enter {
-            width: 100%; padding: 1rem; border: none; border-radius: 12px;
-            background: var(--primary); color: white; font-weight: 900;
-            text-transform: uppercase; cursor: pointer; transition: transform 0.2s;
-        }
-        .btn-enter:active { transform: scale(0.98); }
+    label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+      font-weight: 800;
+    }
 
-        /* LAYER 2: APP DASHBOARD */
-        #layer-app { display: none; height: 100vh; flex-direction: column; }
+    input {
+      width: 100%;
+      background: #020617;
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 12px;
+      color: white;
+      outline: none;
+      box-sizing: border-box;
+      transition: border 0.3s;
+    }
+    input:focus { border-color: var(--primary); }
 
-        .nav-bar {
-            display: flex; background: var(--panel); border-bottom: 1px solid var(--border);
-            padding: 0 1rem;
-        }
+    .btn-enter {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .btn-enter:active { transform: scale(0.98); }
 
-        .nav-item {
-            flex: 1; padding: 1.2rem 0; text-align: center;
-            font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
-            color: var(--text-muted); cursor: pointer;
-        }
-        .nav-item.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+    /* LAYER 2: APP DASHBOARD */
+    #layer-app {
+      display: none; /* hidden until unlock */
+      height: 100vh;
+      flex-direction: column;
+    }
 
-        .content-scroller {
-            flex: 1; display: flex; overflow-x: hidden; scroll-behavior: smooth;
-        }
+    .nav-bar {
+      display: flex;
+      flex-direction: row;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1rem;
+    }
 
-        .view-section {
-            min-width: 100%; padding: 2rem; box-sizing: border-box;
-            overflow-y: auto;
-        }
+    .nav-item {
+      flex: 1;
+      padding: 1.2rem 0;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .nav-item.active {
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
 
-        /* JAVA FEATURE GRAPHIC (Custom CSS) */
-        .java-feature {
-            border-left: 4px solid var(--java-accent);
-            background: rgba(245, 158, 11, 0.05);
-            padding: 1.5rem; border-radius: 0 20px 20px 0; margin: 1rem 0;
-        }
+    .content-scroller {
+      flex: 1;
+      display: flex;
+      flex-direction: row;    /* arrange sections horizontally */
+      overflow-x: scroll;     /* enable horizontal scroll/swipe */
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch; /* smoother iOS scrolling */
+    }
 
-        .hidden { display: none !important; }
-    </style>
+    .view-section {
+      flex: 0 0 100vw;        /* each section equals viewport width */
+      height: calc(100vh - 56px); /* approximate nav height; keeps content visible */
+      scroll-snap-align: start;
+      padding: 2rem;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    /* JAVA FEATURE GRAPHIC (Custom CSS) */
+    .java-feature {
+      border-left: 4px solid var(--java-accent);
+      background: rgba(245, 158, 11, 0.05);
+      padding: 1.5rem;
+      border-radius: 0 20px 20px 0;
+      margin: 1rem 0;
+    }
+
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
 
-    <section id="layer-public">
-        <div class="hero-graphic">A</div>
-        <h1 style="margin-bottom: 0.5rem;">Academic Agent</h1>
-        <p style="color: var(--text-muted); margin-bottom: 2rem;">Independent Ph.D. Management Suite</p>
+  <!-- PUBLIC LAYER -->
+  <section id="layer-public">
+    <div class="hero-graphic">A</div>
+    <h1 style="margin-bottom: 0.5rem;">Academic Agent</h1>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Independent Ph.D. Management Suite</p>
 
-        <div class="login-card">
-            <form id="authForm">
-                <div class="input-group">
-                    <label>University Email</label>
-                    <input type="email" id="email" required placeholder="name@university.edu">
-                </div>
-                <div class="input-group">
-                    <label>Vault Password</label>
-                    <input type="password" id="password" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn-enter">Unlock Dashboard</button>
-            </form>
-            <p onclick="unlockApp('Guest')" style="text-align:center; font-size: 0.7rem; color: var(--text-muted); margin-top: 1.5rem; cursor: pointer;">
-                Continue as Guest
-            </p>
+    <div class="login-card">
+      <form id="authForm">
+        <div class="input-group">
+          <label for="email">University Email</label>
+          <input type="email" id="email" required placeholder="name@university.edu" />
         </div>
-    </section>
-
-    <section id="layer-app">
-        <nav class="nav-bar">
-            <div class="nav-item active" onclick="scrollToView(0)">Uni Log</div>
-            <div class="nav-item" onclick="scrollToView(1)">Data Vault</div>
-            <div class="nav-item" onclick="scrollToView(2)">Java Core</div>
-        </nav>
-
-        <div class="content-scroller" id="mainScroller">
-            <div class="view-section">
-                <h2 style="font-size: 1.8rem; font-weight: 900;">University Log</h2>
-                <div style="background: var(--panel); padding: 2rem; border-radius: 20px; border: 1px dashed var(--border);">
-                    <p style="color: var(--text-muted);">No entries yet. Swipe left to manage research narratives.</p>
-                </div>
-            </div>
-
-            <div class="view-section">
-                <h2 style="font-size: 1.8rem; font-weight: 900;">Data Vault</h2>
-                <div class="java-feature">
-                    <h3 style="color: var(--java-accent); margin: 0;">M.Sc. Thesis Data</h3>
-                    <p style="font-size: 0.9rem;">Kinetics of adsorption of ionic liquids into mordenite.</p>
-                </div>
-            </div>
-
-            <div class="view-section">
-                <h2 style="font-size: 1.8rem; font-weight: 900;">Java Development</h2>
-                <ul style="color: var(--text-muted); line-height: 1.8;">
-                    <li><b>JVM Architecture:</b> Bytecode execution.</li>
-                    <li><b>Strict Typing:</b> Robust error handling.</li>
-                    <li><b>Multithreading:</b> High-performance computing.</li>
-                </ul>
-            </div>
+        <div class="input-group">
+          <label for="password">Vault Password</label>
+          <input type="password" id="password" required placeholder="••••••••" />
         </div>
-    </section>
+        <button type="submit" class="btn-enter">Unlock Dashboard</button>
+      </form>
+      <p
+        id="guestLink"
+        style="text-align:center; font-size: 0.7rem; color: var(--text-muted); margin-top: 1.5rem; cursor: pointer;"
+      >
+        Continue as Guest
+      </p>
+    </div>
+  </section>
 
-    <script>
-        const publicLayer = document.getElementById('layer-public');
-        const appLayer = document.getElementById('layer-app');
-        const scroller = document.getElementById('mainScroller');
-        const navItems = document.querySelectorAll('.nav-item');
+  <!-- APP LAYER -->
+  <section id="layer-app">
+    <nav class="nav-bar">
+      <div class="nav-item active" data-index="0">Uni Log</div>
+      <div class="nav-item" data-index="1">Data Vault</div>
+      <div class="nav-item" data-index="2">Java Core</div>
+    </nav>
 
-        // 1. AUTH LOGIC
-        document.getElementById('authForm').onsubmit = (e) => {
-            e.preventDefault();
-            unlockApp(document.getElementById('email').value);
-        };
+    <div class="content-scroller" id="mainScroller">
+      <div class="view-section" id="view-log">
+        <h2 style="font-size: 1.8rem; font-weight: 900;">University Log</h2>
+        <div style="background: var(--panel); padding: 2rem; border-radius: 20px; border: 1px dashed var(--border);">
+          <p style="color: var(--text-muted);">No entries yet. Swipe left to manage research narratives.</p>
+        </div>
+      </div>
 
-        function unlockApp(user) {
-            publicLayer.classList.add('hidden');
-            appLayer.style.display = 'flex';
-            console.log(`Session Started: ${user}`);
-        }
+      <div class="view-section" id="view-vault">
+        <h2 style="font-size: 1.8rem; font-weight: 900;">Data Vault</h2>
+        <div class="java-feature">
+          <h3 style="color: var(--java-accent); margin: 0;">M.Sc. Thesis Data</h3>
+          <p style="font-size: 0.9rem;">Kinetics of adsorption of ionic liquids into mordenite.</p>
+        </div>
+      </div>
 
-        // 2. NATIVE SWIPE (Pointer Events - Replacement for Hammer.js)
-        let startX;
-        let scrollLeft;
-        let isDown = false;
+      <div class="view-section" id="view-java">
+        <h2 style="font-size: 1.8rem; font-weight: 900;">Java Development</h2>
+        <ul style="color: var(--text-muted); line-height: 1.8;">
+          <li><b>JVM Architecture:</b> Bytecode execution.</li>
+          <li><b>Strict Typing:</b> Robust error handling.</li>
+          <li><b>Multithreading:</b> High-performance computing.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-        scroller.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].pageX - scroller.offsetLeft;
-            scrollLeft = scroller.scrollLeft;
-        });
+  <script>
+    // Elements
+    const publicLayer = document.getElementById("layer-public");
+    const appLayer = document.getElementById("layer-app");
+    const scroller = document.getElementById("mainScroller");
+    const navItems = document.querySelectorAll(".nav-item");
+    const guestLink = document.getElementById("guestLink");
 
-        scroller.addEventListener('touchend', (e) => {
-            const endX = e.changedTouches[0].pageX - scroller.offsetLeft;
-            const walk = startX - endX;
+    // AUTH LOGIC
+    document.getElementById("authForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-            if (Math.abs(walk) > 50) {
-                const direction = walk > 0 ? 1 : -1;
-                const nextIndex = Math.max(0, Math.min(2, Math.round(scroller.scrollLeft / window.innerWidth) + direction));
-                scrollToView(nextIndex);
-            }
-        });
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
 
-        function scrollToView(index) {
-            scroller.scrollTo({
-                left: index * window.innerWidth,
-                behavior: 'smooth'
-            });
-            updateNav(index);
-        }
+      // Replace with real auth (API/Firestore/etc.)
+      unlockApp(email);
+    });
 
-        function updateNav(index) {
-            navItems.forEach((item, i) => {
-                item.classList.toggle('active', i === index);
-            });
-        }
-    </script>
+    guestLink.addEventListener("click", () => unlockApp("Guest"));
+
+    function unlockApp(user) {
+      publicLayer.classList.add("hidden");
+      appLayer.style.display = "flex";
+      console.log(`Session Started: ${user}`);
+      // Start at first tab
+      scrollToView(0);
+      updateNav(0);
+    }
+
+    // NAV CLICK HANDLERS
+    navItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const index = Number(item.getAttribute("data-index"));
+        scrollToView(index);
+      });
+    });
+
+    // SWIPE / SCROLL SYNC
+    let startX = 0;
+    scroller.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].pageX;
+    });
+
+    scroller.addEventListener("touchend", (e) => {
+      const endX = e.changedTouches[0].pageX;
+      const walk = startX - endX;
+      if (Math.abs(walk) > 50) {
+        const direction = walk > 0 ? 1 : -1;
+        const currentIndex = Math.round(scroller.scrollLeft / window.innerWidth);
+        const nextIndex = Math.max(0, Math.min(2, currentIndex + direction));
+        scrollToView(nextIndex);
+      }
+    });
+
+    scroller.addEventListener("scroll", () => {
+      const index = Math.round(scroller.scrollLeft / window.innerWidth);
+      updateNav(index);
+    });
+
+    // Helpers
+    function scrollToView(index) {
+      scroller.scrollTo({
+        left: index * window.innerWidth,
+        behavior: "smooth",
+      });
+      updateNav(index);
+    }
+
+    function updateNav(index) {
+      navItems.forEach((item, i) => {
+        item.classList.toggle("active", i === index);
+      });
+    }
+
+    // Handle viewport changes (orientation, resize) to keep widths aligned
+    window.addEventListener("resize", () => {
+      const currentIndex = Math.round(scroller.scrollLeft / window.innerWidth);
+      scrollToView(currentIndex);
+    });
+  </script>
 </body>
-</html>
-
+    </html>
