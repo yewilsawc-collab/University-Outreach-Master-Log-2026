@@ -1,118 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Academic Agent Pro | Yewilsaw Chanie</title>
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Academic Agent Pro | Yewilsaw Chanie</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="bg-dark text-light">
 
-  <div id="layer-public" class="container-fluid min-vh-100 d-flex flex-column">
-    <header class="p-4 d-flex justify-content-between align-items-center bg-blue shadow">
-      <h1 class="h3 text-gold m-0 fw-bold">ACADEMIC AGENT PRO</h1>
-      <button id="show-auth-ui" class="btn btn-gold shadow-sm">Enter Dashboard</button>
-    </header>
+    <div id="layer-public" class="container-fluid min-vh-100 d-flex flex-column">
+        <header class="p-4 d-flex justify-content-between align-items-center bg-blue shadow">
+            <h1 class="h4 text-gold m-0 fw-bold">ACADEMIC AGENT PRO</h1>
+            <button id="show-auth-ui" class="btn btn-gold shadow-sm">Enter Dashboard</button>
+        </header>
 
-    <main class="flex-grow-1 d-flex align-items-center justify-content-center p-4">
-      <div id="landing-content" class="text-center" style="max-width: 850px;">
-        <h2 class="display-4 fw-bold text-gold mb-2">Yewilsaw Chanie Mekonen</h2>
-        <h3 class="h5 text-secondary mb-4">Physical Chemistry Lecturer & PhD Applicant</h3>
-        <p class="lead text-light mb-5">
-          Specializing in <strong>Surface & Materials Chemistry</strong>. My research investigates the kinetics of adsorption of ionic liquids into mordenite, utilizing FT-IR, TGA, and MATLAB.
-        </p>
-        <div class="row text-start g-4 border-top border-gold pt-4">
-          <div class="col-md-6">
-            <h4 class="h6 text-gold">ACADEMIC GOAL</h4>
-            <p class="small text-muted">Securing a Ph.D. position for 2026 with a focus on interfacial phenomena and high-performance computing.</p>
-          </div>
-          <div class="col-md-6">
-            <h4 class="h6 text-gold">EXPERTISE</h4>
-            <p class="small text-muted">Kinetic modeling, material stability analysis, and professional chemistry education.</p>
-          </div>
+        <main class="flex-grow-1 d-flex align-items-center justify-content-center p-4">
+            <div id="landing-content" class="text-center" style="max-width: 850px;">
+                <h2 class="display-5 fw-bold text-gold mb-2">Yewilsaw Chanie Mekonen</h2>
+                <h3 class="h6 text-secondary mb-4">Physical Chemistry | Ph.D. Applicant 2026</h3>
+                <p class="lead text-light mb-4">
+                    Investigating the <strong>kinetics of adsorption of ionic liquids into mordenite</strong>. 
+                    Integrating experimental methods (FT-IR, TGA) with theoretical MATLAB modeling.
+                </p>
+            </div>
+
+            <div id="auth-container" class="card bg-dark border-gold p-4 d-none" style="width: 380px;">
+                <h3 class="h5 text-gold text-center mb-3">Secure Access</h3>
+                <input type="email" id="login-email" class="form-control mb-2 bg-black text-white" placeholder="Email">
+                <input type="password" id="login-password" class="form-control mb-3 bg-black text-white" placeholder="Password">
+                <button id="email-login-btn" class="btn btn-gold w-100 mb-2">Sign In (Full Access)</button>
+                <button id="guest-login-btn" class="btn btn-outline-gold w-100">Continue as Guest</button>
+                <button id="close-auth" class="btn btn-link text-muted btn-sm w-100 mt-2">Cancel</button>
+            </div>
+        </main>
+    </div>
+
+    <div id="layer-private" class="d-none">
+        <header class="p-3 border-bottom border-gold d-flex justify-content-between align-items-center bg-blue">
+            <span class="text-white fw-bold">RECRUITMENT WORKSPACE</span>
+            <button id="logout-btn" class="btn btn-sm btn-danger">Sign Out</button>
+        </header>
+
+        <nav class="nav nav-tabs bg-blue-light border-gold">
+            <button class="nav-link active" data-tab="log">LOG</button>
+            <button class="nav-link" data-tab="advisor">ADVISOR</button>
+            <button class="nav-link" data-tab="vault">VAULT</button>
+        </nav>
+
+        <main class="p-3">
+            <section id="tab-log" class="tab-content">
+                <div class="card bg-dark border-secondary p-3">
+                    <h4 class="h6 text-gold">Application Tracker</h4>
+                    <div id="log-display" class="small text-muted">No schools logged...</div>
+                </div>
+            </section>
+            
+            <section id="tab-advisor" class="tab-content d-none">
+                <div id="chat-log" class="bg-black border border-secondary p-3 mb-2" style="height:350px; overflow-y:auto;"></div>
+                <input type="text" id="chat-input" class="form-control bg-dark text-white" placeholder="Ask Gemini about mordenite...">
+            </section>
+
+            <section id="tab-vault" class="tab-content d-none">
+                <div class="card bg-dark p-3">
+                    <h4 class="h6 text-gold">Secure Documents</h4>
+                    <div id="vault-list" class="mt-2"></div>
+                </div>
+            </section>
+        </main>
+
+        <div class="d-flex justify-content-center gap-2 py-3 bg-dark">
+            <div class="dot active" data-target="log"></div>
+            <div class="dot" data-target="advisor"></div>
+            <div class="dot" data-target="vault"></div>
         </div>
-      </div>
+    </div>
 
-      <div id="auth-container" class="card bg-dark border-gold p-4 d-none" style="width: 380px;">
-        <h3 class="h5 text-gold text-center mb-4">Secure Access</h3>
-        
-        <div class="mb-3">
-          <input type="email" id="login-email" class="form-control mb-2 bg-black text-white" placeholder="Email">
-          <input type="password" id="login-password" class="form-control mb-3 bg-black text-white" placeholder="Password">
-          <button id="email-login-btn" class="btn btn-gold w-100">Sign In with Email</button>
-        </div>
-
-        <div class="text-center text-muted my-2 small">— OR —</div>
-
-        <button id="guest-login-btn" class="btn btn-outline-gold w-100 mb-3">Continue as Guest</button>
-        
-        <button id="close-auth" class="btn btn-link text-muted btn-sm w-100">Back to Profile</button>
-        <p id="auth-error" class="text-danger small mt-2 d-none text-center"></p>
-      </div>
-    </main>
-  </div>
-
-  <div id="layer-private" class="d-none">
-    <header class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center bg-blue">
-      <div class="d-flex align-items-center">
-        <div class="avatar-circle bg-gold text-blue fw-bold me-2 px-2 py-1 rounded-circle">Y</div>
-        <span class="text-white fw-bold">Academic Agent Pro Dashboard</span>
-      </div>
-      <div class="d-flex gap-2 align-items-center">
-        <button id="toggle-theme" class="btn btn-sm btn-outline-gold">🌙</button>
-        <button id="logout-btn" class="btn btn-sm btn-danger">Sign Out</button>
-      </div>
-    </header>
-
-   </nav>
-    <nav class="nav nav-tabs">
-  <button class="nav-link active" data-tab="log">LOG</button>
-  <button class="nav-link" data-tab="advisor">ADVISOR</button>
-  <button class="nav-link" data-tab="files">FILES</button>
-  <button class="nav-link" data-tab="vault">VAULT</button>
-  <button class="nav-link" data-tab="aud">AUD</button>
-</nav>
-
-<main>
-  <section id="tab-log" class="tab-content">LOG content here</section>
-  <section id="tab-advisor" class="tab-content d-none">ADVISOR content here</section>
-  <section id="tab-files" class="tab-content d-none">FILES content here</section>
-  <section id="tab-vault" class="tab-content d-none">VAULT content here</section>
-  <section id="tab-aud" class="tab-content d-none">AUD content here</section>
-</main>
-
-    <main class="p-3">
-      <section id="tab-log" class="tab-content">
-        <div class="card bg-dark border-secondary p-3 mb-3">
-          <h4 class="h6 text-gold">Application Tracker</h4>
-          <div class="d-flex gap-2">
-            <input type="text" id="school-input" class="form-control bg-black text-white" placeholder="e.g. NJIT Application">
-            <button id="save-school" class="btn btn-gold">Save</button>
-          </div>
-        </div>
-      </section>
-
-      <section id="tab-advisor" class="tab-content d-none">
-        <div id="chat-log" class="bg-black border border-secondary p-3 mb-2" style="height: 350px; overflow-y: auto;"></div>
-        <div class="input-group">
-          <input type="text" id="chat-input" class="form-control bg-dark text-white border-secondary" placeholder="Ask Gemini about mordenite...">
-          <button id="send-chat" class="btn btn-gold">Ask</button>
-        </div>
-      </section>
-
-      <section id="tab-files" class="tab-content d-none">
-        <div class="card bg-dark border-secondary p-3">
-          <h4 class="h6 text-gold">Upload Document (Signed Rec Letters)</h4>
-          <input type="file" id="file-chooser" class="form-control bg-dark text-white mb-2">
-          <button id="upload-doc-btn" class="btn btn-gold w-100">Upload to Storage</button>
-        </div>
-        <div id="vault-file-list" class="mt-3"></div>
-      </section>
-    </main>
-  </div>
-
-  <script type="module" src="js/firebase.js"></script>
-  <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/ui.js"></script>
 </body>
-  </html>
-  
+                  </html>
+                  
