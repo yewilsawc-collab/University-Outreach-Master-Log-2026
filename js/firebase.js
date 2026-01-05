@@ -1,8 +1,10 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "firebase/app";
+import { getAuth, signInAnonymously, signOut } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
   authDomain: "university-outreach-log.firebaseapp.com",
   projectId: "university-outreach-log",
   storageBucket: "university-outreach-log.firebasestorage.app",
@@ -13,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
-// Simple sign-in/out helpers
 export const signIn = () => signInAnonymously(auth);
 export const signOutUser = () => signOut(auth);
