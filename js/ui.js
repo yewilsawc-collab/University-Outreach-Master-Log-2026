@@ -1,37 +1,52 @@
-import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const auth = getAuth();
 
-// --- 1. SMART LAYER SWITCHER ---
+// --- THE LAYER SWITCHER ---
 onAuthStateChanged(auth, (user) => {
     const publicLayer = document.getElementById('layer-public');
     const privateLayer = document.getElementById('layer-private');
 
-    // Only switch to private if the user is authenticated 
-    // AND they didn't just land on the page for the first time
     if (user) {
         publicLayer.classList.add('d-none');
         privateLayer.classList.remove('d-none');
-        console.log("Authenticated session restored.");
+        
+        // Hide Vault from Guests for extra security
+        const vaultTab = document.querySelector('[data-tab="vault"]');
+        if (user.isAnonymous) {
+            vaultTab.classList.add('d-none');
+        } else {
+            vaultTab.classList.remove('d-none');
+        }
     } else {
         publicLayer.classList.remove('d-none');
         privateLayer.classList.add('d-none');
     }
 });
 
-// --- 2. THE TRIGGER (Requires User Action) ---
-document.getElementById('login-trigger').addEventListener('click', () => {
-    // Explicitly sign in only when the button is clicked
-    signInAnonymously(auth).then(() => {
-        console.log("Logged in as Guest");
-    });
+// --- AUTH UI TRIGGERS ---
+document.getElementById('show-auth-ui').addEventListener('click', () => {
+    document.getElementById('landing-content').classList.add('d-none');
+    document.getElementById('auth-container').classList.remove('d-none');
 });
 
-// --- 3. THE LOGOUT (Clears Persistent Session) ---
-document.getElementById('logout-btn').addEventListener('click', () => {
-    signOut(auth).then(() => {
-        // Force refresh to ensure all states are reset
-        window.location.reload();
-    });
+document.getElementById('close-auth').addEventListener('click', () => {
+    document.getElementById('landing-content').classList.remove('d-none');
+    document.getElementById('auth-container').classList.add('d-none');
 });
 
+// --- LOGIN METHODS ---
+document.getElementById('email-login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-password').value;
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+    } catch (err) {
+        alert("Login failed. Check your credentials.");
+    }
+});
+
+document.getElementById('guest-login-btn').addEventListener('click', () => signInAnonymously(auth));
+
+document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).then(() => window.location.reload()));
+    
