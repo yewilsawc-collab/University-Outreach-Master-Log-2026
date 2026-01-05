@@ -1,77 +1,75 @@
-import { auth, signIn, signOut } from "./firebase.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-let loginTriggered = false;
+const auth = getAuth();
+const tabOrder = ['log', 'advisor', 'files', 'vault']; 
 
-// Sign In / Guest Access
-document.getElementById("login-trigger").addEventListener("click", () => {
-  loginTriggered = true;
-  signIn();
+// --- 1. THE GATEKEEPER & INITIALIZATION ---
+onAuthStateChanged(auth, (user) => {
+    const publicLayer = document.getElementById('layer-public');
+    const privateLayer = document.getElementById('layer-private');
+
+    if (user) {
+        publicLayer.classList.add('d-none');
+        privateLayer.classList.remove('d-none');
+        
+        // Security Tier: Hide Vault from Guests
+        const vaultTab = document.querySelector('[data-tab="vault"]');
+        if (user.isAnonymous) {
+            vaultTab.style.display = 'none';
+        } else {
+            vaultTab.style.display = 'block';
+        }
+        switchTab('log'); // Default start
+    } else {
+        publicLayer.classList.remove('d-none');
+        privateLayer.classList.add('d-none');
+    }
 });
 
-// Sign Out
-document.getElementById("logout-btn").addEventListener("click", () => {
-  loginTriggered = false;
-  signOut();
-});
-
-// Auth State Listener
-auth.onAuthStateChanged((user) => {
-  if (!loginTriggered && !user?.isAnonymous) return;
-
-  const isLoggedIn = !!user;
-  document.getElementById("layer-public").classList.toggle("d-none", isLoggedIn);
-  document.getElementById("layer-private").classList.toggle("d-none", !isLoggedIn);
-
-  document.getElementById("user-display-name").textContent = user?.displayName || "Academic Agent Pro";
-  document.getElementById("auth-status-text").textContent = user?.isAnonymous ? "Guest Mode" : "Authenticated Mode";
-});
-
-// Theme Toggle
-document.getElementById("theme-toggle").addEventListener("click", () => {
-  const isDark = document.documentElement.classList.toggle("dark");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-});
-if (localStorage.getItem("theme") === "dark") {
-  document.documentElement.classList.add("dark");
+// --- 2. TAB & INDICATOR LOGIC ---
+function switchTab(tabId) {
+    // Update Buttons
+    document.querySelectorAll('.nav-link').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+    });
+    // Update Content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('d-none', content.id !== `tab-${tabId}`);
+    });
+    // Update Visual Indicator Dots
+    document.querySelectorAll('.dot').forEach(dot => {
+        dot.classList.toggle('active', dot.dataset.target === tabId);
+    });
 }
 
-// Swipe detection for tab navigation
-let touchStartX = 0;
-let touchEndX = 0;
+document.querySelectorAll('.nav-link').forEach(button => {
+    button.addEventListener('click', () => switchTab(button.dataset.tab));
+});
 
-function handleSwipe() {
-  const tabs = Array.from(document.querySelectorAll(".nav-link"));
-  const activeIndex = tabs.findIndex((t) => t.classList.contains("active"));
+// --- 3. SWIPE GESTURE MANAGER ---
+let touchstartX = 0;
+let touchendX = 0;
 
-  if (touchEndX < touchStartX - 50 && activeIndex < tabs.length - 1) {
-    // Swipe left → next tab
-    tabs[activeIndex + 1].click();
-  }
-  if (touchEndX > touchStartX + 50 && activeIndex > 0) {
-    // Swipe right → previous tab
-    tabs[activeIndex - 1].click();
-  }
+function handleGesture() {
+    const activeBtn = document.querySelector('.nav-link.active');
+    if (!activeBtn) return;
+    
+    const currentTab = activeBtn.dataset.tab;
+    let currentIndex = tabOrder.indexOf(currentTab);
+
+    // Swipe Left (Next Tab)
+    if (touchendX < touchstartX - 70) {
+        if (currentIndex < tabOrder.length - 1) switchTab(tabOrder[currentIndex + 1]);
+    }
+    // Swipe Right (Previous Tab)
+    if (touchendX > touchstartX + 70) {
+        if (currentIndex > 0) switchTab(tabOrder[currentIndex - 1]);
+    }
 }
 
-document.addEventListener("touchstart", (e) => {
-  touchStartX = e.changedTouches[0].screenX;
+document.getElementById('layer-private').addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
+document.getElementById('layer-private').addEventListener('touchend', e => {
+    touchendX = e.changedTouches[0].screenX;
+    handleGesture();
 });
 
-document.addEventListener("touchend", (e) => {
-  touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
-});
-// Tab switching logic
-document.querySelectorAll(".nav-link").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    // Remove active state from all tabs
-    document.querySelectorAll(".nav-link").forEach((b) => b.classList.remove("active"));
-    // Hide all tab contents
-    document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.add("d-none"));
-
-    // Activate clicked tab
-    btn.classList.add("active");
-    const targetId = `tab-${btn.dataset.tab}`;
-    document.getElementById(targetId)?.classList.remove("d-none");
-  });
-});
