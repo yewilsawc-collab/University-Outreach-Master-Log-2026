@@ -3,101 +3,111 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Academic Agent Pro | Yewilsaw Chanie</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Academic Agent Pro | Gateway</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+    .hidden { display: none; }
+  </style>
 </head>
-<body class="bg-dark text-light">
+<body class="bg-[#020617] text-slate-200 font-sans overflow-x-hidden">
 
-  <!-- Public Layer -->
-  <div id="layer-public" class="container">
-    <header class="header">
-      <h1>ACADEMIC AGENT PRO</h1>
-      <div>
-        <button id="emailLoginBtn">Sign in with Email</button>
-        <button id="guestLoginBtn">Continue as Guest</button>
+  <section id="public-layer" class="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+    <div class="max-w-3xl space-y-8 animate-in fade-in zoom-in duration-700">
+      <div class="inline-block px-4 py-1.5 mb-4 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-widest">
+        Next-Gen Ph.D. Admissions Command
       </div>
-    </header>
-
-    <main class="public-main">
-      <h2>Surface & Materials Chemistry</h2>
-      <p>
-        Investigating the structure, reactivity, and assembly mechanisms of materials—
-        building a foundation for advanced studies in interfacial phenomena.
+      
+      <h1 class="text-5xl md:text-7xl font-black tracking-tighter text-white leading-none">
+        ACADEMIC <span class="text-blue-500">AGENT</span> PRO
+      </h1>
+      
+      <p class="text-slate-400 text-lg md:text-xl max-w-xl mx-auto font-medium">
+        The centralized ecosystem for managing university logs, research narratives, and faculty outreach in one secure vault.
       </p>
-      <section>
-        <h3>RESEARCH FOCUS</h3>
-        <p>Kinetics of adsorption of ionic liquids into mordenite. Expertise in FT‑IR, TGA, and MATLAB.</p>
-      </section>
-      <section>
-        <h3>GOAL</h3>
-        <p>Integrating experimental chemistry with theoretical methods for a Ph.D. in Physical Chemistry (2026).</p>
-      </section>
-    </main>
-  </div>
 
-  <!-- Private Layer -->
-  <div id="layer-private" class="d-none">
-    <header class="header">
-      <h1 id="user-display-name">DASHBOARD</h1>
-      <div>
-        <button id="theme-toggle">🌙</button>
-        <button id="logoutBtn">Sign Out</button>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-8">
+        <div class="glass p-5 rounded-2xl text-left">
+          <div class="text-blue-400 font-black text-xs uppercase mb-2">01. University Log</div>
+          <p class="text-[11px] text-slate-400">Track R1 institutions, faculty interest, and application deadlines in real-time.</p>
+        </div>
+        <div class="glass p-5 rounded-2xl text-left">
+          <div class="text-indigo-400 font-black text-xs uppercase mb-2">02. Data Vault</div>
+          <p class="text-[11px] text-slate-400">Securely store research narratives, TGA/FT-IR data, and technical stacks.</p>
+        </div>
+        <div class="glass p-5 rounded-2xl text-left">
+          <div class="text-emerald-400 font-black text-xs uppercase mb-2">03. AI Advisor</div>
+          <p class="text-[11px] text-slate-400">Integrated assistant to help draft communications and organize your profile.</p>
+        </div>
       </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+        <button onclick="enterApp('guest')" class="px-8 py-4 bg-white text-black font-black uppercase text-xs rounded-xl hover:bg-blue-500 hover:text-white transition-all">
+          Explore as Guest
+        </button>
+        <button onclick="enterApp('auth')" class="px-8 py-4 border border-slate-700 font-black uppercase text-xs rounded-xl hover:bg-slate-800 transition-all">
+          Sign In with Email
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="app-layer" class="hidden min-h-screen flex flex-col">
+    <header class="p-4 border-b border-slate-800 flex justify-between items-center bg-[#0f172a]">
+      <span class="font-black text-xs tracking-widest text-blue-400">AGENT PRO / DASHBOARD</span>
+      <button onclick="location.reload()" class="text-[10px] text-slate-500 font-bold uppercase underline">Exit Session</button>
     </header>
 
-    <nav class="nav-tabs">
-      <button class="nav-link active" data-tab="log">LOG</button>
-      <button class="nav-link" data-tab="advisor">ADVISOR</button>
-      <button class="nav-link" data-tab="files">FILES</button>
-      <button class="nav-link" data-tab="vault">VAULT</button>
-      <button class="nav-link" data-tab="aud">AUD</button>
-    </nav>
+    <main class="flex-1 p-6 max-w-5xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-8 space-y-4">
+        <div class="flex justify-between items-end">
+          <h2 class="text-xl font-black tracking-tight">University Log</h2>
+          <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Active Entries</span>
+        </div>
+        <div class="glass min-h-[400px] rounded-3xl p-6 relative overflow-hidden">
+          <p class="text-slate-500 text-xs italic">No universities added yet. Use the command bar below.</p>
+        </div>
+      </div>
 
-    <main class="private-main">
-      <!-- LOG Tab -->
-      <section id="tab-log" class="tab-content">
-        <label>Add School Outreach</label>
-        <input type="text" id="school-input" placeholder="e.g., NJIT, Yale..." />
-        <button id="save-school">Save</button>
-        <div id="log-display">No schools logged yet...</div>
-      </section>
-
-      <!-- ADVISOR Tab -->
-      <section id="tab-advisor" class="tab-content d-none">
-        <textarea id="ai-input" placeholder="Ask Gemini about mordenite kinetics..."></textarea>
-        <button id="ask-ai">Generate Advice</button>
-        <div id="ai-response"></div>
-      </section>
-
-      <!-- FILES Tab -->
-      <section id="tab-files" class="tab-content d-none">
-        <h3>Academic Documents</h3>
-        <input type="file" id="file-input" />
-        <button id="upload-btn">Upload to Vault</button>
-        <div id="file-list"></div>
-      </section>
-
-      <!-- VAULT Tab -->
-      <section id="tab-vault" class="tab-content d-none">
-        <h3>Secure Vault</h3>
-        <p>Encrypted storage for sensitive academic documents and audit logs.</p>
-      </section>
-
-      <!-- AUD Tab -->
-      <section id="tab-aud" class="tab-content d-none">
-        <h3>Audit Trail</h3>
-        <ul id="audit-list">
-          <li>No activity yet...</li>
-        </ul>
-      </section>
+      <aside class="lg:col-span-4 space-y-6">
+        <div class="glass p-6 rounded-3xl border-blue-500/20">
+          <h3 class="text-xs font-black uppercase text-blue-400 mb-4 tracking-widest">Session Identity</h3>
+          <div id="session-type" class="text-sm font-bold">Authenticated as <span class="text-white">Guest</span></div>
+          <p class="text-[10px] text-slate-500 mt-2">Data will be cleared upon refresh in Guest Mode.</p>
+        </div>
+        
+        <div class="glass p-6 rounded-3xl">
+          <h3 class="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest">Data Vault</h3>
+          <ul class="text-[11px] space-y-2 text-slate-300">
+            <li class="flex items-center gap-2">● Research Narratives</li>
+            <li class="flex items-center gap-2">● CV / Publications</li>
+            <li class="flex items-center gap-2 text-slate-500 italic">● No documents uploaded</li>
+          </ul>
+        </div>
+      </aside>
     </main>
-  </div>
 
-  <footer class="footer">
-    <span>Status: <strong id="connection-status">Online</strong></span>
-    <p>© 2026 Academic Agent Pro</p>
-  </footer>
+    <footer class="p-4 bg-slate-900/50 backdrop-blur-md">
+      <div class="max-w-2xl mx-auto relative">
+        <input type="text" placeholder="Type 'add [University Name]' to update log..." class="w-full bg-slate-800 border border-slate-700 rounded-2xl py-4 px-6 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-2xl" />
+      </div>
+    </footer>
+  </section>
 
-  <script src="ui.js"></script>
+  <script>
+    function enterApp(mode) {
+      document.getElementById('public-layer').classList.add('hidden');
+      document.getElementById('app-layer').classList.remove('hidden');
+      
+      const sessionLabel = document.querySelector('#session-type span');
+      if (mode === 'auth') {
+        sessionLabel.innerText = "Authorized User";
+        sessionLabel.className = "text-blue-400";
+      } else {
+        sessionLabel.innerText = "Guest Voyager";
+      }
+    }
+  </script>
 </body>
-    </html>
+        </html>
+
