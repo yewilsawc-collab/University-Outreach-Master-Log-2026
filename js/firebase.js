@@ -11,5 +11,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 export const db = getFirestore(app);
 
+// Simple sign-in/out helpers
+export const signIn = () => signInAnonymously(auth);
+export const signOutUser = () => signOut(auth);
