@@ -1,54 +1,81 @@
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { auth, signIn, signOut } from "./firebase.js";
 
-const auth = getAuth();
-const tabOrder = ['log', 'advisor', 'vault'];
+let loginTriggered = false;
 
-// --- LAYER & TIERED ACCESS ---
-onAuthStateChanged(auth, (user) => {
-    const publicLayer = document.getElementById('layer-public');
-    const privateLayer = document.getElementById('layer-private');
-
-    if (user) {
-        publicLayer.classList.add('d-none');
-        privateLayer.classList.remove('d-none');
-        
-        // Tiered Access: Hide Vault for Guests
-        const vaultTab = document.querySelector('[data-tab="vault"]');
-        vaultTab.style.display = user.isAnonymous ? 'none' : 'block';
-        switchTab('log');
-    } else {
-        publicLayer.classList.remove('d-none');
-        privateLayer.classList.add('d-none');
-    }
+// Sign In / Guest Access
+document.getElementById("login-trigger").addEventListener("click", () => {
+  loginTriggered = true;
+  signIn();
 });
 
-// --- TAB & INDICATOR ENGINE ---
-function switchTab(tabId) {
-    document.querySelectorAll('.nav-link').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.toggle('d-none', content.id !== `tab-${tabId}`));
-    document.querySelectorAll('.dot').forEach(dot => dot.classList.toggle('active', dot.dataset.target === tabId));
+// Sign Out
+document.getElementById("logout-btn").addEventListener("click", () => {
+  loginTriggered = false;
+  signOut();
+});
+
+// Auth State Listener
+auth.onAuthStateChanged((user) => {
+  if (!loginTriggered && !user?.isAnonymous) return;
+
+  const isLoggedIn = !!user;
+  document.getElementById("layer-public").classList.toggle("d-none", isLoggedIn);
+  document.getElementById("layer-private").classList.toggle("d-none", !isLoggedIn);
+
+  document.getElementById("user-display-name").textContent =
+    user?.displayName || "Academic Agent Pro";
+  document.getElementById("auth-status-text").textContent =
+    user?.isAnonymous ? "Guest Mode" : "Authenticated Mode";
+});
+
+// Theme Toggle
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  const isDark = document.documentElement.classList.toggle("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+});
+if (localStorage.getItem("theme") === "dark") {
+  document.documentElement.classList.add("dark");
 }
 
-document.querySelectorAll('.nav-link').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+// Tab Switching
+document.querySelectorAll(".nav-link").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    // Remove active state from all buttons
+    document.querySelectorAll(".nav-link").forEach((b) => b.classList.remove("active"));
+    // Hide all tab contents
+    document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.add("d-none"));
 
-// --- SWIPE GESTURES ---
-let startX = 0;
-document.getElementById('layer-private').addEventListener('touchstart', e => startX = e.touches[0].clientX);
-document.getElementById('layer-private').addEventListener('touchend', e => {
-    let endX = e.changedTouches[0].clientX;
-    let currentIndex = tabOrder.indexOf(document.querySelector('.nav-link.active').dataset.tab);
-    if (startX - endX > 70 && currentIndex < tabOrder.length - 1) switchTab(tabOrder[currentIndex + 1]);
-    if (endX - startX > 70 && currentIndex > 0) switchTab(tabOrder[currentIndex - 1]);
+    // Activate clicked button
+    btn.classList.add("active");
+    const targetId = `tab-${btn.dataset.tab}`;
+    const targetSection = document.getElementById(targetId);
+    if (targetSection) targetSection.classList.remove("d-none");
+  });
 });
 
-// --- AUTH ACTIONS ---
-document.getElementById('show-auth-ui').addEventListener('click', () => {
-    document.getElementById('landing-content').classList.add('d-none');
-    document.getElementById('auth-container').classList.remove('d-none');
+// Swipe Navigation
+let touchStartX = 0;
+let touchEndX = 0;
+
+function handleSwipe() {
+  const tabs = Array.from(document.querySelectorAll(".nav-link"));
+  const activeIndex = tabs.findIndex((t) => t.classList.contains("active"));
+
+  if (touchEndX < touchStartX - 50 && activeIndex < tabs.length - 1) {
+    // Swipe left → next tab
+    tabs[activeIndex + 1].click();
+  }
+  if (touchEndX > touchStartX + 50 && activeIndex > 0) {
+    // Swipe right → previous tab
+    tabs[activeIndex - 1].click();
+  }
+}
+
+document.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
 });
-document.getElementById('email-login-btn').addEventListener('click', () => {
-    signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
+
+document.addEventListener("touchend", (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
 });
-document.getElementById('guest-login-btn').addEventListener('click', () => signInAnonymously(auth));
-document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).then(() => window.location.reload()));
-    
