@@ -44,3 +44,29 @@ document.querySelectorAll(".nav-link").forEach((btn) => {
     document.getElementById(`tab-${btn.dataset.tab}`).classList.remove("d-none");
   });
 });
+// Swipe detection for tab navigation
+let touchStartX = 0;
+let touchEndX = 0;
+
+function handleSwipe() {
+  const tabs = Array.from(document.querySelectorAll(".nav-link"));
+  const activeIndex = tabs.findIndex((t) => t.classList.contains("active"));
+
+  if (touchEndX < touchStartX - 50 && activeIndex < tabs.length - 1) {
+    // Swipe left → next tab
+    tabs[activeIndex + 1].click();
+  }
+  if (touchEndX > touchStartX + 50 && activeIndex > 0) {
+    // Swipe right → previous tab
+    tabs[activeIndex - 1].click();
+  }
+}
+
+document.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
