@@ -8,7 +8,6 @@
   />
   <title>Academic Agent Pro | Independent Build</title>
   <style>
-    /* CORE DESIGN SYSTEM (No Frameworks) */
     :root {
       --primary: #2563eb;
       --bg: #020617;
@@ -20,145 +19,102 @@
     }
 
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+      margin: 0; padding: 0; height: 100%;
       background-color: var(--bg);
       color: var(--text);
       font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow: hidden; /* prevent body scroll; app handles its own scrolls */
+      overflow: hidden; / app manages scroll internally /
     }
 
-    /* LAYER 1: PUBLIC */
+    / PUBLIC LAYER /
     #layer-public {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 2rem;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100vh; padding: 2rem;
       background: radial-gradient(circle at top right, #1e1b4b, var(--bg));
     }
 
     .hero-graphic {
-      width: 80px;
-      height: 80px;
-      background: var(--primary);
-      border-radius: 20px;
-      margin-bottom: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 2rem;
+      width: 80px; height: 80px; background: var(--primary);
+      border-radius: 20px; margin-bottom: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 2rem;
       box-shadow: 0 0 30px rgba(37, 99, 235, 0.4);
     }
 
     .login-card {
       background: var(--panel);
       border: 1px solid var(--border);
-      padding: 2.5rem;
-      border-radius: 30px;
-      width: 100%;
-      max-width: 360px;
+      padding: 2.5rem; border-radius: 30px;
+      width: 100%; max-width: 360px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
     .input-group { margin-bottom: 1.2rem; }
-
     label {
-      display: block;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-      color: var(--text-muted);
-      font-weight: 800;
+      display: block; font-size: 0.7rem; text-transform: uppercase;
+      margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 800;
     }
-
     input {
-      width: 100%;
-      background: #020617;
-      border: 1px solid var(--border);
-      padding: 1rem;
-      border-radius: 12px;
-      color: white;
-      outline: none;
-      box-sizing: border-box;
-      transition: border 0.3s;
+      width: 100%; background: #020617; border: 1px solid var(--border);
+      padding: 1rem; border-radius: 12px; color: white; outline: none;
+      box-sizing: border-box; transition: border 0.3s;
     }
     input:focus { border-color: var(--primary); }
 
     .btn-enter {
-      width: 100%;
-      padding: 1rem;
-      border: none;
-      border-radius: 12px;
-      background: var(--primary);
-      color: white;
-      font-weight: 900;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform 0.2s;
+      width: 100%; padding: 1rem; border: none; border-radius: 12px;
+      background: var(--primary); color: white; font-weight: 900;
+      text-transform: uppercase; cursor: pointer; transition: transform 0.2s;
     }
     .btn-enter:active { transform: scale(0.98); }
 
-    /* LAYER 2: APP DASHBOARD */
+    .guest-link {
+      text-align:center; font-size: 0.7rem; color: var(--text-muted);
+      margin-top: 1.5rem; cursor: pointer;
+    }
+
+    / APP DASHBOARD /
     #layer-app {
-      display: none; /* hidden until unlock */
-      height: 100vh;
-      flex-direction: column;
+      display: none; height: 100vh; flex-direction: column;
     }
 
     .nav-bar {
-      display: flex;
-      flex-direction: row;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: row; align-items: center;
+      gap: 0.5rem;
+      background: var(--panel); border-bottom: 1px solid var(--border);
       padding: 0 1rem;
     }
-
     .nav-item {
-      flex: 1;
-      padding: 1.2rem 0;
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      cursor: pointer;
-      user-select: none;
+      flex: 1; padding: 1.2rem 0; text-align: center;
+      font-size: 0.75rem; font-weight: uppercase;
+      color: var(--text-muted); cursor: pointer; user-select: none;
     }
-    .nav-item.active {
-      color: var(--primary);
-      border-bottom: 3px solid var(--primary);
+    .nav-item.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+    #logoutBtn {
+      flex: 0; padding: 0.8rem 1rem; border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--text); cursor: pointer;
+      background: #0b1223;
     }
+    #logoutBtn:hover { background: #0a1020; }
 
     .content-scroller {
-      flex: 1;
-      display: flex;
-      flex-direction: row;    /* arrange sections horizontally */
-      overflow-x: scroll;     /* enable horizontal scroll/swipe */
-      overflow-y: hidden;
+      flex: 1; display: flex; flex-direction: row;
+      overflow-x: scroll; overflow-y: hidden;
       scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch; /* smoother iOS scrolling */
+      -webkit-overflow-scrolling: touch;
     }
-
     .view-section {
-      flex: 0 0 100vw;        /* each section equals viewport width */
-      height: calc(100vh - 56px); /* approximate nav height; keeps content visible */
+      flex: 0 0 100vw; height: calc(100vh - 64px);
       scroll-snap-align: start;
-      padding: 2rem;
-      box-sizing: border-box;
+      padding: 2rem; box-sizing: border-box;
       overflow-y: auto;
     }
 
-    /* JAVA FEATURE GRAPHIC (Custom CSS) */
     .java-feature {
       border-left: 4px solid var(--java-accent);
       background: rgba(245, 158, 11, 0.05);
-      padding: 1.5rem;
-      border-radius: 0 20px 20px 0;
-      margin: 1rem 0;
+      padding: 1.5rem; border-radius: 0 20px 20px 0; margin: 1rem 0;
     }
 
     .hidden { display: none !important; }
@@ -166,7 +122,7 @@
 </head>
 <body>
 
-  <!-- PUBLIC LAYER -->
+  <!-- PUBLIC LOGIN -->
   <section id="layer-public">
     <div class="hero-graphic">A</div>
     <h1 style="margin-bottom: 0.5rem;">Academic Agent</h1>
@@ -184,31 +140,53 @@
         </div>
         <button type="submit" class="btn-enter">Unlock Dashboard</button>
       </form>
-      <p
-        id="guestLink"
-        style="text-align:center; font-size: 0.7rem; color: var(--text-muted); margin-top: 1.5rem; cursor: pointer;"
-      >
-        Continue as Guest
-      </p>
+      <p id="guestLink" class="guest-link">Continue as Guest</p>
     </div>
   </section>
 
-  <!-- APP LAYER -->
+  <!-- APP DASHBOARD -->
   <section id="layer-app">
     <nav class="nav-bar">
       <div class="nav-item active" data-index="0">Uni Log</div>
       <div class="nav-item" data-index="1">Data Vault</div>
       <div class="nav-item" data-index="2">Java Core</div>
+      <button id="logoutBtn">Logout</button>
     </nav>
 
     <div class="content-scroller" id="mainScroller">
+      <!-- University Log -->
       <div class="view-section" id="view-log">
         <h2 style="font-size: 1.8rem; font-weight: 900;">University Log</h2>
-        <div style="background: var(--panel); padding: 2rem; border-radius: 20px; border: 1px dashed var(--border);">
-          <p style="color: var(--text-muted);">No entries yet. Swipe left to manage research narratives.</p>
+
+        <div style="background: var(--panel); padding: 2rem; border-radius: 20px; border: 1px dashed var(--border); margin-bottom:1rem;">
+          <p style="color: var(--text-muted);">Add notes and files below. Swipe to switch tabs.</p>
         </div>
+
+        <!-- Input + Upload -->
+        <form id="logForm" style="display:flex; gap:0.5rem; flex-wrap: wrap;">
+          <input
+            type="text"
+            id="logInput"
+            placeholder="Write a note..."
+            style="flex:1 1 260px; padding:0.8rem; border-radius:12px; border:1px solid var(--border); background:#020617; color:white;"
+          />
+          <input
+            type="file"
+            id="logFile"
+            style="flex:1 1 220px; color:var(--text-muted);"
+          />
+          <button
+            type="submit"
+            style="padding:0.8rem 1.2rem; border:none; border-radius:12px; background:var(--primary); color:white; font-weight:700;"
+          >
+            Add
+          </button>
+        </form>
+
+        <div id="logEntries" style="margin-top:1rem;"></div>
       </div>
 
+      <!-- Data Vault -->
       <div class="view-section" id="view-vault">
         <h2 style="font-size: 1.8rem; font-weight: 900;">Data Vault</h2>
         <div class="java-feature">
@@ -217,6 +195,7 @@
         </div>
       </div>
 
+      <!-- Java Core -->
       <div class="view-section" id="view-java">
         <h2 style="font-size: 1.8rem; font-weight: 900;">Java Development</h2>
         <ul style="color: var(--text-muted); line-height: 1.8;">
@@ -235,8 +214,9 @@
     const scroller = document.getElementById("mainScroller");
     const navItems = document.querySelectorAll(".nav-item");
     const guestLink = document.getElementById("guestLink");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    // AUTH LOGIC
+    // Auth
     document.getElementById("authForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
@@ -246,8 +226,6 @@
         alert("Please enter both email and password.");
         return;
       }
-
-      // Replace with real auth (API/Firestore/etc.)
       unlockApp(email);
     });
 
@@ -256,13 +234,20 @@
     function unlockApp(user) {
       publicLayer.classList.add("hidden");
       appLayer.style.display = "flex";
-      console.log(`Session Started: ${user}`);
-      // Start at first tab
+      console.log(Session Started: ${user});
       scrollToView(0);
       updateNav(0);
     }
 
-    // NAV CLICK HANDLERS
+    // Logout
+    logoutBtn.addEventListener("click", () => {
+      appLayer.style.display = "none";
+      publicLayer.classList.remove("hidden");
+      document.getElementById("authForm").reset();
+      console.log("Session Ended");
+    });
+
+    // Nav handlers
     navItems.forEach((item) => {
       item.addEventListener("click", () => {
         const index = Number(item.getAttribute("data-index"));
@@ -270,7 +255,7 @@
       });
     });
 
-    // SWIPE / SCROLL SYNC
+    // Swipe / Scroll sync
     let startX = 0;
     scroller.addEventListener("touchstart", (e) => {
       startX = e.touches[0].pageX;
@@ -292,12 +277,8 @@
       updateNav(index);
     });
 
-    // Helpers
     function scrollToView(index) {
-      scroller.scrollTo({
-        left: index * window.innerWidth,
-        behavior: "smooth",
-      });
+      scroller.scrollTo({ left: index * window.innerWidth, behavior: "smooth" });
       updateNav(index);
     }
 
@@ -307,11 +288,39 @@
       });
     }
 
-    // Handle viewport changes (orientation, resize) to keep widths aligned
+    // Keep widths aligned on resize/orientation change
     window.addEventListener("resize", () => {
       const currentIndex = Math.round(scroller.scrollLeft / window.innerWidth);
       scrollToView(currentIndex);
     });
+
+    // University Log: input + upload
+    document.getElementById("logForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = document.getElementById("logInput").value.trim();
+      const file = document.getElementById("logFile").files[0];
+
+      if (!text && !file) {
+        alert("Please enter text or select a file.");
+        return;
+      }
+
+      const entryDiv = document.createElement("div");
+      entryDiv.style.margin = "0.5rem 0";
+      entryDiv.style.padding = "1rem";
+      entryDiv.style.background = "var(--panel)";
+      entryDiv.style.border = "1px solid var(--border)";
+      entryDiv.style.borderRadius = "12px";
+
+      entryDiv.innerHTML = `
+        ${text ? <p>${text}</p> : ""}
+        ${file ? <p style="color:var(--text-muted)">Uploaded: ${file.name}</p> : ""}
+      `;
+
+      document.getElementById("logEntries").appendChild(entryDiv);
+      document.getElementById("logForm").reset();
+    });
   </script>
 </body>
-  </html>
+</html>
+`
