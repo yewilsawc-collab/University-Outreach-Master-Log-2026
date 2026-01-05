@@ -1,52 +1,46 @@
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { auth, signIn, signOut } from "./firebase.js";
 
-const auth = getAuth();
+let loginTriggered = false;
 
-// --- THE LAYER SWITCHER ---
-onAuthStateChanged(auth, (user) => {
-    const publicLayer = document.getElementById('layer-public');
-    const privateLayer = document.getElementById('layer-private');
-
-    if (user) {
-        publicLayer.classList.add('d-none');
-        privateLayer.classList.remove('d-none');
-        
-        // Hide Vault from Guests for extra security
-        const vaultTab = document.querySelector('[data-tab="vault"]');
-        if (user.isAnonymous) {
-            vaultTab.classList.add('d-none');
-        } else {
-            vaultTab.classList.remove('d-none');
-        }
-    } else {
-        publicLayer.classList.remove('d-none');
-        privateLayer.classList.add('d-none');
-    }
+// Sign In / Guest Access
+document.getElementById("login-trigger").addEventListener("click", () => {
+  loginTriggered = true;
+  signIn();
 });
 
-// --- AUTH UI TRIGGERS ---
-document.getElementById('show-auth-ui').addEventListener('click', () => {
-    document.getElementById('landing-content').classList.add('d-none');
-    document.getElementById('auth-container').classList.remove('d-none');
+// Sign Out
+document.getElementById("logout-btn").addEventListener("click", () => {
+  loginTriggered = false;
+  signOut();
 });
 
-document.getElementById('close-auth').addEventListener('click', () => {
-    document.getElementById('landing-content').classList.remove('d-none');
-    document.getElementById('auth-container').classList.add('d-none');
+// Auth State Listener
+auth.onAuthStateChanged((user) => {
+  if (!loginTriggered && !user?.isAnonymous) return;
+
+  const isLoggedIn = !!user;
+  document.getElementById("layer-public").classList.toggle("d-none", isLoggedIn);
+  document.getElementById("layer-private").classList.toggle("d-none", !isLoggedIn);
+
+  document.getElementById("user-display-name").textContent = user?.displayName || "Academic Agent Pro";
+  document.getElementById("auth-status-text").textContent = user?.isAnonymous ? "Guest Mode" : "Authenticated Mode";
 });
 
-// --- LOGIN METHODS ---
-document.getElementById('email-login-btn').addEventListener('click', async () => {
-    const email = document.getElementById('login-email').value;
-    const pass = document.getElementById('login-password').value;
-    try {
-        await signInWithEmailAndPassword(auth, email, pass);
-    } catch (err) {
-        alert("Login failed. Check your credentials.");
-    }
+// Theme Toggle
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  const isDark = document.documentElement.classList.toggle("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
 });
+if (localStorage.getItem("theme") === "dark") {
+  document.documentElement.classList.add("dark");
+}
 
-document.getElementById('guest-login-btn').addEventListener('click', () => signInAnonymously(auth));
-
-document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).then(() => window.location.reload()));
-    
+// Tab Switching
+document.querySelectorAll(".nav-link").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".nav-link").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.add("d-none"));
+    btn.classList.add("active");
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.remove("d-none");
+  });
+});
