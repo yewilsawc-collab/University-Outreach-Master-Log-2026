@@ -6,3 +6,11 @@ service cloud.firestore {
     }
   }
 }
+match /conversations/{convoId} {
+  // Only users in the participants array can read or write to this chat
+  allow read, write: if request.auth.uid in resource.data.participants;
+  
+  match /messages/{messageId} {
+    allow read, write: if request.auth.uid in get(/databases/$(database)/documents/conversations/$(convoId)).data.participants;
+  }
+}
