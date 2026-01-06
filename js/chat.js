@@ -68,3 +68,40 @@ function getConversationID(uid1, uid2) {
     return [uid1, uid2].sort().join('_');
         }
                                                    
+
+// Helper: Ensure a consistent ID for two users
+const getRoomId = (uid1, uid2) => [uid1, uid2].sort().join("_");
+
+// 1. Send a private message
+export async function sendPrivateMessage(recipientUid, text) {
+    const roomId = getRoomId(currentUser.uid, recipientUid);
+    
+    // Add message to sub-collection
+    await addDoc(collection(db, "conversations", roomId, "messages"), {
+        senderId: currentUser.uid,
+        text: text,
+        timestamp: serverTimestamp()
+    });
+
+    // Update parent doc for Inbox preview
+    await setDoc(doc(db, "conversations", roomId), {
+        participants: [currentUser.uid, recipientUid],
+        lastMessage: text,
+        lastUpdate: serverTimestamp()
+    }, { merge: true });
+}
+
+// 2. Load the Inbox list
+export function loadInbox(callback) {
+    const q = query(
+        collection(db, "conversations"), 
+        where("participants", "array-contains", currentUser.uid),
+        orderBy("lastUpdate", "desc")
+    );
+
+    onSnapshot(q, (snapshot) => {
+        const convos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(convos);
+    });
+}
+    
