@@ -2,43 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Academic Social Network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elementa | Universal Social Ecosystem</title>
+    
+    <meta name="description" content="Elementa: A universal social media platform for academic and professional networking.">
+    <meta property="og:title" content="Elementa Social Network">
+    <meta property="og:image" content="/assets/icon-512.png">
+    <meta name="theme-color" content="#0a2540">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style (2).css"> <link rel="stylesheet" href="base.css">
+    
+    <link rel="manifest" href="manifest.webmanifest">
 </head>
-<body>
-    <header><h1>Academic Portal</h1></header>
-    <nav>
-        <button onclick="showSection('profile')">Profile</button>
-        <button onclick="showSection('feed')">Feed</button>
-        <button onclick="showSection('chat')">Chat</button>
-        <button id="toggle-theme">🌓</button>
+<body class="bg-[#0f172a] text-slate-100 font-sans min-h-screen flex flex-col overflow-x-hidden">
+
+    <header class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-md border-b border-white/10 p-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-[#f1c40f] rounded-lg flex items-center justify-center font-bold text-black">E</div>
+            <h1 class="text-xl font-bold tracking-tight">Elementa</h1>
+        </div>
+        <nav class="hidden md:flex gap-6 text-sm font-medium">
+            <a href="#" onclick="showSection('feed')" class="hover:text-[#f1c40f]">Feed</a>
+            <a href="#" onclick="showSection('chat')" class="hover:text-[#f1c40f]">Messages</a>
+            <a href="#" onclick="showSection('vault')" class="hover:text-[#f1c40f]">Data Vault</a>
+        </nav>
+        <div id="user-display" class="text-xs text-slate-400">Connecting...</div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        
+        <aside class="hidden lg:flex flex-col w-64 border-r border-white/10 p-6 space-y-8">
+            <section>
+                <h3 class="text-xs uppercase text-slate-500 font-bold mb-4">Network</h3>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3 cursor-pointer hover:text-[#f1c40f]">
+                        <span>🏠</span> Home Feed
+                    </li>
+                    <li class="flex items-center gap-3 cursor-pointer hover:text-[#f1c40f]">
+                        <span>📨</span> Private Inbox
+                    </li>
+                </ul>
+            </section>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto no-scrollbar pb-20">
+            
+            <section id="feed-section" class="tab-content active p-4 max-w-2xl mx-auto">
+                <div class="post-card mb-6"> <textarea id="post-input" placeholder="What's your research update?" class="w-full bg-transparent border-none focus:ring-0 text-lg"></textarea>
+                    <div class="flex justify-between mt-4">
+                        <button id="ai-draft-btn" class="text-xs bg-white/5 px-3 py-1 rounded-full border border-white/10 hover:bg-white/10">✨ AI Draft</button>
+                        <button id="share-btn" class="bg-[#f1c40f] text-black px-4 py-1 rounded-full font-bold text-sm">Post</button>
+                    </div>
+                </div>
+                <div id="social-feed" class="space-y-4">
+                    </div>
+            </section>
+
+            <section id="chat-section" class="tab-content hidden h-full flex flex-col">
+                <div id="chat-log" class="flex-1 p-4 space-y-4 overflow-y-auto">
+                    </div>
+                <footer class="p-4 border-t border-white/10">
+                    <div class="flex gap-2 bg-white/5 p-2 rounded-2xl border border-white/10">
+                        <input id="chat-input" type="text" placeholder="Message..." class="flex-1 bg-transparent px-2 outline-none">
+                        <button onclick="sendUserMessage(document.getElementById('chat-input').value)" class="bg-[#f1c40f] text-black p-2 rounded-xl">Send</button>
+                    </div>
+                </footer>
+            </section>
+
+        </main>
+    </div>
+
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#0f172a]/90 backdrop-blur-lg border-t border-white/10 flex justify-around p-4 text-2xl">
+        <button onclick="showSection('feed')">🏠</button>
+        <button onclick="showSection('chat')">💬</button>
+        <button onclick="showSection('vault')">📂</button>
+        <button onclick="showSection('profile')">👤</button>
     </nav>
 
-    <main id="main-content">
-        <section id="profile-section">
-            <div id="profile-display" class="user-message" style="align-self: center; width: 80%;"></div>
-        </section>
-
-        <section id="feed-section" style="display:none;">
-            <div id="social-feed" class="chat-log" style="height: 400px; overflow-y: auto;"></div>
-            <div class="input-area">
-                <input type="text" id="post-input" placeholder="What's your research update?">
-                <button id="ai-draft-btn">AI Draft</button>
-                <button id="share-btn">Post</button>
-            </div>
-        </section>
-
-        <section id="chat-section" style="display:none;">
-            <div id="chat-log"></div>
-            <div class="input-area">
-                <input type="text" id="chat-input" placeholder="Message Gemini...">
-                <button id="send-btn">Send</button>
-            </div>
-        </section>
-    </main>
-
+    <script id="firebase-config" type="application/json">
+        { "apiKey": "YOUR_KEY", "authDomain": "...", "projectId": "..." }
+    </script>
+    <script type="module" src="ui (5).js"></script>
     <script type="module" src="app.js"></script>
-    <script src="ui.js"></script>
 </body>
-  </html>
+</html>
 
