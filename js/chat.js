@@ -3,6 +3,27 @@
 
 import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getGeminiResponse } from "./ai.js";  // Gemini integration
+import { db } from "./firebase.js";
+import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
+
+async function sendPrivateMessage(recipientId, text) {
+    const convoId = getConversationID(currentUser.uid, recipientId);
+    const messagesRef = collection(db, "conversations", convoId, "messages");
+
+    // 1. Add the message to the sub-collection
+    await addDoc(messagesRef, {
+        senderId: currentUser.uid,
+        text: text,
+        timestamp: serverTimestamp()
+    });
+
+    // 2. Update the parent conversation for the "Inbox" view
+    await updateDoc(doc(db, "conversations", convoId), {
+        lastMessage: text,
+        updatedAt: serverTimestamp(),
+        participants: [currentUser.uid, recipientId]
+    });
+                       }
 
 // Initialize Realtime Database
 const db = getDatabase();
@@ -43,3 +64,7 @@ function renderMessageToScreen(text, sender, timestamp) {
     container.appendChild(messageEl);
     container.scrollTop = container.scrollHeight; // auto-scroll
       }
+function getConversationID(uid1, uid2) {
+    return [uid1, uid2].sort().join('_');
+        }
+                                                   
