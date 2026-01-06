@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0f172a] text-white">
+    <div class="flex h-screen">
+        <nav class="w-64 border-r border-white/10 p-6 flex flex-col gap-4">
+            <a href="feed.html" class="text-[#f1c40f] font-bold">🏠 Stream</a>
+            <a href="messages.html" class="hover:text-[#f1c40f]">💬 Neural Link</a>
+            <a href="vault.html" class="hover:text-[#f1c40f]">📂 Data Vault</a>
+        </nav>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="glass p-6 rounded-3xl mb-8">
+                    <textarea id="post-input" placeholder="What's happening in the ecosystem?" class="w-full bg-transparent border-none outline-none text-lg resize-none h-20"></textarea>
+                    <div class="flex justify-between items-center border-t border-white/5 pt-4">
+                        <input type="file" id="media-upload" class="hidden" multiple>
+                        <button onclick="document.getElementById('media-upload').click()">🖼️ Media</button>
+                        <button class="bg-[#f1c40f] text-black px-8 py-2 rounded-full font-bold">Post</button>
+                    </div>
+                </div>
+                <div id="social-stream" class="space-y-6"></div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
