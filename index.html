@@ -3,87 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elementa | Universal Social Ecosystem</title>
+    <title>Elementa | Universal Social Media</title>
     
-    <meta name="description" content="Elementa: A universal social media platform for academic and professional networking.">
-    <meta property="og:title" content="Elementa Social Network">
-    <meta property="og:image" content="/assets/icon-512.png">
-    <meta name="theme-color" content="#0a2540">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style (2).css"> <link rel="stylesheet" href="base.css">
-    
+    <script src=""></script>
     <link rel="manifest" href="manifest.webmanifest">
+
+    <style>
+        :root {
+            --primary: #f1c40f;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+        body {
+            background-color: var(--bg-dark);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: flex; }
+        .glass { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
 </head>
-<body class="bg-[#0f172a] text-slate-100 font-sans min-h-screen flex flex-col overflow-x-hidden">
+<body class="bg-[#0f172a] text-slate-100 font-sans min-h-screen flex flex-col">
 
     <header class="sticky top-0 z-50 bg-[#0f172a]/80 backdrop-blur-md border-b border-white/10 p-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-[#f1c40f] rounded-lg flex items-center justify-center font-bold text-black">E</div>
-            <h1 class="text-xl font-bold tracking-tight">Elementa</h1>
+            <div class="w-10 h-10 bg-[#f1c40f] rounded-xl flex items-center justify-center font-black text-black text-xl shadow-[0_0_15px_rgba(241,196,15,0.3)]">E</div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight">Elementa</h1>
+                <p id="user-status" class="text-[10px] text-slate-400">Connect</p>
+            </div>
         </div>
-        <nav class="hidden md:flex gap-6 text-sm font-medium">
-            <a href="#" onclick="showSection('feed')" class="hover:text-[#f1c40f]">Feed</a>
-            <a href="#" onclick="showSection('chat')" class="hover:text-[#f1c40f]">Messages</a>
-            <a href="#" onclick="showSection('vault')" class="hover:text-[#f1c40f]">Data Vault</a>
-        </nav>
-        <div id="user-display" class="text-xs text-slate-400">Connecting...</div>
+        <div class="flex gap-2">
+            <button onclick="toggleModal('auth-modal')" class="text-xs font-bold bg-white/10 px-4 py-2 rounded-full hover:bg-white/20">Sign In</button>
+        </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
-        
-        <aside class="hidden lg:flex flex-col w-64 border-r border-white/10 p-6 space-y-8">
-            <section>
-                <h3 class="text-xs uppercase text-slate-500 font-bold mb-4">Network</h3>
-                <ul class="space-y-4">
-                    <li class="flex items-center gap-3 cursor-pointer hover:text-[#f1c40f]">
-                        <span>🏠</span> Home Feed
-                    </li>
-                    <li class="flex items-center gap-3 cursor-pointer hover:text-[#f1c40f]">
-                        <span>📨</span> Private Inbox
-                    </li>
-                </ul>
-            </section>
+        <aside class="hidden md:flex flex-col w-64 border-r border-white/10 p-6 gap-6">
+            <nav class="space-y-2">
+                <button onclick="showSection('feed')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3">🏠 <span class="font-medium">Feed</span></button>
+                <button onclick="showSection('chat')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3">💬 <span class="font-medium">Messages</span></button>
+                <button onclick="showSection('vault')" class="w-full text-left px-4 py-3 rounded-xl hover:bg-white/5 transition-all flex items-center gap-3">📂 <span class="font-medium">Data Vault</span></button>
+            </nav>
         </aside>
 
-        <main class="flex-1 overflow-y-auto no-scrollbar pb-20">
+        <main class="flex-1 overflow-y-auto pb-24 md:pb-0">
             
-            <section id="feed-section" class="tab-content active p-4 max-w-2xl mx-auto">
-                <div class="post-card mb-6"> <textarea id="post-input" placeholder="What's your research update?" class="w-full bg-transparent border-none focus:ring-0 text-lg"></textarea>
-                    <div class="flex justify-between mt-4">
-                        <button id="ai-draft-btn" class="text-xs bg-white/5 px-3 py-1 rounded-full border border-white/10 hover:bg-white/10">✨ AI Draft</button>
-                        <button id="share-btn" class="bg-[#f1c40f] text-black px-4 py-1 rounded-full font-bold text-sm">Post</button>
+            <section id="feed-section" class="tab-content active p-4 max-w-2xl mx-auto flex-col">
+                <div class="glass p-4 rounded-2xl mb-6">
+                    <textarea id="post-input" placeholder="Share your latest research findings..." class="w-full bg-transparent border-none focus:ring-0 text-slate-100 h-24 resize-none"></textarea>
+                    <div id="media-preview" class="hidden grid grid-cols-2 gap-2 mb-3"></div>
+                    <div class="flex justify-between items-center border-t border-white/10 pt-4">
+                        <div class="flex gap-4">
+                            <input type="file" id="media-input" class="hidden" accept="image/*,video/*" multiple onchange="handleMediaSelect(event)">
+                            <button onclick="document.getElementById('media-input').click()" class="text-slate-400 hover:text-[#f1c40f]">🖼️ Media</button>
+                        </div>
+                        <button onclick="uploadAndPost()" class="bg-[#f1c40f] text-black px-6 py-2 rounded-full font-bold">Post</button>
                     </div>
                 </div>
-                <div id="social-feed" class="space-y-4">
-                    </div>
+                <div id="social-feed" class="space-y-4"></div>
             </section>
 
-            <section id="chat-section" class="tab-content hidden h-full flex flex-col">
-                <div id="chat-log" class="flex-1 p-4 space-y-4 overflow-y-auto">
-                    </div>
-                <footer class="p-4 border-t border-white/10">
-                    <div class="flex gap-2 bg-white/5 p-2 rounded-2xl border border-white/10">
-                        <input id="chat-input" type="text" placeholder="Message..." class="flex-1 bg-transparent px-2 outline-none">
-                        <button onclick="sendUserMessage(document.getElementById('chat-input').value)" class="bg-[#f1c40f] text-black p-2 rounded-xl">Send</button>
-                    </div>
-                </footer>
+            <section id="chat-section" class="tab-content hidden h-full flex-col">
+                <div id="chat-log" class="flex-1 p-4 space-y-4 overflow-y-auto"></div>
+                <div class="p-4 glass m-4 rounded-2xl flex gap-2">
+                    <input id="chat-input" type="text" placeholder="Message colleagues..." class="flex-1 bg-transparent outline-none">
+                    <button onclick="sendMessage()" class="bg-[#f1c40f] text-black px-4 py-2 rounded-xl font-bold">Send</button>
+                </div>
             </section>
 
         </main>
     </div>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#0f172a]/90 backdrop-blur-lg border-t border-white/10 flex justify-around p-4 text-2xl">
-        <button onclick="showSection('feed')">🏠</button>
-        <button onclick="showSection('chat')">💬</button>
-        <button onclick="showSection('vault')">📂</button>
-        <button onclick="showSection('profile')">👤</button>
-    </nav>
+    <div id="auth-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-[#1e293b] p-8 rounded-2xl border border-white/10 w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6 text-[#f1c40f]">Sign In</h2>
+            <input type="email" id="auth-email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mb-4 outline-none">
+            <input type="password" id="auth-password" placeholder="Password" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mb-6 outline-none">
+            <button onclick="handleAuth()" class="w-full bg-[#f1c40f] text-black font-bold py-3 rounded-lg">Proceed</button>
+            <button onclick="toggleModal('auth-modal')" class="mt-4 text-sm text-slate-400 w-full">Cancel</button>
+        </div>
+    </div>
 
-    <script id="firebase-config" type="application/json">
-        { "apiKey": "YOUR_KEY", "authDomain": "...", "projectId": "..." }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js";
+
+        // CONFIG: Replace with your actual Firebase project keys
+        const firebaseConfig = {
+            apiKey: "YOUR_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- AUTH LOGIC ---
+        window.handleAuth = async () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                toggleModal('auth-modal');
+            } catch (e) {
+                await signInWithEmailAndPassword(auth, email, password);
+                toggleModal('auth-modal');
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            document.getElementById('user-status').textContent = user ? `Logged in: ${user.email}` : "Guest Researcher";
+        });
+
+        // --- NAVIGATION ---
+        window.showSection = (sectionId) => {
+            document.querySelectorAll('.tab-content').forEach(s => s.classList.remove('active'));
+            document.getElementById(`${sectionId}-section`).classList.add('active');
+        };
+
+        window.toggleModal = (id) => document.getElementById(id).classList.toggle('hidden');
+
+        // --- POSTING LOGIC ---
+        let selectedFiles = [];
+        window.handleMediaSelect = (e) => {
+            selectedFiles = Array.from(e.target.files);
+            const preview = document.getElementById('media-preview');
+            preview.innerHTML = '';
+            preview.classList.remove('hidden');
+            selectedFiles.forEach(f => {
+                const url = URL.createObjectURL(f);
+                preview.innerHTML += f.type.startsWith('image') ? `<img src="${url}" class="h-20 rounded-lg">` : `<video src="${url}" class="h-20 rounded-lg">`;
+            });
+        };
+
+        window.uploadAndPost = async () => {
+            const text = document.getElementById('post-input').value;
+            if(!text && selectedFiles.length === 0) return;
+            
+            const urls = await Promise.all(selectedFiles.map(async f => {
+                const r = ref(storage, `posts/${Date.now()}_${f.name}`);
+                await uploadBytes(r, f);
+                return getDownloadURL(r);
+            }));
+
+            await addDoc(collection(db, "posts"), { 
+                content: text, 
+                media: urls, 
+                author: auth.currentUser?.email, 
+                createdAt: serverTimestamp() 
+            });
+            
+            document.getElementById('post-input').value = '';
+            document.getElementById('media-preview').classList.add('hidden');
+            selectedFiles = [];
+        };
+
+        // --- CHAT LOGIC ---
+        window.sendMessage = async () => {
+            const input = document.getElementById('chat-input');
+            if(!input.value || !auth.currentUser) return;
+            await addDoc(collection(db, "messages"), {
+                text: input.value,
+                email: auth.currentUser.email,
+                createdAt: serverTimestamp()
+            });
+            input.value = '';
+        };
+
+        // Real-time Chat Sync
+        onSnapshot(query(collection(db, "messages"), orderBy("createdAt", "asc")), (snap) => {
+            const log = document.getElementById('chat-log');
+            log.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                log.innerHTML += `<div class="p-3 glass rounded-xl self-start max-w-sm">
+                    <p class="text-[10px] text-amber-400 font-bold">${d.email}</p>
+                    <p class="text-sm">${d.text}</p>
+                </div>`;
+            });
+            log.scrollTop = log.scrollHeight;
+        });
     </script>
-    <script type="module" src="ui (5).js"></script>
-    <script type="module" src="app.js"></script>
 </body>
 </html>
+
