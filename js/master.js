@@ -45,3 +45,42 @@ export function initNavigation() {
         });
     }
         }
+// js/master.js
+
+export function initNavigation() {
+    // 1. Inject Loader HTML
+    const loaderHTML = `
+    <div id="loader-overlay">
+        <div class="node-pulse">E</div>
+        <div class="loader-text tracking-widest animate-pulse">Node Connecting...</div>
+    </div>
+    `;
+    document.body.insertAdjacentHTML('afterbegin', loaderHTML);
+
+    // 2. Navigation Bar HTML (Previous turn logic included)
+    const navHTML = `
+    <div class="neural-glow" id="glow"></div>
+    <aside class="elementa-glass w-full md:w-64 h-16 md:h-[95vh] fixed bottom-0 md:top-[2.5vh] md:left-4 z-[100] md:rounded-3xl flex md:flex-row md:flex-col items-center justify-around md:justify-start p-2 md:p-4">
+        </aside>
+    `;
+
+    const navContainer = document.getElementById('global-nav');
+    if (navContainer) navContainer.innerHTML = navHTML;
+
+    // 3. Handle Loader Removal
+    window.addEventListener('load', () => {
+        const loader = document.getElementById('loader-overlay');
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+        }, 300); // Small delay to ensure smooth transition
+    });
+
+    // 4. Neural Glow for Android Touch
+    const glow = document.getElementById('glow');
+    document.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        glow.style.transform = `translate(${touch.clientX - 150}px, ${touch.clientY - 150}px)`;
+    });
+                            }
+                              
