@@ -18,3 +18,13 @@ export function listenToFeed(callback) {
         callback(posts);
     });
 }
+
+import { getGeminiResponse } from "./ai.js";
+
+async function handleNewPost(text) {
+    // Optional: Use Gemini to suggest hashtags or check for helpfulness
+    const aiSuggestion = await getGeminiResponse(`Suggest 3 academic hashtags for: ${text}`);
+    console.log("AI Tags:", aiSuggestion);
+    
+    await sharePost(`${text} \n\n ${aiSuggestion}`);
+}
