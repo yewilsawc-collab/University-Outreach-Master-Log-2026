@@ -71,7 +71,34 @@ function getConversationID(uid1, uid2) {
 
 // Helper: Ensure a consistent ID for two users
 const getRoomId = (uid1, uid2) => [uid1, uid2].sort().join("_");
+const Haptics = {
+  // Light pulse for successful message sent
+  success: () => {
+    if ("vibrate" in navigator) navigator.vibrate(40);
+  },
+  
+  // Double pulse for receiving a 1-on-1 message
+  notification: () => {
+    if ("vibrate" in navigator) navigator.vibrate([50, 30, 50]);
+  },
+  
+  // Warning pulse for a failed Gemini request or upload error
+  error: () => {
+    if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
+  }
+};
 
+// Example usage in your existing chat logic
+export async function sendUserMessage(text) {
+    await push(chatRef, { sender: "Yewilsaw", text, timestamp: Date.now() });
+    
+    // Trigger haptic pulse on success
+    Haptics.success();
+    
+    const reply = await getGeminiResponse(text);
+    // ... rest of logic
+    }
+        
 // 1. Send a private message
 export async function sendPrivateMessage(recipientUid, text) {
     const roomId = getRoomId(currentUser.uid, recipientUid);
