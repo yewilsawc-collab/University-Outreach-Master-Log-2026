@@ -1,135 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Academic Agent Pro</title>
-
-  <!-- UI -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-
-  <!-- Firebase config: replace with your own if needed -->
-  <script id="firebase-config" type="application/json">
-  {
-    "apiKey": "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
-    "authDomain": "university-outreach-log.firebaseapp.com",
-    "projectId": "university-outreach-log",
-    "storageBucket": "university-outreach-log.firebasestorage.app",
-    "messagingSenderId": "566149647802",
-    "appId": "1:566149647802:web:490c7cc3d10b7cd7732183"
-  }
-  </script>
-</head>
-<body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans overflow-x-hidden">
-
-  <!-- Header -->
-  <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-        <span class="font-black text-white text-lg">Y</span>
-      </div>
-      <div>
-        <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Academic Agent Pro</h1>
-        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Initializing...</p>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 Schools</div>
-      <button id="logout-btn" onclick="window.processLogout()" class="hidden bg-red-900/20 border border-red-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Logout</button>
-    </div>
-  </header>
-
-  <!-- Tabs -->
-  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
-    <button onclick="window.switchTab('log')" id="tab-log"
-            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">
-      University Log
-    </button>
-    <button onclick="window.switchTab('chat')" id="tab-chat"
-            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
-      AI Advisor
-    </button>
-    <button onclick="window.switchTab('vault')" id="tab-vault"
-            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
-      Data Vault
-    </button>
-    <button onclick="window.switchTab('accounts')" id="tab-accounts"
-            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
-      Accounts
-    </button>
+<body>
+  <nav>
+    <button id="btn-feed-view" onclick="switchTab('feed-view')">FEED</button>
+    <button id="btn-ai-view" onclick="switchTab('ai-view')">AI COMPOSER</button>
   </nav>
 
-  <!-- Main: swipe zone -->
-  <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
-
-    <!-- University log -->
-    <div id="log-view" class="space-y-4">
-      <div id="uni-list" class="grid grid-cols-1 gap-3"></div>
+  <main id="swipe-zone">
+    <div id="feed-view" class="tab-content active">
+      <div id="social-feed-container"></div>
     </div>
 
-    <!-- Chat -->
-    <div id="chat-view" class="hidden">
-      <div id="chat-container" class="space-y-4 mb-8 min-h-[60vh]"></div>
-    </div>
-
-    <!-- Vault -->
-    <div id="vault-view" class="hidden space-y-4">
-      <div class="bg-blue-600/10 border border-blue-500/30 p-4 rounded-2xl mb-4">
-        <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Vault editor</h2>
-        <p class="text-[9px] text-slate-400 leading-tight">Update your core research profile. These details support SOP drafts and portal fills.</p>
-      </div>
-      <div id="vault-editor" class="space-y-4"></div>
-      <button onclick="window.saveVault()"
-              class="w-full py-3 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-blue-500/20">
-        Update master profile
-      </button>
-    </div>
-
-    <!-- Accounts -->
-    <div id="accounts-view" class="hidden space-y-6">
-      <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50">
-        <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4 text-center">Add or switch account</h2>
-        <div class="space-y-4">
-          <input id="identity-email" type="email" placeholder="Email address"
-                 class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
-          <input id="identity-pass" type="password" placeholder="Password"
-                 class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
-          <div class="flex gap-2">
-            <button onclick="window.processAuth()" class="flex-1 bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/20">
-              Sign in / Switch
-            </button>
-            <button onclick="window.processSignUp()" class="flex-1 bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">
-              Create new
-            </button>
-          </div>
-        </div>
-      </div>
-      <div id="account-status" class="text-center p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-        <p class="text-[9px] text-emerald-400 font-bold uppercase">Current secure session active</p>
-      </div>
+    <div id="ai-view" class="tab-content">
+      <textarea id="ai-input" placeholder="What's on your mind?"></textarea>
+      <button onclick="handleGeminiDraft()">Draft with Gemini</button>
     </div>
   </main>
-
-  <!-- Footer: chat composer -->
-  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
-    <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
-      <input type="file" id="chat-file" class="hidden" multiple />
-      <button type="button"
-              onclick="document.getElementById('chat-file').click()"
-              class="bg-slate-800/80 border border-slate-700 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 text-xl font-bold shadow-xl">+</button>
-      <div class="relative flex-1">
-        <input id="chat-input" type="text" autocomplete="off"
-               placeholder="Add school (e.g., 'add Yale') or message..."
-               class="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none" />
-        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
-          ➤
-        </button>
-      </div>
-    </form>
-    </footer>
-  </script>
 </body>
-</html>
+
+
