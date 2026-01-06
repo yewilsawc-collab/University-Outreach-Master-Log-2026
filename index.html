@@ -1,19 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Academic Social Network</title>
+</head>
 <body>
-  <nav>
-    <button id="btn-feed-view" onclick="switchTab('feed-view')">FEED</button>
-    <button id="btn-ai-view" onclick="switchTab('ai-view')">AI COMPOSER</button>
-  </nav>
+    <header><h1>Academic Portal</h1></header>
+    <nav>
+        <button onclick="showSection('profile')">Profile</button>
+        <button onclick="showSection('feed')">Feed</button>
+        <button onclick="showSection('chat')">Chat</button>
+        <button id="toggle-theme">🌓</button>
+    </nav>
 
-  <main id="swipe-zone">
-    <div id="feed-view" class="tab-content active">
-      <div id="social-feed-container"></div>
-    </div>
+    <main id="main-content">
+        <section id="profile-section">
+            <div id="profile-display" class="user-message" style="align-self: center; width: 80%;"></div>
+        </section>
 
-    <div id="ai-view" class="tab-content">
-      <textarea id="ai-input" placeholder="What's on your mind?"></textarea>
-      <button onclick="handleGeminiDraft()">Draft with Gemini</button>
-    </div>
-  </main>
+        <section id="feed-section" style="display:none;">
+            <div id="social-feed" class="chat-log" style="height: 400px; overflow-y: auto;"></div>
+            <div class="input-area">
+                <input type="text" id="post-input" placeholder="What's your research update?">
+                <button id="ai-draft-btn">AI Draft</button>
+                <button id="share-btn">Post</button>
+            </div>
+        </section>
+
+        <section id="chat-section" style="display:none;">
+            <div id="chat-log"></div>
+            <div class="input-area">
+                <input type="text" id="chat-input" placeholder="Message Gemini...">
+                <button id="send-btn">Send</button>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="app.js"></script>
+    <script src="ui.js"></script>
 </body>
-
+  </html>
 
