@@ -3,6 +3,19 @@
 <head>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+// Simple logic to render your private gallery
+function renderVaultAssets(assets) {
+    const vaultGrid = document.getElementById('vault-grid');
+    vaultGrid.innerHTML = assets.map(asset => `
+        <div class="elementa-glass p-2 rounded-2xl aspect-square relative group cursor-pointer overflow-hidden">
+            <img src="${asset.url}" class="w-full h-full object-cover rounded-xl transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span class="text-[10px] font-bold tracking-widest uppercase">View Asset</span>
+            </div>
+        </div>
+    `).join('');
+}
+
 </head>
 <body class="bg-[#0f172a] text-white">
     <div class="flex h-screen">
