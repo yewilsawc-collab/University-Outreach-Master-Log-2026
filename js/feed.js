@@ -52,3 +52,27 @@ export function loadFeed(renderCallback) {
         renderCallback(posts);
     });
 }
+
+import { db } from "./firebase.js";
+import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const postsRef = collection(db, "posts");
+
+// Function to create a new post
+export async function createPost(content) {
+    await addDoc(postsRef, {
+        author: "Yewilsaw", // Placeholder for authenticated user
+        text: content,
+        likes: 0,
+        timestamp: Date.now()
+    });
+}
+
+// Listen for new posts in real-time
+export function listenToFeed(callback) {
+    const q = query(postsRef, orderBy("timestamp", "desc"));
+    onSnapshot(q, (snapshot) => {
+        const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(posts);
+    });
+}
