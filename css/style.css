@@ -87,4 +87,46 @@
     -webkit-backdrop-filter: blur(8px) saturate(150%);
     background: rgba(15, 23, 42, 0.75);
   }
-  
+  /* Node Connecting Loader Overlay */
+#loader-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease-out, visibility 0.5s;
+}
+
+/* Pulsing Gold Logo for the Loader */
+.node-pulse {
+    width: 60px;
+    height: 60px;
+    background: #f1c40f;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: black;
+    font-size: 2rem;
+    box-shadow: 0 0 30px rgba(241, 196, 15, 0.4);
+    animation: pulse-node 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-node {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; box-shadow: 0 0 50px rgba(241, 196, 15, 0.6); }
+}
+
+.loader-text {
+    margin-top: 20px;
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #f1c40f;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+    }
+      
