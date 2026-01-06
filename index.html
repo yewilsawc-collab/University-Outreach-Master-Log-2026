@@ -1,93 +1,37 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elementa | Universal Hub</title>
+  <title>Elementa | Universal Social Media Hub</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-dark text-light font-sans min-h-screen flex flex-col">
+<body class="bg-dark text-light font-sans min-h-screen flex flex-col justify-between">
 
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">E</div>
-    <div>
-      <h1 class="title">Elementa</h1>
-      <p id="user-status" class="subtitle">Guest User</p>
+  <!-- Top Branding -->
+  <header class="flex justify-between items-center p-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center font-black text-black text-xl shadow-md">E</div>
+      <h1 class="text-lg font-bold">Elementa</h1>
     </div>
-    <button id="sign-in-btn" class="btn">Sign In</button>
+    <button id="sign-up-btn" class="text-sm font-semibold text-yellow-400">Sign Up</button>
   </header>
 
-  <!-- Navigation -->
-  <nav class="nav">
-    <button id="feed-tab">🏠 Feed</button>
-    <button id="chat-tab">💬 Chat</button>
-    <button id="social-tab">🌐 Social</button>
-  </nav>
-
-  <!-- Main Content -->
-  <main class="main">
-    <!-- Feed -->
-    <section id="feed-section" class="tab-content active">
-      <textarea id="post-input" placeholder="Share what’s on your mind..."></textarea>
-      <button id="post-btn" class="btn">Post</button>
-      <div id="social-feed"></div>
-    </section>
-
-    <!-- Chat -->
-    <section id="chat-section" class="tab-content">
-      <div id="chat-log"></div>
-      <input id="chat-input" type="text" placeholder="Message...">
-      <button id="send-btn" class="btn">Send</button>
-    </section>
-
-    <!-- Social Hub -->
-    <section id="social-section" class="tab-content">
-      <h2>Discover & Connect</h2>
-      <div id="social-discover">
-        <div class="trending">
-          <h3>🔥 Trending Topics</h3>
-          <ul id="trending-list">
-            <li>#Innovation</li>
-            <li>#Design</li>
-            <li>#Community</li>
-          </ul>
-        </div>
-        <div class="connections">
-          <h3>👥 Suggested Connections</h3>
-          <ul id="connections-list">
-            <li>Jane Doe – Chemist</li>
-            <li>Alex Smith – Designer</li>
-            <li>Maria Lopez – Developer</li>
-          </ul>
-        </div>
-        <div class="spaces">
-          <h3>🎨 Creative Spaces</h3>
-          <ul id="spaces-list">
-            <li>Photography Club</li>
-            <li>AI Builders</li>
-            <li>Music Lounge</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+  <!-- Tagline -->
+  <main class="flex-1 flex flex-col items-center justify-center text-center px-6">
+    <h2 class="text-xl font-bold mb-2">Elementa a universal social media hub</h2>
+    <p class="text-sm text-slate-400">Experience the Elementa</p>
   </main>
 
-  <!-- Auth Modal -->
-  <div id="auth-modal" class="modal hidden">
-    <h2>Welcome to Elementa</h2>
-    <input type="email" id="auth-email" placeholder="Email">
-    <input type="password" id="auth-password" placeholder="Password">
-    <button id="auth-proceed" class="btn">Proceed</button>
-    <button id="auth-cancel" class="btn-secondary">Cancel</button>
-  </div>
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 w-full bg-[#1e293b] border-t border-white/10 flex justify-around items-center py-3 text-xl text-slate-300">
+    <button id="nav-home">🏠</button>
+    <button id="nav-chat">💬</button>
+    <button id="nav-folder">📂</button>
+    <button id="nav-profile">👤</button>
+  </nav>
 
   <!-- Scripts -->
   <script type="module" src="js/navigation.js"></script>
-  <script type="module" src="js/auth.js"></script>
-  <script type="module" src="js/chat.js"></script>
-  <script type="module" src="Social/posts.js"></script>
-  <script type="module" src="Social/feed.js"></script>
 </body>
-        </html>
+</html>
