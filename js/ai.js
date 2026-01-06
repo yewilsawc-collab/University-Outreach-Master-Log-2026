@@ -40,3 +40,19 @@ postBtn.addEventListener("click", async () => {
     inputField.value = draft;
     inputField.placeholder = "Type your update...";
 });
+
+// ai.js remains largely the same but can be used for post assistance
+export async function getGeminiResponse(userText) {
+    try {
+        const response = await fetch("/gemini-proxy", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: `As a social media assistant, react to: ${userText}` })
+        });
+        const data = await response.json();
+        return data.reply || "No response.";
+    } catch (err) {
+        console.error("AI Assistant failed:", err);
+        return "⚠️ Error connecting to Gemini.";
+    }
+}
