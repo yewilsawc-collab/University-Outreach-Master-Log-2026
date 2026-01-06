@@ -25,3 +25,18 @@ export async function getGeminiResponse(userText) {
         return "⚠️ Error: Unable to connect to Gemini.";
     }
 }
+
+// Add this to your UI logic
+const postBtn = document.getElementById("ai-draft-btn");
+const inputField = document.getElementById("chat-input"); // Reuse chat input
+
+postBtn.addEventListener("click", async () => {
+    const topic = inputField.value;
+    inputField.placeholder = "Gemini is drafting...";
+    
+    // Request an academic summary from Gemini
+    const draft = await getGeminiResponse(`Draft a professional social media post about: ${topic}. Mention my interest in Physical Chemistry and interfacial phenomena.`);
+    
+    inputField.value = draft;
+    inputField.placeholder = "Type your update...";
+});
