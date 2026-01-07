@@ -182,3 +182,37 @@ const quickActionHTML = `
 </div>
 `;
 document.body.insertAdjacentHTML('beforeend', quickActionHTML);
+// Add to your master.js init function
+export function initStatusMonitor() {
+    const statusHTML = `
+        <div class="elementa-glass status-shard">
+            <div id="connection-dot" class="status-dot online"></div>
+            <span id="latency-text">00ms</span>
+            <span class="opacity-20">|</span>
+            <span id="node-count">1 ACTIVE NODE</span>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', statusHTML);
+
+    // 1. Monitor Latency
+    setInterval(() => {
+        const start = Date.now();
+        // Ping the free cloud endpoint
+        fetch('https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8', { mode: 'no-cors' })
+            .then(() => {
+                const latency = Date.now() - start;
+                const text = document.getElementById('latency-text');
+                const dot = document.getElementById('connection-dot');
+                
+                text.textContent = `${latency}ms`;
+                
+                // Dynamic visual feedback
+                if(latency > 300) dot.className = "status-dot lagging";
+                else dot.className = "status-dot online";
+            })
+            .catch(() => {
+                document.getElementById('connection-dot').className = "status-dot offline";
+                document.getElementById('latency-text').textContent = "DISCONNECTED";
+            });
+    }, 5000); // Check every 5 seconds to save free-tier bandwidth
+                    }
