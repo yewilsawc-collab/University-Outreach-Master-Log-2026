@@ -25,3 +25,21 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+// sw.js update
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js');
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/assets/icon-192.png',
+    badge: '/assets/icon-badge.png',
+    vibrate: [200, 100, 200] // Custom pulse
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+  
