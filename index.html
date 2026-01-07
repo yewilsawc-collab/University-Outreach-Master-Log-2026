@@ -3,39 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elementa | The Universal Gateway</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Elementa | Universal Ecosystem</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#020617] text-slate-200 h-screen flex items-center justify-center overflow-hidden p-6">
+<body class="bg-[#020617] text-white font-sans overflow-x-hidden">
 
-    <div class="absolute inset-0 z-0 overflow-hidden">
-        <div class="neural-glow" style="top: 20%; left: 30%;"></div>
-        <div class="neural-glow" style="bottom: 10%; right: 20%; background: radial-gradient(circle, rgba(241, 196, 15, 0.05) 0%, transparent 70%);"></div>
+    <div id="splash-screen" class="fixed inset-0 z-[5000] flex items-center justify-center bg-[#020617] transition-all duration-1000">
+        <div class="w-24 h-24 bg-[#f1c40f] rounded-[30px] flex items-center justify-center shadow-[0_0_50px_rgba(241,196,15,0.3)] animate-pulse">
+            <span class="text-black text-4xl font-black">E</span>
+        </div>
     </div>
 
-    <main class="elementa-glass glass-noise p-12 rounded-[50px] w-full max-w-lg z-10 text-center relative border-t-2 border-white/10">
-        <div class="w-20 h-20 bg-[#f1c40f] rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-[0_0_50px_rgba(241,196,15,0.3)]">
-            <span class="text-black text-4xl font-black">E</span>
-       <button onclick="document.getElementById('splash').style.display='none'" 
-        class="fixed bottom-10 right-10 z-[9999] opacity-20 text-[8px] text-white">
-    FORCE WAKE
-       </button>
-            
-        </div>
+    <main id="main-ecosystem" class="opacity-0 transition-opacity duration-1000">
+        
+        <header class="fixed top-0 w-full p-6 flex justify-between items-center z-[100] backdrop-blur-md">
+            <div class="w-8 h-8 bg-[#f1c40f] rounded-lg flex items-center justify-center font-black text-black text-xs">E</div>
+            <div class="flex items-center gap-4">
+                <span class="text-[10px] tracking-[0.3em] font-mono text-slate-500">ARCHITECT MODE</span>
+                <div class="w-10 h-10 rounded-full aura-architect">
+                    <img src="yewilsaw-profile.jpg" class="rounded-full w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
 
-        <h1 id="welcome-text" class="text-xl font-mono text-[#f1c40f] mb-4 h-8 uppercase tracking-[0.2em]"></h1>
-        <p id="sub-text" class="text-slate-500 text-xs mb-10 opacity-0 transition-opacity duration-1000">AUTHENTICATING NEURAL SIGNATURE...</p>
+        <section id="feed" class="pt-24 pb-32 max-w-lg mx-auto px-4">
+            <div id="shard-container" class="space-y-6"></div>
+        </section>
 
-        <div id="login-form" class="space-y-4 opacity-0 transform translate-y-4 transition-all duration-700">
-            <input type="email" placeholder="NODE IDENTITY (EMAIL)" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-[#f1c40f] text-sm">
-            <button onclick="window.location.href='pages/feed.html'" class="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#f1c40f] transition-all">
-                Enter Ecosystem
-            </button>
-        </div>
+        <nav class="fixed bottom-0 w-full p-6 z-[100]">
+            <div class="elementa-glass max-w-sm mx-auto flex justify-around p-4 rounded-[40px] border-t border-white/10">
+                <button class="nav-item">Pulse</button>
+                <button class="nav-item">Map</button>
+                <button class="nav-item">eChat</button>
+                <button class="nav-item">Vault</button>
+            </div>
+        </nav>
     </main>
 
-    <script src="js/welcome.js"></script>
+    <script src="app.js"></script>
 </body>
-</html>
+    </html>
 
