@@ -28,3 +28,33 @@ export async function displayProfile(elementId) {
         `;
     }
                                               }
+import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { auth } from "./master.js";
+
+const db = getFirestore();
+
+export function syncProfileStats() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    // 1. Query all posts where the author is the current user
+    const q = query(collection(db, "posts"), where("authorUID", "==", user.uid));
+
+    onSnapshot(q, (snapshot) => {
+        let totalResonations = 0;
+        let postCount = snapshot.size;
+
+        snapshot.forEach((doc) => {
+            totalResonations += (doc.data().resonations || 0);
+        });
+
+        // 2. Update the UI Shards
+        document.getElementById('stat-resonance').textContent = totalResonations.toLocaleString();
+        document.getElementById('stat-posts').textContent = postCount;
+        
+        // 3. Calculate "Ecosystem Rank" (e.g., total resonance / posts)
+        const rank = postCount > 0 ? (totalResonations / postCount).toFixed(1) : 0;
+        document.getElementById('stat-rank').textContent = rank;
+    });
+                         }
+            
