@@ -163,3 +163,22 @@ window.showQuickActions = () => {
 window.hideQuickActions = () => {
     document.getElementById('quick-action-overlay').style.display = 'none';
 };
+const quickActionHTML = `
+<div id="quick-action-overlay" onclick="hideQuickActions()">
+    <div class="action-circle">
+        <button class="action-btn elementa-glass" onclick="window.location.href='feed.html?action=new'">
+            <span class="text-3xl">✨</span> NEW SHARD
+        </button>
+        <button class="action-btn elementa-glass" onclick="window.location.href='vault.html?action=upload'">
+            <span class="text-3xl">📂</span> VAULT UP
+        </button>
+        <button class="action-btn elementa-glass" onclick="window.location.href='messages.html'">
+            <span class="text-3xl">💬</span> NEURAL LINK
+        </button>
+        <button class="action-btn elementa-glass" onclick="toggleSearch()">
+            <span class="text-3xl">🔍</span> SEARCH
+        </button>
+    </div>
+</div>
+`;
+document.body.insertAdjacentHTML('beforeend', quickActionHTML);
