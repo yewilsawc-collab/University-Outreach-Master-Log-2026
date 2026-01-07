@@ -1,16 +1,6 @@
 {
   "hosting": {
-    "site": "university-outreach-log", 
-    "public": ".",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      { "source": "!{/css/**,/js/**,/assets/**,/manifest.webmanifest,/sw.js}", "destination": "/index.html" }
-    ]
-  }
-}
-
-{
-  "hosting": {
+    "site": "university-outreach-log",
     "public": ".",
     "ignore": [
       "firebase.json",
@@ -18,6 +8,10 @@
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/gemini-proxy",
+        "function": "geminiProxy"
+      },
       {
         "source": "**",
         "destination": "/index.html"
@@ -35,4 +29,5 @@
       }
     ]
   }
-}
+      }
+
