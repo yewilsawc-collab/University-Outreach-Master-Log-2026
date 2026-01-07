@@ -1,58 +1,56 @@
-// ai.js
-// Calls Gemini AI through your Firebase Function or proxy endpoint
+// ai.js - Refined Version
 
-export async function getGeminiResponse(userText) {
-    try {
-        // Replace with your Firebase Function or proxy URL
-        const response = await fetch("/gemini-proxy", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ prompt: userText })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Gemini API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Expecting { reply: "..." } from your backend
-        return data.reply || "Gemini could not generate a response.";
-    } catch (err) {
-        console.error("Gemini request failed:", err);
-        return "⚠️ Error: Unable to connect to Gemini.";
-    }
-}
-
-// Add this to your UI logic
-const postBtn = document.getElementById("ai-draft-btn");
-const inputField = document.getElementById("chat-input"); // Reuse chat input
-
-postBtn.addEventListener("click", async () => {
-    const topic = inputField.value;
-    inputField.placeholder = "Gemini is drafting...";
-    
-    // Request an academic summary from Gemini
-    const draft = await getGeminiResponse(`Draft a professional social media post about: ${topic}. Mention my interest in Physical Chemistry and interfacial phenomena.`);
-    
-    inputField.value = draft;
-    inputField.placeholder = "Type your update...";
-});
-
-// ai.js remains largely the same but can be used for post assistance
-export async function getGeminiResponse(userText) {
+/**
+ * Generic function to call your Gemini proxy
+ * @param {string} prompt - The full text/instruction to send
+ */
+export async function getGeminiResponse(prompt) {
     try {
         const response = await fetch("/gemini-proxy", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: `As a social media assistant, react to: ${userText}` })
+            body: JSON.stringify({ prompt })
         });
+
+        if (!response.ok) throw new Error(`Status: ${response.status}`);
+
         const data = await response.json();
-        return data.reply || "No response.";
+        return data.reply || "Gemini could not generate a response.";
     } catch (err) {
-        console.error("AI Assistant failed:", err);
-        return "⚠️ Error connecting to Gemini.";
+        console.error("Gemini request failed:", err);
+        return null; // Return null so the UI can handle the error specifically
     }
 }
+
+// UI Logic
+const postBtn = document.getElementById("ai-draft-btn");
+const inputField = document.getElementById("chat-input");
+
+if (postBtn && inputField) {
+    postBtn.addEventListener("click", async () => {
+        const topic = inputField.value.trim();
+        if (!topic) return alert("Please enter a topic first!");
+
+        const originalPlaceholder = inputField.placeholder;
+        inputField.value = "";
+        inputField.placeholder = "✨ Gemini is drafting your post...";
+        postBtn.disabled = true; // Prevent double-clicks
+
+        const customPrompt = `Draft a professional social media post about: ${topic}. 
+        Mention my interest in Physical Chemistry and interfacial phenomena. 
+        Keep it engaging but academic.`;
+
+        const draft = await getGeminiResponse(customPrompt);
+
+        if (draft) {
+            inputField.value = draft;
+        } else {
+            inputField.value = topic; // Restore original text on error
+            alert("⚠️ Error: Unable to connect to Gemini.");
+        }
+
+        inputField.placeholder = originalPlaceholder;
+        postBtn.disabled = false;
+    });
+}
+
