@@ -1,96 +1,109 @@
-import { auth, db, rtdb } from "./firebase.js"; // Ensure these are exported from firebase.js
+// chat.js - Consolidated Full Version
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { 
-    collection, addDoc, setDoc, doc, serverTimestamp, 
+    collection, addDoc, serverTimestamp, doc, updateDoc, setDoc, 
     query, where, orderBy, onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { 
-    ref, push, onChildAdded 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getGeminiResponse } from "./ai.js";
+import { db as firestore } from "./firebase.js"; // Renamed to avoid conflict
 
-/** * HAPTIC FEEDBACK 
- */
+// Initialize Realtime Database for Public Chat
+const rtdb = getDatabase();
+const publicChatRef = ref(rtdb, "phd_chat_logs");
+
+// --- Haptics & Feedback ---
 const Haptics = {
-    success: () => "vibrate" in navigator && navigator.vibrate(40),
-    notification: () => "vibrate" in navigator && navigator.vibrate([50, 30, 50]),
-    error: () => "vibrate" in navigator && navigator.vibrate([100, 50, 100])
+    success: () => { if ("vibrate" in navigator) navigator.vibrate(40); },
+    notification: () => { if ("vibrate" in navigator) navigator.vibrate([50, 30, 50]); },
+    error: () => { if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]); }
 };
 
-/**
- * 1. PRIVATE MESSAGING (Firestore)
- * Best for: One-on-one structured chats with an Inbox view.
- */
+// --- Helper Functions ---
 const getRoomId = (uid1, uid2) => [uid1, uid2].sort().join("_");
 
-export async function sendPrivateMessage(recipientUid, text) {
-    const user = auth.currentUser;
-    if (!user) return;
+// --- Public Chat Logic ---
+export async function sendUserMessage(text) {
+    try {
+        // 1. Push user message to RTDB
+        await push(publicChatRef, {
+            sender: "Yewilsaw",
+            text,
+            timestamp: Date.now()
+        });
+        Haptics.success(); //
 
-    const roomId = getRoomId(user.uid, recipientUid);
-    const messagesRef = collection(db, "conversations", roomId, "messages");
+        // 2. Request Gemini AI response
+        const reply = await getGeminiResponse(text);
+
+        // 3. Push Gemini's reply to RTDB
+        await push(publicChatRef, {
+            sender: "Gemini",
+            text: reply || "No response generated.",
+            timestamp: Date.now()
+        });
+    } catch (err) {
+        console.error("Public chat error:", err);
+        Haptics.error(); //
+    }
+}
+
+// Listen for public messages and render
+onChildAdded(publicChatRef, (snapshot) => {
+    const message = snapshot.val();
+    renderMessageToScreen(message.text, message.sender, message.timestamp);
+});
+
+// --- Private Messaging Logic (Firestore) ---
+export async function sendPrivateMessage(recipientUid, text) {
+    const roomId = getRoomId(currentUser.uid, recipientUid); //
+    const messagesRef = collection(firestore, "conversations", roomId, "messages");
 
     try {
-        await Promise.all([
-            addDoc(messagesRef, {
-                senderId: user.uid,
-                text: text,
-                timestamp: serverTimestamp()
-            }),
-            setDoc(doc(db, "conversations", roomId), {
-                participants: [user.uid, recipientUid],
-                lastMessage: text,
-                lastUpdate: serverTimestamp()
-            }, { merge: true })
-        ]);
-        Haptics.success();
+        // 1. Add message to sub-collection
+        await addDoc(messagesRef, {
+            senderId: currentUser.uid,
+            text: text,
+            timestamp: serverTimestamp()
+        });
+
+        // 2. Update parent doc for Inbox preview
+        await setDoc(doc(firestore, "conversations", roomId), {
+            participants: [currentUser.uid, recipientUid],
+            lastMessage: text,
+            lastUpdate: serverTimestamp()
+        }, { merge: true });
+
+        Haptics.success(); //
     } catch (err) {
-        console.error("Msg Error:", err);
+        console.error("Private message error:", err);
         Haptics.error();
     }
 }
 
+// --- Inbox Loading ---
 export function loadInbox(callback) {
-    const user = auth.currentUser;
-    if (!user) return;
-
     const q = query(
-        collection(db, "conversations"),
-        where("participants", "array-contains", user.uid),
+        collection(firestore, "conversations"), 
+        where("participants", "array-contains", currentUser.uid),
         orderBy("lastUpdate", "desc")
-    );
+    ); //
 
-    return onSnapshot(q, (snapshot) => {
+    onSnapshot(q, (snapshot) => {
         const convos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(convos);
     });
 }
 
-/**
- * 2. AI CHAT LOGS (Realtime Database)
- * Best for: High-frequency logs and AI interactions.
- */
-const chatRef = ref(rtdb, "phd_chat_logs");
+// --- UI Rendering ---
+function renderMessageToScreen(text, sender, timestamp) {
+    const container = document.getElementById("chat-log");
+    if (!container) return;
 
-export async function sendUserMessage(text) {
-    try {
-        // 1. Log User Message
-        await push(chatRef, { sender: "Yewilsaw", text, timestamp: Date.now() });
-        Haptics.success();
-
-        // 2. Get AI Response
-        const reply = await getGeminiResponse(text);
-
-        // 3. Log AI Reply
-        await push(chatRef, { sender: "Gemini", text: reply, timestamp: Date.now() });
-    } catch (err) {
-        Haptics.error();
-    }
-}
-
-// UI Listener for AI Logs
-export function listenToGlobalChat(renderFn) {
-    onChildAdded(chatRef, (snapshot) => {
-        renderFn(snapshot.val());
-    });
+    const messageEl = document.createElement("div");
+    messageEl.className = sender === "Yewilsaw" ? "user-message" : "ai-message"; //
+    messageEl.textContent = `${sender}: ${text} (${new Date(timestamp).toLocaleTimeString()})`;
+    
+    container.appendChild(messageEl);
+    container.scrollTop = container.scrollHeight; // Auto-scroll
 }
     
