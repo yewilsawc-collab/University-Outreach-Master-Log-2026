@@ -260,3 +260,27 @@ function triggerSparkVisuals(data) {
     // 4. Show Notification Toast
     showToast("✨ A NEW NODE HAS SPARKED YOU!");
 }
+export function triggerSparkResponse() {
+    // 1. Physical Pulse (Android Exclusive)
+    // A 'Double Tap' vibration pattern
+    if ("vibrate" in navigator) {
+        navigator.vibrate([100, 50, 100]); 
+    }
+
+    // 2. Visual Surge
+    const overlay = document.createElement('div');
+    overlay.className = "fixed inset-0 z-[1000] bg-[#f1c40f]/10 pointer-events-none animate-spark-flash";
+    document.body.appendChild(overlay);
+
+    // 3. Notification Toast
+    const toast = document.createElement('div');
+    toast.className = "fixed top-10 left-1/2 -translate-x-1/2 elementa-glass spark-toast px-8 py-4 rounded-2xl z-[1001] text-[10px] font-black uppercase tracking-widest text-[#f1c40f]";
+    toast.innerHTML = "✨ Node Resonance Detected";
+    document.body.appendChild(toast);
+
+    // 4. Cleanup Memory
+    setTimeout(() => {
+        overlay.remove();
+        toast.remove();
+    }, 2000);
+        }
