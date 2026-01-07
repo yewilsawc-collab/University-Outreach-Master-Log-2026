@@ -258,3 +258,19 @@
 
 .visual-shard:active .shard-overlay { opacity: 1; } /* Mobile Touch */
 .visual-shard:hover .shard-overlay { opacity: 1; } /* Desktop Hover */
+.feed-container {
+    scroll-snap-type: y mandatory;
+    perspective: 1000px;
+}
+
+.elementa-glass.post-card {
+    scroll-snap-align: center;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Posts slightly shrink and fade when not in the "Adsorption Zone" */
+.elementa-glass.post-card:not(:focus-within) {
+    transform: scale(0.9) rotateX(5deg);
+    opacity: 0.5;
+  }
+      
