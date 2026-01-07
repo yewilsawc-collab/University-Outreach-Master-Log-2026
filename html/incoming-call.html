@@ -1,0 +1,18 @@
+<div id="call-overlay" class="fixed inset-0 z-[5000] bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center">
+    <div class="relative mb-12">
+        <div class="absolute inset-0 rounded-full bg-[#f1c40f] animate-ping opacity-20"></div>
+        <img src="caller-avatar.jpg" class="w-32 h-32 rounded-full border-2 border-[#f1c40f] z-10 relative">
+    </div>
+    
+    <h2 class="text-white text-2xl font-black tracking-tighter mb-1">INCOMING STREAM</h2>
+    <p class="text-[#f1c40f] text-[10px] font-mono tracking-[0.4em] mb-20 uppercase">Node: Alexander_NYC</p>
+
+    <div class="flex gap-12">
+        <button onclick="rejectStream()" class="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/50 flex items-center justify-center">
+            <span class="text-red-500">✕</span>
+        </button>
+        <button onclick="acceptStream()" class="w-20 h-20 rounded-full bg-[#f1c40f] flex items-center justify-center shadow-[0_0_30px_rgba(241,196,15,0.5)]">
+            <span class="text-black text-xl">▼</span>
+        </button>
+    </div>
+</div>
