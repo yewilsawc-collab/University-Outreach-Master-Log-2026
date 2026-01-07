@@ -306,3 +306,8 @@ export function launchGenesisPulse(message) {
     `;
     document.body.appendChild(pulseBox);
         }
+// Inside the Node Rendering logic
+if (user.uid === "YOUR_ADMIN_UID_FROM_FIREBASE") {
+    profileElement.classList.add('aura-architect');
+    profileElement.innerHTML += '<span class="root-badge">Λ</span>';
+}
