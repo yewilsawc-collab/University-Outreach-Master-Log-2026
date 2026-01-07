@@ -1,46 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elementa | Universal Ecosystem</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elementa | Universal Ecosystem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="bg-[#020617] text-white font-sans overflow-x-hidden">
 
-    <section id="layer-landing" class="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-        <div class="w-20 h-20 bg-[#f1c40f] rounded-[25px] flex items-center justify-center mb-8 shadow-xl">
-            <span class="text-black text-4xl font-black">E</span>
-        </div>
-        <h1 class="text-4xl font-black uppercase tracking-tighter mb-4">Universal Ecosystem</h1>
-        <p class="text-slate-400 max-w-xs mb-8">Exploring Kinetics & Interfacial Phenomena.</p>
-        <button onclick="showLayer('layer-auth')" class="bg-white text-black px-12 py-4 rounded-2xl font-bold active:scale-95 transition-transform">
-            Enter Architect Mode
+  <!-- Landing Layer -->
+  <section id="layer-landing" class="min-h-screen flex flex-col items-center justify-center px-6 text-center">
+    <div class="w-20 h-20 bg-[#f1c40f] rounded-[25px] flex items-center justify-center mb-8 shadow-xl">
+      <span class="text-black text-4xl font-black">E</span>
+    </div>
+    <h1 class="text-4xl font-black uppercase tracking-tighter mb-4">Universal Ecosystem</h1>
+    <p class="text-slate-400 max-w-xs mb-8">
+      Exploring kinetics & interfacial phenomena through Architect Mode.
+    </p>
+    <button onclick="showLayer('layer-auth')" 
+            class="bg-white text-black px-12 py-4 rounded-2xl font-bold active:scale-95 transition-transform">
+      Enter Architect Mode
+    </button>
+  </section>
+
+  <!-- Authentication Layer -->
+  <section id="layer-auth" class="hidden min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-sm p-8 rounded-[40px] border border-white/10 bg-white/5 backdrop-blur-2xl">
+      <h2 class="text-2xl font-black uppercase text-center mb-6">Identify</h2>
+      <form id="login-form" class="space-y-4">
+        <input type="email" id="email" placeholder="Email" 
+               class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f]" />
+        <input type="password" id="password" placeholder="Key Protocol" 
+               class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f]" />
+        <button type="submit" 
+                class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest">
+          Verify
         </button>
-    </section>
+      </form>
+      <div id="auth-error" class="text-red-500 text-[10px] mt-4 text-center hidden"></div>
+    </div>
+  </section>
 
-    <section id="layer-auth" class="hidden min-h-screen flex items-center justify-center p-6">
-        <div class="w-full max-w-sm p-8 rounded-[40px] border border-white/10 bg-white/5 backdrop-blur-2xl">
-            <h2 class="text-2xl font-black uppercase text-center mb-6">Identify</h2>
-            <form id="login-form" class="space-y-4">
-                <input type="email" id="email" placeholder="Email" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
-                <input type="password" id="password" placeholder="Key Protocol" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
-                <button type="submit" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase">Verify</button>
-            </form>
-            <div id="auth-error" class="text-red-500 text-[10px] mt-4 text-center hidden"></div>
-        </div>
-    </section>
+  <!-- App Layer -->
+  <main id="layer-app" class="hidden opacity-0 transition-opacity duration-1000">
+    <header class="p-6 flex justify-between items-center">
+      <div class="w-8 h-8 bg-[#f1c40f] rounded-lg flex items-center justify-center font-black text-black text-xs">E</div>
+      <span class="text-[10px] tracking-[0.3em] font-mono text-slate-500">ARCHITECT MODE</span>
+    </header>
+    <div id="social-feed" class="p-4 space-y-4">
+      <!-- Shards will be injected here -->
+    </div>
+  </main>
 
-    <main id="layer-app" class="hidden opacity-0 transition-opacity duration-1000">
-        <header class="p-6 flex justify-between items-center">
-            <div class="w-8 h-8 bg-[#f1c40f] rounded-lg flex items-center justify-center font-black text-black text-xs">E</div>
-            <span class="text-[10px] tracking-[0.3em] font-mono text-slate-500">ARCHITECT MODE</span>
-        </header>
-        <div id="social-feed" class="p-4 space-y-4"></div>
-        </main>
-
-    <script type="module" src="app.js"></script>
+  <!-- Scripts -->
+  <script src="firebase-config.js"></script> <!-- injected at build from secrets -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
-
