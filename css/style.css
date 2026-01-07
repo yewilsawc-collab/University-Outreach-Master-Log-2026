@@ -172,6 +172,41 @@
     grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
+/* Status Shard Positioning */
+.status-shard {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    z-index: 1000;
+}
+
+/* Pulse indicator based on connection quality */
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f1c40f;
+    box-shadow: 0 0 10px #f1c40f;
+}
+
+.status-dot.online { background: #00ff88; box-shadow: 0 0 10px #00ff88; animation: pulse 2s infinite; }
+.status-dot.lagging { background: #f1c40f; }
+.status-dot.offline { background: #ff4444; }
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+      
 
 .action-btn {
     width: 120px;
