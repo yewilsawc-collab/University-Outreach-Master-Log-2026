@@ -134,3 +134,32 @@ window.executeSearch = (query) => {
         </div>
     `).join('');
 };
+// Add this to your initNavigation function in master.js
+
+let touchTimer;
+const logoNode = document.querySelector('.logo-node'); // Add this class to your Nav Logo
+
+function startLongPress() {
+    touchTimer = setTimeout(() => {
+        if (window.navigator.vibrate) window.navigator.vibrate([30, 50]); // Dual-pulse feedback
+        showQuickActions();
+    }, 600); // 600ms held down triggers the menu
+}
+
+function cancelLongPress() {
+    clearTimeout(touchTimer);
+}
+
+// Attach to your logo
+logoNode.addEventListener('touchstart', startLongPress);
+logoNode.addEventListener('touchend', cancelLongPress);
+logoNode.addEventListener('touchmove', cancelLongPress);
+
+window.showQuickActions = () => {
+    const overlay = document.getElementById('quick-action-overlay');
+    overlay.style.display = 'flex';
+};
+
+window.hideQuickActions = () => {
+    document.getElementById('quick-action-overlay').style.display = 'none';
+};
