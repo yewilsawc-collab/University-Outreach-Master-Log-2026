@@ -84,3 +84,26 @@ export function initNavigation() {
     });
                             }
                               
+// Add this inside the navHTML string in your initNavigation function
+const searchTrigger = `
+    <div class="mt-4 px-2">
+        <button onclick="toggleSearch()" class="glass-interactive w-full flex items-center justify-center md:justify-start gap-4 p-4 rounded-2xl text-slate-400">
+            <span>🔍</span>
+            <span class="hidden md:block font-bold text-[10px] uppercase tracking-[0.2em]">Search Grid</span>
+        </button>
+    </div>
+`;
+
+// Add the Search Overlay to the bottom of your body
+const searchOverlay = `
+    <div id="search-modal" class="hidden fixed inset-0 z-[200] elementa-glass backdrop-blur-3xl p-6 flex flex-col items-center pt-24 page-transition">
+        <button onclick="toggleSearch()" class="absolute top-8 right-8 text-2xl">✕</button>
+        <div class="w-full max-w-2xl">
+            <input type="text" id="grid-search-input" oninput="executeSearch(this.value)" 
+                   placeholder="SEARCH NODES OR SHARDS..." 
+                   class="w-full bg-transparent border-b-2 border-[#f1c40f] text-3xl font-black outline-none pb-4 tracking-tighter uppercase placeholder:opacity-20">
+            <div id="search-results" class="mt-12 space-y-4 max-h-[60vh] overflow-y-auto custom-scroll">
+                </div>
+        </div>
+    </div>
+`;
