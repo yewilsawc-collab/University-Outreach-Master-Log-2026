@@ -7,29 +7,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#020617] text-white font-sans flex items-center justify-center min-h-screen p-6">
+<body class="bg-[#020617] text-white flex items-center justify-center min-h-screen p-6">
 
     <div class="w-full max-w-sm p-8 rounded-[40px] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl">
         <div class="mb-8 text-center">
             <h2 class="text-2xl font-black uppercase tracking-widest">Identify</h2>
-            <p class="text-xs text-slate-500 mt-2">Accessing Neural Architect Layers</p>
+            <p class="text-xs text-slate-500 mt-2">Neural Architect Protocols</p>
         </div>
 
         <form id="login-form" class="space-y-4">
-            <div>
-                <input type="email" id="email" placeholder="Email Address" 
-                    class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f] transition-all">
-            </div>
-            <div>
-                <input type="password" id="password" placeholder="Key Protocol" 
-                    class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f] transition-all">
-            </div>
+            <input type="email" id="email" placeholder="Email Address" 
+                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f] transition-all">
+            <input type="password" id="password" placeholder="Key Protocol" 
+                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f] transition-all">
             
-            <button type="submit" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest mt-4 active:scale-95 transition-transform">
+            <button type="submit" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest mt-4 active:scale-95">
                 Verify Identity
             </button>
         </form>
-
         <div id="error-msg" class="text-red-500 text-[10px] text-center mt-4 hidden"></div>
     </div>
 
@@ -37,8 +32,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         
-        // Use your firebaseConfig here
-        const firebaseConfig = { /* Paste your config from firebase.js */ };
+        // PASTE YOUR CONFIG FROM firebase.js HERE
+        const firebaseConfig = { 
+            apiKey: "...", 
+            authDomain: "...", 
+            projectId: "...", 
+            // ... copy the rest
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
@@ -46,18 +47,17 @@
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('error-msg');
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // On success, redirect to the app ecosystem
+                // SUCCESS: Redirect to the main app file
                 window.location.href = "app.html"; 
             } catch (error) {
-                errorEl.innerText = "AUTHENTICATION FAILED: " + error.message;
-                errorEl.classList.remove('hidden');
+                document.getElementById('error-msg').innerText = "AUTH ERROR: " + error.message;
+                document.getElementById('error-msg').classList.remove('hidden');
             }
         });
     </script>
 </body>
-          </html>
-          
+</html>
+
