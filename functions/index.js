@@ -51,3 +51,16 @@ function setupTerminalLogic() {
         }
     });
 }
+// Example of real-time message listener
+const q = query(collection(db, `chats/${chatId}/messages`), orderBy("timestamp"));
+
+onSnapshot(q, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+            renderMessage(change.doc.data());
+            // Play a soft "Link" sound if the window isn't focused
+            if (!document.hasFocus()) playLinkSound();
+        }
+    });
+});
+                                                                              
