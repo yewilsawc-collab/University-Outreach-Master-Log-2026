@@ -23,3 +23,31 @@ exports.geminiProxy = functions.https.onRequest(async (req, res) => {
         res.status(500).json({ reply: "Error contacting Gemini." });
     }
 });
+function setupTerminalLogic() {
+    const input = document.getElementById('terminal-input');
+    const output = document.getElementById('terminal-output');
+
+    input.addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const cmd = input.value.trim().toLowerCase();
+            output.innerHTML += `<p><span class="text-[#f1c40f]">λ</span> ${cmd}</p>`;
+            
+            // Command Logic
+            if (cmd === 'help') {
+                Object.entries(COMMANDS).forEach(([c, d]) => {
+                    output.innerHTML += `<p class="text-slate-500">${c.padEnd(15)} - ${d}</p>`;
+                });
+            } else if (cmd === 'status') {
+                output.innerHTML += `<p class="text-blue-400">NODES ONLINE: ${document.getElementById('node-count').textContent}</p>`;
+                output.innerHTML += `<p class="text-blue-400">LATENCY: ${document.getElementById('latency-text').textContent}</p>`;
+            } else if (cmd.startsWith('broadcast')) {
+                const msg = cmd.replace('broadcast --m', '');
+                // Trigger Firebase Pulse Function here
+                output.innerHTML += `<p class="text-orange-500">GLOBAL PULSE DEPLOYED: ${msg}</p>`;
+            }
+            
+            input.value = "";
+            output.scrollTop = output.scrollHeight;
+        }
+    });
+}
