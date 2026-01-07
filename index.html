@@ -1,60 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Elementa | Universal Ecosystem</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elementa – Social Media Platform</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-[#020617] text-white font-sans overflow-x-hidden">
+<body class="alabaster-mode">
 
-  <!-- Landing Layer -->
-  <section id="layer-landing" class="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-    <div class="w-20 h-20 bg-[#f1c40f] rounded-[25px] flex items-center justify-center mb-8 shadow-xl">
-      <span class="text-black text-4xl font-black">E</span>
+  <!-- Hero Section -->
+  <section class="flex flex-col items-center justify-center min-h-screen text-center p-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 mb-6 cursor-pointer" onclick="window.location.href='index.html'">
+      <div class="w-12 h-12 bg-[#f1c40f] rounded-xl flex items-center justify-center shadow-lg">
+        <span class="text-black font-black text-2xl">E</span>
+      </div>
+      <h1 class="font-black tracking-tighter text-3xl">ELEMENTA</h1>
     </div>
-    <h1 class="text-4xl font-black uppercase tracking-tighter mb-4">Universal Ecosystem</h1>
-    <p class="text-slate-400 max-w-xs mb-8">
-      Exploring kinetics & interfacial phenomena through Architect Mode.
+
+    <!-- Tagline -->
+    <p class="text-slate-500 mb-10 max-w-md">
+      A universal social media platform built for connection, research, and collaboration.
     </p>
-    <button onclick="showLayer('layer-auth')" 
-            class="bg-white text-black px-12 py-4 rounded-2xl font-bold active:scale-95 transition-transform">
-      Enter Architect Mode
-    </button>
-  </section>
 
-  <!-- Authentication Layer -->
-  <section id="layer-auth" class="hidden min-h-screen flex items-center justify-center p-6">
-    <div class="w-full max-w-sm p-8 rounded-[40px] border border-white/10 bg-white/5 backdrop-blur-2xl">
-      <h2 class="text-2xl font-black uppercase text-center mb-6">Identify</h2>
-      <form id="login-form" class="space-y-4">
-        <input type="email" id="email" placeholder="Email" 
-               class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f]" />
-        <input type="password" id="password" placeholder="Key Protocol" 
-               class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f]" />
-        <button type="submit" 
-                class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest">
-          Verify
-        </button>
-      </form>
-      <div id="auth-error" class="text-red-500 text-[10px] mt-4 text-center hidden"></div>
+    <!-- Auth Buttons -->
+    <div class="flex gap-6">
+      <button onclick="window.location.href='signup.html'"
+        class="px-6 py-3 rounded-xl bg-[#f1c40f] text-black font-bold shadow-md hover:bg-yellow-400 transition">
+        Sign Up
+      </button>
+      <button onclick="window.location.href='signin.html'"
+        class="px-6 py-3 rounded-xl bg-black text-[#f1c40f] font-bold border border-[#f1c40f] hover:bg-[#f1c40f]/10 transition">
+        Sign In
+      </button>
     </div>
   </section>
 
-  <!-- App Layer -->
-  <main id="layer-app" class="hidden opacity-0 transition-opacity duration-1000">
-    <header class="p-6 flex justify-between items-center">
-      <div class="w-8 h-8 bg-[#f1c40f] rounded-lg flex items-center justify-center font-black text-black text-xs">E</div>
-      <span class="text-[10px] tracking-[0.3em] font-mono text-slate-500">ARCHITECT MODE</span>
-    </header>
-    <div id="social-feed" class="p-4 space-y-4">
-      <!-- Shards will be injected here -->
-    </div>
-  </main>
+  <!-- Firebase Config injected at deploy -->
+  <script src="firebase-config.js"></script>
 
-  <!-- Scripts -->
-  <script src="firebase-config.js"></script> <!-- injected at build from secrets -->
-  <script type="module" src="app.js"></script>
+  <!-- App Initialization -->
+  <script type="module">
+    import { initNavigation } from './js/master.js';
+    import { db } from './js/firebase-init.js';
+
+    // Boot the ecosystem (nav, status monitor, etc.)
+    initNavigation();
+  </script>
 </body>
 </html>
