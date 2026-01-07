@@ -1,102 +1,57 @@
 import { db } from "./firebase.js";
-import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const postsRef = collection(db, "social_feed");
-
-export async function postUpdate(content) {
-    await addDoc(postsRef, {
-        author: "Yewilsaw",
-        text: content,
-        timestamp: Date.now()
-    });
-}
-
-export function listenToFeed(callback) {
-    const q = query(postsRef, orderBy("timestamp", "desc"));
-    onSnapshot(q, (snapshot) => {
-        const posts = snapshot.docs.map(doc => doc.data());
-        callback(posts);
-    });
-}
-
+import { 
+    collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, increment 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getGeminiResponse } from "./ai.js";
 
-async function handleNewPost(text) {
-    // Optional: Use Gemini to suggest hashtags or check for helpfulness
-    const aiSuggestion = await getGeminiResponse(`Suggest 3 academic hashtags for: ${text}`);
-    console.log("AI Tags:", aiSuggestion);
-    
-    await sharePost(`${text} \n\n ${aiSuggestion}`);
-}
-
-import { db } from "./firebase.js";
-import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 const postsRef = collection(db, "posts");
 
-// Function to share a post
-export async function sharePost(content) {
-    await addDoc(postsRef, {
-        author: "Yewilsaw Chanie Mekonen", // Using your preferred name from settings
-        content: content,
-        timestamp: new Date(),
-        likes: 0
-    });
+/**
+ * Creates a post with AI-generated hashtags
+ */
+export async function createPost(text) {
+    try {
+        // AI Enhancement
+        const aiSuggestion = await getGeminiResponse(`Suggest 3 academic hashtags for: ${text}`);
+        const finalContent = `${text} \n\n ${aiSuggestion}`;
+
+        await addDoc(postsRef, {
+            author: "Yewilsaw Chanie Mekonen",
+            content: finalContent,
+            timestamp: Date.now(),
+            resonations: 0
+        });
+    } catch (error) {
+        console.error("Failed to post:", error);
+    }
 }
 
-// Function to listen for new posts and update the UI
-export function loadFeed(renderCallback) {
+/**
+ * Real-time listener for the feed
+ */
+export function initFeed(callback) {
     const q = query(postsRef, orderBy("timestamp", "desc"));
-    onSnapshot(q, (snapshot) => {
-        const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderCallback(posts);
-    });
-}
-
-import { db } from "./firebase.js";
-import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const postsRef = collection(db, "posts");
-
-// Function to create a new post
-export async function createPost(content) {
-    await addDoc(postsRef, {
-        author: "Yewilsaw", // Placeholder for authenticated user
-        text: content,
-        likes: 0,
-        timestamp: Date.now()
-    });
-}
-
-// Listen for new posts in real-time
-export function listenToFeed(callback) {
-    const q = query(postsRef, orderBy("timestamp", "desc"));
-    onSnapshot(q, (snapshot) => {
+    return onSnapshot(q, (snapshot) => {
         const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(posts);
     });
 }
-import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const db = getFirestore();
-
+/**
+ * The "Resonate" (Like) mechanism with haptic feedback
+ */
 window.resonate = async (postId) => {
-    // 1. Identify the specific post node
     const postRef = doc(db, "posts", postId);
-
     try {
-        // 2. Atomically increment the count (Zero-latency feel)
         await updateDoc(postRef, {
             resonations: increment(1)
         });
         
-        // 3. Trigger a haptic feedback if on Android
-        if (window.navigator.vibrate) {
-            window.navigator.vibrate(10); 
+        if (navigator.vibrate) {
+            navigator.vibrate(10); 
         }
-        
-        console.log("Post Resonated!");
     } catch (error) {
-        console.error("Link unstable:", error);
+        console.error("Connection unstable:", error);
     }
 };
+        
