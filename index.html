@@ -126,3 +126,38 @@
   <script type="module" src="Social/feed.js"></script>
 </body>
   </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementa | The Universal Gateway</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#020617] text-slate-200 h-screen flex items-center justify-center overflow-hidden p-6">
+
+    <div class="absolute inset-0 z-0 overflow-hidden">
+        <div class="neural-glow" style="top: 20%; left: 30%;"></div>
+        <div class="neural-glow" style="bottom: 10%; right: 20%; background: radial-gradient(circle, rgba(241, 196, 15, 0.05) 0%, transparent 70%);"></div>
+    </div>
+
+    <main class="elementa-glass glass-noise p-12 rounded-[50px] w-full max-w-lg z-10 text-center relative border-t-2 border-white/10">
+        <div class="w-20 h-20 bg-[#f1c40f] rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-[0_0_50px_rgba(241,196,15,0.3)]">
+            <span class="text-black text-4xl font-black">E</span>
+        </div>
+
+        <h1 id="welcome-text" class="text-xl font-mono text-[#f1c40f] mb-4 h-8 uppercase tracking-[0.2em]"></h1>
+        <p id="sub-text" class="text-slate-500 text-xs mb-10 opacity-0 transition-opacity duration-1000">AUTHENTICATING NEURAL SIGNATURE...</p>
+
+        <div id="login-form" class="space-y-4 opacity-0 transform translate-y-4 transition-all duration-700">
+            <input type="email" placeholder="NODE IDENTITY (EMAIL)" class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-[#f1c40f] text-sm">
+            <button onclick="window.location.href='pages/feed.html'" class="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#f1c40f] transition-all">
+                Enter Ecosystem
+            </button>
+        </div>
+    </main>
+
+    <script src="js/welcome.js"></script>
+</body>
+</html>
