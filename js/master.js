@@ -1,112 +1,180 @@
-// js/master.js
+
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Initialize Firestore for real-time monitoring
+const db = getFirestore();
+
+/**
+ * CORE INITIALIZER
+ * Call this in your HTML module script to boot the ecosystem.
+ */
 export function initNavigation() {
-    const navHTML = `
-    <aside class="elementa-glass glass-noise w-20 md:w-64 h-[95vh] my-[2.5vh] ml-4 rounded-3xl flex flex-col p-4 fixed left-0 z-50">
-        <div class="flex items-center gap-3 mb-10 px-2 cursor-pointer" onclick="window.location.href='../index.html'">
-            <div class="w-10 h-10 bg-[#f1c40f] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(241,196,15,0.3)]">
-                <span class="text-black font-black text-xl">E</span>
-            </div>
-            <h1 class="font-black tracking-tighter hidden md:block text-lg">ELEMENTA</h1>
-        </div>
+    injectLoader();
+    injectBaseLayout();
+    initSolarSync();
+    initStatusMonitor();
+    setupInteractions();
+    handleActiveState();
+    registerServiceWorker();
+}
 
-        <nav class="flex-1 flex flex-col gap-2">
-            <a href="feed.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
-                <span>🏠</span> <span class="hidden md:block font-bold text-xs uppercase tracking-widest">Stream</span>
-            </a>
-            <a href="messages.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
-                <span>💬</span> <span class="hidden md:block font-bold text-xs uppercase tracking-widest">Neural Link</span>
-            </a>
-            <a href="vault.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
-                <span>📂</span> <span class="hidden md:block font-bold text-xs uppercase tracking-widest">Vault</span>
-            </a>
-        </nav>
+// --- 1. UI INJECTION MODULES ---
 
-        <a href="profile.html" class="glass-interactive mt-auto p-2 rounded-2xl border border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f1c40f] to-orange-500"></div>
-            <div class="hidden md:block overflow-hidden">
-                <p class="text-[10px] font-bold truncate">Yewilsaw Chanie</p>
-                <p class="text-[8px] text-slate-500">Physical Chemist</p>
-            </div>
-        </a>
-    </aside>
-    `;
-
-    const navContainer = document.getElementById('global-nav');
-    if (navContainer) {
-        navContainer.innerHTML = navHTML;
-        
-        // Highlight active page
-        const currentPage = window.location.pathname.split("/").pop();
-        const links = navContainer.querySelectorAll('a');
-        links.forEach(link => {
-            if (link.getAttribute('href') === currentPage) {
-                link.classList.add('bg-white/10', 'text-[#f1c40f]', 'border', 'border-white/10');
-            }
-        });
-    }
-        }
-// js/master.js
-
-export function initNavigation() {
-    // 1. Inject Loader HTML
+function injectLoader() {
     const loaderHTML = `
-    <div id="loader-overlay">
-        <div class="node-pulse">E</div>
-        <div class="loader-text tracking-widest animate-pulse">Node Connecting...</div>
-    </div>
-    `;
+    <div id="loader-overlay" style="position:fixed; inset:0; z-index:1000; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity 0.5s ease;">
+        <div class="node-pulse bg-[#f1c40f] w-16 h-16 rounded-2xl flex items-center justify-center text-black font-black text-2xl mb-4 shadow-[0_0_30px_rgba(241,196,15,0.4)]">E</div>
+        <div class="loader-text text-[#f1c40f] text-[10px] font-bold tracking-[0.3em] animate-pulse uppercase">Node Connecting...</div>
+    </div>`;
     document.body.insertAdjacentHTML('afterbegin', loaderHTML);
 
-    // 2. Navigation Bar HTML (Previous turn logic included)
-    const navHTML = `
-    <div class="neural-glow" id="glow"></div>
-    <aside class="elementa-glass w-full md:w-64 h-16 md:h-[95vh] fixed bottom-0 md:top-[2.5vh] md:left-4 z-[100] md:rounded-3xl flex md:flex-row md:flex-col items-center justify-around md:justify-start p-2 md:p-4">
-        </aside>
-    `;
-
-    const navContainer = document.getElementById('global-nav');
-    if (navContainer) navContainer.innerHTML = navHTML;
-
-    // 3. Handle Loader Removal
     window.addEventListener('load', () => {
         const loader = document.getElementById('loader-overlay');
         setTimeout(() => {
             loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-        }, 300); // Small delay to ensure smooth transition
+            setTimeout(() => loader.remove(), 500);
+        }, 300);
     });
+}
 
-    // 4. Neural Glow for Android Touch
-    const glow = document.getElementById('glow');
-    document.addEventListener('touchstart', (e) => {
-        const touch = e.touches[0];
-        glow.style.transform = `translate(${touch.clientX - 150}px, ${touch.clientY - 150}px)`;
-    });
-                            }
-                              
-// Add this inside the navHTML string in your initNavigation function
-const searchTrigger = `
-    <div class="mt-4 px-2">
-        <button onclick="toggleSearch()" class="glass-interactive w-full flex items-center justify-center md:justify-start gap-4 p-4 rounded-2xl text-slate-400">
-            <span>🔍</span>
-            <span class="hidden md:block font-bold text-[10px] uppercase tracking-[0.2em]">Search Grid</span>
-        </button>
-    </div>
-`;
+function injectBaseLayout() {
+    const navHTML = `
+    <div class="neural-glow fixed w-[300px] h-[300px] rounded-full bg-[#f1c40f]/5 blur-[100px] pointer-events-none z-0" id="glow"></div>
+    
+    <aside class="elementa-glass glass-noise w-full md:w-64 h-16 md:h-[95vh] fixed bottom-0 md:top-[2.5vh] md:left-4 z-[100] md:rounded-3xl flex md:flex-col items-center p-2 md:p-4 transition-all">
+        <div class="logo-node hidden md:flex items-center gap-3 mb-10 px-2 cursor-pointer" onclick="window.location.href='index.html'">
+            <div class="w-10 h-10 bg-[#f1c40f] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(241,196,15,0.3)]">
+                <span class="text-black font-black text-xl">E</span>
+            </div>
+            <h1 class="font-black tracking-tighter text-lg">ELEMENTA</h1>
+        </div>
 
-// Add the Search Overlay to the bottom of your body
-const searchOverlay = `
+        <nav class="flex-1 flex flex-row md:flex-col gap-2 w-full justify-around md:justify-start">
+            <a href="feed.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
+                <span>🏠</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Stream</span>
+            </a>
+            <a href="messages.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
+                <span>💬</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Neural Link</span>
+            </a>
+            <a href="vault.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
+                <span>📂</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Vault</span>
+            </a>
+            <button onclick="toggleSearch()" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:text-[#f1c40f]">
+                <span>🔍</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Search</span>
+            </button>
+        </nav>
+
+        <a href="profile.html" class="glass-interactive mt-auto p-2 rounded-2xl border border-white/5 hidden md:flex items-center gap-3 w-full">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#f1c40f] to-orange-500"></div>
+            <div class="overflow-hidden">
+                <p class="text-[9px] font-black truncate uppercase">Yewilsaw Chanie</p>
+                <p class="text-[7px] text-slate-500 uppercase tracking-tighter">Physical Chemist</p>
+            </div>
+        </a>
+    </aside>
+
     <div id="search-modal" class="hidden fixed inset-0 z-[200] elementa-glass backdrop-blur-3xl p-6 flex flex-col items-center pt-24 page-transition">
         <button onclick="toggleSearch()" class="absolute top-8 right-8 text-2xl">✕</button>
         <div class="w-full max-w-2xl">
             <input type="text" id="grid-search-input" oninput="executeSearch(this.value)" 
                    placeholder="SEARCH NODES OR SHARDS..." 
                    class="w-full bg-transparent border-b-2 border-[#f1c40f] text-3xl font-black outline-none pb-4 tracking-tighter uppercase placeholder:opacity-20">
-            <div id="search-results" class="mt-12 space-y-4 max-h-[60vh] overflow-y-auto custom-scroll">
-                </div>
+            <div id="search-results" class="mt-12 space-y-4 max-h-[60vh] overflow-y-auto custom-scroll"></div>
         </div>
     </div>
-`;
+
+    <div id="quick-action-overlay" class="hidden fixed inset-0 z-[300] bg-black/80 backdrop-blur-xl items-center justify-center p-6" onclick="hideQuickActions()">
+        <div class="grid grid-cols-2 gap-4 max-w-sm w-full">
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="window.location.href='feed.html?action=new'">
+                <span class="text-3xl">✨</span> <span class="text-[10px] font-black">NEW SHARD</span>
+            </button>
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="window.location.href='vault.html?action=upload'">
+                <span class="text-3xl">📂</span> <span class="text-[10px] font-black">VAULT UP</span>
+            </button>
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="window.location.href='messages.html'">
+                <span class="text-3xl">💬</span> <span class="text-[10px] font-black">MESSAGES</span>
+            </button>
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="toggleSearch()">
+                <span class="text-3xl">🔍</span> <span class="text-[10px] font-black">SEARCH</span>
+            </button>
+        </div>
+    </div>`;
+
+    const container = document.getElementById('global-nav');
+    if (container) container.innerHTML = navHTML;
+}
+
+// --- 2. INTERACTION ENGINE ---
+
+function setupInteractions() {
+    const glow = document.getElementById('glow');
+    const logoNode = document.querySelector('.logo-node');
+    let touchTimer;
+
+    // Neural Glow Following (Touch/Android)
+    document.addEventListener('touchstart', (e) => {
+        if (!glow) return;
+        const touch = e.touches[0];
+        glow.style.transform = `translate(${touch.clientX - 150}px, ${touch.clientY - 150}px)`;
+    });
+
+    // Logo Long Press for Quick Actions
+    if (logoNode) {
+        logoNode.addEventListener('touchstart', () => {
+            touchTimer = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate([30, 50]);
+                window.showQuickActions();
+            }, 600);
+        });
+        logoNode.addEventListener('touchend', () => clearTimeout(touchTimer));
+        logoNode.addEventListener('touchmove', () => clearTimeout(touchTimer));
+    }
+}
+
+// --- 3. ECOSYSTEM MONITORING ---
+
+export function initStatusMonitor() {
+    const statusHTML = `
+        <div class="elementa-glass status-shard fixed bottom-20 md:bottom-8 right-8 flex items-center gap-3 px-4 py-2 rounded-full text-[8px] font-black tracking-widest z-[90] border border-white/5">
+            <div id="connection-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span id="latency-text">00MS</span>
+            <span class="opacity-20">|</span>
+            <span id="node-count">1 NODE ONLINE</span>
+        </div>`;
+    document.body.insertAdjacentHTML('beforeend', statusHTML);
+
+    // Latency Ping Logic
+    setInterval(async () => {
+        const start = Date.now();
+        try {
+            await fetch('https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8', { mode: 'no-cors' });
+            const latency = Date.now() - start;
+            const text = document.getElementById('latency-text');
+            const dot = document.getElementById('connection-dot');
+            
+            text.textContent = `${latency}MS`;
+            dot.className = latency > 300 ? "w-2 h-2 rounded-full bg-yellow-500" : "w-2 h-2 rounded-full bg-green-500";
+        } catch {
+            document.getElementById('connection-dot').className = "w-2 h-2 rounded-full bg-red-500";
+            document.getElementById('latency-text').textContent = "DISCONNECTED";
+        }
+    }, 5000);
+
+    // Active Node Count Listener
+    onSnapshot(collection(db, "active_sessions"), (snap) => {
+        const count = snap.size || 1;
+        document.getElementById('node-count').textContent = `${count} ${count === 1 ? 'NODE' : 'NODES'} ONLINE`;
+    });
+}
+
+export function initSolarSync() {
+    const hour = new Date().getHours();
+    document.body.classList.remove('obsidian-mode', 'alabaster-mode');
+    document.body.classList.add(hour >= 18 || hour < 6 ? 'obsidian-mode' : 'alabaster-mode');
+}
+
+// --- 4. GLOBAL UTILITIES & ACTIONS ---
+
 window.toggleSearch = () => {
     const modal = document.getElementById('search-modal');
     modal.classList.toggle('hidden');
@@ -122,206 +190,43 @@ window.executeSearch = (query) => {
         return;
     }
 
-    // Logic: Filter posts currently stored in your local session for instant speed
-    // This is "High Performance" because it happens in 0ms on the client side
+    // High Performance Client-Side Search
     const localPosts = Array.from(document.querySelectorAll('.elementa-glass p'));
     const filtered = localPosts.filter(p => p.textContent.toLowerCase().includes(query.toLowerCase()));
 
     resultsContainer.innerHTML = filtered.map(p => `
         <div class="glass-interactive p-4 rounded-2xl border border-white/5 cursor-pointer" onclick="toggleSearch()">
-            <p class="text-xs text-[#f1c40f] font-black mb-1 uppercase">SHARD MATCH</p>
-            <p class="text-sm line-clamp-2 opacity-70">${p.textContent}</p>
+            <p class="text-[8px] text-[#f1c40f] font-black mb-1 uppercase tracking-widest">SHARD MATCH</p>
+            <p class="text-sm line-clamp-2 opacity-70 font-light">${p.textContent}</p>
         </div>
     `).join('');
 };
-// Add this to your initNavigation function in master.js
-
-let touchTimer;
-const logoNode = document.querySelector('.logo-node'); // Add this class to your Nav Logo
-
-function startLongPress() {
-    touchTimer = setTimeout(() => {
-        if (window.navigator.vibrate) window.navigator.vibrate([30, 50]); // Dual-pulse feedback
-        showQuickActions();
-    }, 600); // 600ms held down triggers the menu
-}
-
-function cancelLongPress() {
-    clearTimeout(touchTimer);
-}
-
-// Attach to your logo
-logoNode.addEventListener('touchstart', startLongPress);
-logoNode.addEventListener('touchend', cancelLongPress);
-logoNode.addEventListener('touchmove', cancelLongPress);
 
 window.showQuickActions = () => {
-    const overlay = document.getElementById('quick-action-overlay');
-    overlay.style.display = 'flex';
+    document.getElementById('quick-action-overlay').style.display = 'flex';
 };
 
 window.hideQuickActions = () => {
     document.getElementById('quick-action-overlay').style.display = 'none';
 };
-const quickActionHTML = `
-<div id="quick-action-overlay" onclick="hideQuickActions()">
-    <div class="action-circle">
-        <button class="action-btn elementa-glass" onclick="window.location.href='feed.html?action=new'">
-            <span class="text-3xl">✨</span> NEW SHARD
-        </button>
-        <button class="action-btn elementa-glass" onclick="window.location.href='vault.html?action=upload'">
-            <span class="text-3xl">📂</span> VAULT UP
-        </button>
-        <button class="action-btn elementa-glass" onclick="window.location.href='messages.html'">
-            <span class="text-3xl">💬</span> NEURAL LINK
-        </button>
-        <button class="action-btn elementa-glass" onclick="toggleSearch()">
-            <span class="text-3xl">🔍</span> SEARCH
-        </button>
-    </div>
-</div>
-`;
-document.body.insertAdjacentHTML('beforeend', quickActionHTML);
-// Add to your master.js init function
-export function initStatusMonitor() {
-    const statusHTML = `
-        <div class="elementa-glass status-shard">
-            <div id="connection-dot" class="status-dot online"></div>
-            <span id="latency-text">00ms</span>
-            <span class="opacity-20">|</span>
-            <span id="node-count">1 ACTIVE NODE</span>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', statusHTML);
 
-    // 1. Monitor Latency
-    setInterval(() => {
-        const start = Date.now();
-        // Ping the free cloud endpoint
-        fetch('https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8', { mode: 'no-cors' })
-            .then(() => {
-                const latency = Date.now() - start;
-                const text = document.getElementById('latency-text');
-                const dot = document.getElementById('connection-dot');
-                
-                text.textContent = `${latency}ms`;
-                
-                // Dynamic visual feedback
-                if(latency > 300) dot.className = "status-dot lagging";
-                else dot.className = "status-dot online";
-            })
-            .catch(() => {
-                document.getElementById('connection-dot').className = "status-dot offline";
-                document.getElementById('latency-text').textContent = "DISCONNECTED";
-            });
-    }, 5000); // Check every 5 seconds to save free-tier bandwidth
-                    }
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const db = getFirestore();
-
-// Listen for total active sessions in the ecosystem
-onSnapshot(collection(db, "active_sessions"), (snap) => {
-    const count = snap.size || 1;
-    document.getElementById('node-count').textContent = `${count} ${count === 1 ? 'NODE' : 'NODES'} ONLINE`;
-});
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Neural Link Cached.'))
-      .catch(err => console.log('Offline Node Failed.'));
-  });
-}
-export function initSolarSync() {
-    const hour = new Date().getHours();
-    const body = document.body;
-    
-    // If it's between 6 PM and 6 AM, stay in Obsidian mode
-    if (hour >= 18 || hour < 6) {
-        body.classList.add('obsidian-mode');
-    } else {
-        body.classList.add('alabaster-mode'); // Soft light glass for daytime
-    }
-}
-function triggerSparkVisuals(data) {
-    // 1. Android Haptics
-    if (window.navigator.vibrate) {
-        window.navigator.vibrate([100, 50, 100]); 
-    }
-
-    // 2. UI Overlay
-    const flash = document.createElement('div');
-    flash.className = "fixed inset-0 z-[1000] bg-[#f1c40f]/20 backdrop-blur-sm pointer-events-none animate-spark-flash";
-    document.body.appendChild(flash);
-
-    // 3. Clean up
-    setTimeout(() => flash.remove(), 1000);
-    
-    // 4. Show Notification Toast
-    showToast("✨ A NEW NODE HAS SPARKED YOU!");
-}
-export function triggerSparkResponse() {
-    // 1. Physical Pulse (Android Exclusive)
-    // A 'Double Tap' vibration pattern
-    if ("vibrate" in navigator) {
-        navigator.vibrate([100, 50, 100]); 
-    }
-
-    // 2. Visual Surge
-    const overlay = document.createElement('div');
-    overlay.className = "fixed inset-0 z-[1000] bg-[#f1c40f]/10 pointer-events-none animate-spark-flash";
-    document.body.appendChild(overlay);
-
-    // 3. Notification Toast
-    const toast = document.createElement('div');
-    toast.className = "fixed top-10 left-1/2 -translate-x-1/2 elementa-glass spark-toast px-8 py-4 rounded-2xl z-[1001] text-[10px] font-black uppercase tracking-widest text-[#f1c40f]";
-    toast.innerHTML = "✨ Node Resonance Detected";
-    document.body.appendChild(toast);
-
-    // 4. Cleanup Memory
-    setTimeout(() => {
-        overlay.remove();
-        toast.remove();
-    }, 2000);
+function handleActiveState() {
+    const currentPage = window.location.pathname.split("/").pop() || 'index.html';
+    const links = document.querySelectorAll('nav a');
+    links.forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+            link.classList.add('bg-white/10', 'text-[#f1c40f]', 'border', 'border-white/10');
         }
-// Triggered by the Broadcast Logic
-export function launchGenesisPulse(message) {
-    // 1. Force the 'Universal Gold' Theme for 5 seconds
-    document.body.classList.add('pulse-active');
-    
-    // 2. Heavy Haptic Sequence (Long Pulse)
-    if ("vibrate" in navigator) {
-        navigator.vibrate([500, 200, 500]); 
-    }
-
-    // 3. Display the Broadcast Message
-    const pulseBox = document.createElement('div');
-    pulseBox.className = "fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-3xl p-10";
-    pulseBox.innerHTML = `
-        <div class="text-center">
-            <h1 class="text-[#f1c40f] text-xs font-black tracking-[0.5em] mb-4">GLOBAL PULSE RECEIVED</h1>
-            <p class="text-white text-2xl font-light leading-relaxed">${message}</p>
-            <button onclick="this.parentElement.parentElement.remove()" class="mt-10 border border-[#f1c40f] text-[#f1c40f] px-10 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[#f1c40f] hover:text-black transition-all">Acknowledge</button>
-        </div>
-    `;
-    document.body.appendChild(pulseBox);
-        }
-// Inside the Node Rendering logic
-if (user.uid === "YOUR_ADMIN_UID_FROM_FIREBASE") {
-    profileElement.classList.add('aura-architect');
-    profileElement.innerHTML += '<span class="root-badge">Λ</span>';
+    });
 }
-function triggerCallHaptics() {
-    if ("vibrate" in navigator) {
-        // Rhythmic heartbeat: Pulse, pause, pulse, long pause
-        const heartbeat = [200, 100, 200, 1000]; 
-        const callRhythm = setInterval(() => {
-            navigator.vibrate(heartbeat);
-        }, 1500);
-        
-        // Stop vibrating if the call is answered or timed out
-        window.currentCallInterval = callRhythm;
-    }
-                              }
 
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('Neural Link Cached.'))
+                .catch(() => console.log('Offline Node Failed.'));
+        });
+    }
+}
 
