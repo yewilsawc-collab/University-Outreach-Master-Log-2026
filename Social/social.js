@@ -3,37 +3,54 @@ import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gsta
 
 const postsRef = collection(db, "posts");
 
-export async function postUpdate(content) {
+/**
+ * Creates a research update linked to your UID for stats tracking
+ */
+export async function createPost(content, userUid) {
     await addDoc(postsRef, {
-        author: "Yewilsaw",
+        author: "Yewilsaw Chanie Mekonen",
+        authorUID: userUid, // Crucial for profile.js sync
         text: content,
         timestamp: Date.now(),
-        type: "research_update"
+        type: "research_update",
+        resonations: 0 // Required for the Resonate/Like system
     });
 }
 
+/**
+ * Connects the Firestore stream to your UI container
+ */
 export function initFeed(containerId) {
     const q = query(postsRef, orderBy("timestamp", "desc"));
     const container = document.getElementById(containerId);
 
-    onSnapshot(q, (snapshot) => {
+    if (!container) return;
+
+    return onSnapshot(q, (snapshot) => {
         container.innerHTML = ""; 
         snapshot.forEach((doc) => {
             const post = doc.data();
-            renderPost(container, post);
+            const postId = doc.id;
+            renderPost(container, post, postId);
         });
     });
 }
 
-function renderPost(container, post) {
+function renderPost(container, post, postId) {
     const div = document.createElement("div");
-    // Reuse your existing high-contrast blue/gold styling
-    div.className = "user-message"; 
-    div.style.width = "90%";
+    div.className = "post-card"; // Using a consistent class for the ecosystem
     div.innerHTML = `
-        <strong>${post.author}</strong>
-        <p>${post.text}</p>
-        <small>${new Date(post.timestamp).toLocaleDateString()}</small>
+        <div class="post-header">
+            <strong>${post.author}</strong>
+            <small>${new Date(post.timestamp).toLocaleString()}</small>
+        </div>
+        <p class="post-content">${post.text}</p>
+        <div class="post-actions">
+            <button onclick="resonate('${postId}')">
+                Resonate (${post.resonations || 0})
+            </button>
+        </div>
     `;
     container.appendChild(div);
-}
+                }
+            
