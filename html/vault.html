@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <main class="ml-0 md:ml-72 p-6 pt-24">
+    <header class="flex justify-between items-center mb-10">
+        <div>
+            <h2 class="text-4xl font-black tracking-tighter uppercase">The Vault</h2>
+            <p class="text-[10px] text-slate-500 tracking-[0.3em]">ENCRYPTED ASSET REPOSITORY</p>
+        </div>
+        <button onclick="triggerUpload()" class="bg-[#f1c40f] text-black px-6 py-2 rounded-xl font-black text-xs hover:scale-105 transition-all">
+            UPLOAD ASSET
+        </button>
+    </header>
+
+    <div id="vault-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+        </div>
+</main>
+
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
 // Simple logic to render your private gallery
