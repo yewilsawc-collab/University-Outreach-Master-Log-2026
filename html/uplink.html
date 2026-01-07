@@ -1,0 +1,25 @@
+<div id="composer-modal" class="hidden fixed inset-0 z-[600] flex items-center justify-center p-4 backdrop-blur-2xl">
+    <div class="elementa-glass p-8 rounded-[40px] w-full max-w-lg relative border-t border-white/20">
+        <button onclick="closeComposer()" class="absolute top-6 right-6 text-slate-500 hover:text-white">✕</button>
+        
+        <h3 class="text-xs font-black tracking-[0.3em] text-[#f1c40f] mb-6 uppercase">New Shard</h3>
+
+        <div id="media-preview" class="w-full h-48 bg-white/5 rounded-3xl mb-4 border-2 border-dashed border-white/10 flex items-center justify-center overflow-hidden">
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest">Tap to add media</p>
+        </div>
+
+        <textarea id="shard-content" placeholder="What's the vibe?" 
+            class="w-full bg-transparent text-xl font-medium outline-none resize-none h-32 placeholder:text-slate-700"></textarea>
+
+        <div class="flex justify-between items-center mt-6">
+            <div class="flex gap-4">
+                <button class="text-xl">🖼️</button>
+                <button class="text-xl">📍</button>
+                <button class="text-xl">🔥</button>
+            </div>
+            <button onclick="deployShard()" class="bg-[#f1c40f] text-black px-10 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_10px_30px_rgba(241,196,15,0.3)]">
+                Deploy
+            </button>
+        </div>
+    </div>
+</div>
