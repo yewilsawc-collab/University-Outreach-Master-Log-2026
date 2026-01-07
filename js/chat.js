@@ -1,134 +1,96 @@
-// chat.js
-// Handles user messages, stores them in Firebase, and requests Gemini AI replies
+import { auth, db, rtdb } from "./firebase.js"; // Ensure these are exported from firebase.js
+import { 
+    collection, addDoc, setDoc, doc, serverTimestamp, 
+    query, where, orderBy, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+    ref, push, onChildAdded 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getGeminiResponse } from "./ai.js";
 
-import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import { getGeminiResponse } from "./ai.js";  // Gemini integration
-import { db } from "./firebase.js";
-import { collection, addDoc, serverTimestamp, doc, updateDoc } from "firebase/firestore";
-
-async function sendPrivateMessage(recipientId, text) {
-    const convoId = getConversationID(currentUser.uid, recipientId);
-    const messagesRef = collection(db, "conversations", convoId, "messages");
-
-    // 1. Add the message to the sub-collection
-    await addDoc(messagesRef, {
-        senderId: currentUser.uid,
-        text: text,
-        timestamp: serverTimestamp()
-    });
-
-    // 2. Update the parent conversation for the "Inbox" view
-    await updateDoc(doc(db, "conversations", convoId), {
-        lastMessage: text,
-        updatedAt: serverTimestamp(),
-        participants: [currentUser.uid, recipientId]
-    });
-                       }
-
-// Initialize Realtime Database
-const db = getDatabase();
-const chatRef = ref(db, "phd_chat_logs");
-
-// Function to send a message
-export async function sendUserMessage(text) {
-    // 1. Push user message to Firebase
-    await push(chatRef, {
-        sender: "Yewilsaw",
-        text,
-        timestamp: Date.now()
-    });
-
-    // 2. Ask Gemini for a reply
-    const reply = await getGeminiResponse(text);
-
-    // 3. Push Gemini's reply to Firebase
-    await push(chatRef, {
-        sender: "Gemini",
-        text: reply,
-        timestamp: Date.now()
-    });
-}
-
-// Listen for messages and update the UI in real-time
-onChildAdded(chatRef, (snapshot) => {
-    const message = snapshot.val();
-    renderMessageToScreen(message.text, message.sender, message.timestamp);
-});
-
-// Simple UI renderer
-function renderMessageToScreen(text, sender, timestamp) {
-    const container = document.getElementById("chat-log");
-    const messageEl = document.createElement("div");
-    messageEl.className = sender === "Yewilsaw" ? "user-message" : "ai-message";
-    messageEl.textContent = `${sender}: ${text} (${new Date(timestamp).toLocaleTimeString()})`;
-    container.appendChild(messageEl);
-    container.scrollTop = container.scrollHeight; // auto-scroll
-      }
-function getConversationID(uid1, uid2) {
-    return [uid1, uid2].sort().join('_');
-        }
-                                                   
-
-// Helper: Ensure a consistent ID for two users
-const getRoomId = (uid1, uid2) => [uid1, uid2].sort().join("_");
+/** * HAPTIC FEEDBACK 
+ */
 const Haptics = {
-  // Light pulse for successful message sent
-  success: () => {
-    if ("vibrate" in navigator) navigator.vibrate(40);
-  },
-  
-  // Double pulse for receiving a 1-on-1 message
-  notification: () => {
-    if ("vibrate" in navigator) navigator.vibrate([50, 30, 50]);
-  },
-  
-  // Warning pulse for a failed Gemini request or upload error
-  error: () => {
-    if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
-  }
+    success: () => "vibrate" in navigator && navigator.vibrate(40),
+    notification: () => "vibrate" in navigator && navigator.vibrate([50, 30, 50]),
+    error: () => "vibrate" in navigator && navigator.vibrate([100, 50, 100])
 };
 
-// Example usage in your existing chat logic
-export async function sendUserMessage(text) {
-    await push(chatRef, { sender: "Yewilsaw", text, timestamp: Date.now() });
-    
-    // Trigger haptic pulse on success
-    Haptics.success();
-    
-    const reply = await getGeminiResponse(text);
-    // ... rest of logic
-    }
-        
-// 1. Send a private message
-export async function sendPrivateMessage(recipientUid, text) {
-    const roomId = getRoomId(currentUser.uid, recipientUid);
-    
-    // Add message to sub-collection
-    await addDoc(collection(db, "conversations", roomId, "messages"), {
-        senderId: currentUser.uid,
-        text: text,
-        timestamp: serverTimestamp()
-    });
+/**
+ * 1. PRIVATE MESSAGING (Firestore)
+ * Best for: One-on-one structured chats with an Inbox view.
+ */
+const getRoomId = (uid1, uid2) => [uid1, uid2].sort().join("_");
 
-    // Update parent doc for Inbox preview
-    await setDoc(doc(db, "conversations", roomId), {
-        participants: [currentUser.uid, recipientUid],
-        lastMessage: text,
-        lastUpdate: serverTimestamp()
-    }, { merge: true });
+export async function sendPrivateMessage(recipientUid, text) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const roomId = getRoomId(user.uid, recipientUid);
+    const messagesRef = collection(db, "conversations", roomId, "messages");
+
+    try {
+        await Promise.all([
+            addDoc(messagesRef, {
+                senderId: user.uid,
+                text: text,
+                timestamp: serverTimestamp()
+            }),
+            setDoc(doc(db, "conversations", roomId), {
+                participants: [user.uid, recipientUid],
+                lastMessage: text,
+                lastUpdate: serverTimestamp()
+            }, { merge: true })
+        ]);
+        Haptics.success();
+    } catch (err) {
+        console.error("Msg Error:", err);
+        Haptics.error();
+    }
 }
 
-// 2. Load the Inbox list
 export function loadInbox(callback) {
+    const user = auth.currentUser;
+    if (!user) return;
+
     const q = query(
-        collection(db, "conversations"), 
-        where("participants", "array-contains", currentUser.uid),
+        collection(db, "conversations"),
+        where("participants", "array-contains", user.uid),
         orderBy("lastUpdate", "desc")
     );
 
-    onSnapshot(q, (snapshot) => {
+    return onSnapshot(q, (snapshot) => {
         const convos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(convos);
+    });
+}
+
+/**
+ * 2. AI CHAT LOGS (Realtime Database)
+ * Best for: High-frequency logs and AI interactions.
+ */
+const chatRef = ref(rtdb, "phd_chat_logs");
+
+export async function sendUserMessage(text) {
+    try {
+        // 1. Log User Message
+        await push(chatRef, { sender: "Yewilsaw", text, timestamp: Date.now() });
+        Haptics.success();
+
+        // 2. Get AI Response
+        const reply = await getGeminiResponse(text);
+
+        // 3. Log AI Reply
+        await push(chatRef, { sender: "Gemini", text: reply, timestamp: Date.now() });
+    } catch (err) {
+        Haptics.error();
+    }
+}
+
+// UI Listener for AI Logs
+export function listenToGlobalChat(renderFn) {
+    onChildAdded(chatRef, (snapshot) => {
+        renderFn(snapshot.val());
     });
 }
     
