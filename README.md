@@ -106,3 +106,51 @@ The following protocols are now **STABLE** and operating within universal parame
 > Your identity is linked, your vault is secure, and the resonance has begun.  
 > From the Source Node in Addis, we go universal.  
 > Explore the map. Find your tribe. Spark the connection.
+---
+
+# Elementa Architect: Node Support Script
+
+This script is designed to handle the most common inquiries with the premium, non-academic tone of Elementa. It keeps the mystery of the ecosystem alive while providing clear, technical guidance.
+
+---
+
+## Scenario A: Post Disappearance
+**User asks:** "Why did my post disappear?"  
+**Response:**  
+> "Your Shard has undergone Entropy. In the Elementa ecosystem, content requires Resonance (interaction) to remain in the public Pulse. Don't worry—it hasn't been deleted. It has been adsorbed into your private Vault. You can find it there and choose to re-deploy it when the energy is right."
+
+---
+
+## Scenario B: Connecting Nearby
+**User asks:** "How do I connect with people nearby?"  
+**Response:**  
+> "Activate your Node Discovery map. You'll see the energy pulses of other users in Addis Ababa. If you vibe with a profile, send a Spark. Once they Spark you back, a Neural Link is established, unlocking your private eChat tunnel."
+
+---
+
+## Scenario C: Profile Aura
+**User asks:** "What is the glowing ring around my profile?"  
+**Response:**  
+> "That is your Aura. It reflects your current standing in the universal ecosystem. A gold glow indicates you are a high-resonance node. As you continue to link and share quality Shards, your Aura will stabilize and evolve."
+
+---
+
+## Scenario D: Technical Glitch
+**User reports:** "Something isn’t working."  
+**Response:**  
+> "Logged. Please use the Support Uplink in your settings to transmit the specific variance. Every report helps us recalibrate the Universal Protocol for peak performance."
+
+---
+
+## Architect’s Quick-Command Guide (Android Terminal)
+
+| Command            | Action                                      | Frequency |
+|--------------------|---------------------------------------------|-----------|
+| `system --status`  | Check global node health and server latency | Daily     |
+| `entropy --run`    | Manually trigger archival of low-energy Shards | Weekly  |
+| `broadcast --m "[msg]"` | Send a Global Pulse to all 100 users   | As needed |
+
+---
+
+## The Path to 2026
+By managing this **Seed group**, you are gaining real-world data on Social Dynamics and System Stability. This experience parallels your research in **Kinetics**—observing how a population of "nodes" reacts under different conditions.
