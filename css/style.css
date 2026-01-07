@@ -293,3 +293,18 @@
     to { transform: scale(4); opacity: 0; }
   }
                                              
+@keyframes spark-flash {
+    0% { opacity: 0; backdrop-filter: blur(0px); }
+    20% { opacity: 1; backdrop-filter: blur(10px); }
+    100% { opacity: 0; backdrop-filter: blur(0px); }
+}
+
+.animate-spark-flash {
+    animation: spark-flash 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.spark-toast {
+    box-shadow: 0 0 30px rgba(241, 196, 15, 0.4);
+    border: 1px solid #f1c40f;
+      }
+                     
