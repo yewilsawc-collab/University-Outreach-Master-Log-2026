@@ -216,3 +216,12 @@ export function initStatusMonitor() {
             });
     }, 5000); // Check every 5 seconds to save free-tier bandwidth
                     }
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const db = getFirestore();
+
+// Listen for total active sessions in the ecosystem
+onSnapshot(collection(db, "active_sessions"), (snap) => {
+    const count = snap.size || 1;
+    document.getElementById('node-count').textContent = `${count} ${count === 1 ? 'NODE' : 'NODES'} ONLINE`;
+});
