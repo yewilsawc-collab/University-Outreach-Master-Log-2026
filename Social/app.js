@@ -44,4 +44,21 @@ window.showSection = (id) => {
 };
 
 init();
-          
+ // The Expansion Protocol
+window.addEventListener('load', () => {
+    const splash = document.querySelector('#splash-screen');
+    const appInterface = document.querySelector('#main-ecosystem');
+
+    // Simulate Neural Calibration (Data Loading)
+    setTimeout(() => {
+        // Move logo and fade out the obsidian backdrop
+        splash.classList.add('reveal-ecosystem');
+        appInterface.style.opacity = '1';
+        
+        // Trigger Neural Haptic for the Architect
+        if ("vibrate" in navigator) {
+            navigator.vibrate(50); 
+        }
+    }, 2000); 
+});
+                                                          
