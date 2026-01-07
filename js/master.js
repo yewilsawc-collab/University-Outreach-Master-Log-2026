@@ -311,3 +311,16 @@ if (user.uid === "YOUR_ADMIN_UID_FROM_FIREBASE") {
     profileElement.classList.add('aura-architect');
     profileElement.innerHTML += '<span class="root-badge">Λ</span>';
 }
+function triggerCallHaptics() {
+    if ("vibrate" in navigator) {
+        // Rhythmic heartbeat: Pulse, pause, pulse, long pause
+        const heartbeat = [200, 100, 200, 1000]; 
+        const callRhythm = setInterval(() => {
+            navigator.vibrate(heartbeat);
+        }, 1500);
+        
+        // Stop vibrating if the call is answered or timed out
+        window.currentCallInterval = callRhythm;
+    }
+                              }
+    
