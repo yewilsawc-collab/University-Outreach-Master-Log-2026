@@ -232,3 +232,14 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('Offline Node Failed.'));
   });
 }
+export function initSolarSync() {
+    const hour = new Date().getHours();
+    const body = document.body;
+    
+    // If it's between 6 PM and 6 AM, stay in Obsidian mode
+    if (hour >= 18 || hour < 6) {
+        body.classList.add('obsidian-mode');
+    } else {
+        body.classList.add('alabaster-mode'); // Soft light glass for daytime
+    }
+}
