@@ -284,3 +284,25 @@ export function triggerSparkResponse() {
         toast.remove();
     }, 2000);
         }
+// Triggered by the Broadcast Logic
+export function launchGenesisPulse(message) {
+    // 1. Force the 'Universal Gold' Theme for 5 seconds
+    document.body.classList.add('pulse-active');
+    
+    // 2. Heavy Haptic Sequence (Long Pulse)
+    if ("vibrate" in navigator) {
+        navigator.vibrate([500, 200, 500]); 
+    }
+
+    // 3. Display the Broadcast Message
+    const pulseBox = document.createElement('div');
+    pulseBox.className = "fixed inset-0 z-[2000] flex items-center justify-center bg-black/80 backdrop-blur-3xl p-10";
+    pulseBox.innerHTML = `
+        <div class="text-center">
+            <h1 class="text-[#f1c40f] text-xs font-black tracking-[0.5em] mb-4">GLOBAL PULSE RECEIVED</h1>
+            <p class="text-white text-2xl font-light leading-relaxed">${message}</p>
+            <button onclick="this.parentElement.parentElement.remove()" class="mt-10 border border-[#f1c40f] text-[#f1c40f] px-10 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-[#f1c40f] hover:text-black transition-all">Acknowledge</button>
+        </div>
+    `;
+    document.body.appendChild(pulseBox);
+        }
