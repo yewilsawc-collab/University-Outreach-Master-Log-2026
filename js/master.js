@@ -243,3 +243,20 @@ export function initSolarSync() {
         body.classList.add('alabaster-mode'); // Soft light glass for daytime
     }
 }
+function triggerSparkVisuals(data) {
+    // 1. Android Haptics
+    if (window.navigator.vibrate) {
+        window.navigator.vibrate([100, 50, 100]); 
+    }
+
+    // 2. UI Overlay
+    const flash = document.createElement('div');
+    flash.className = "fixed inset-0 z-[1000] bg-[#f1c40f]/20 backdrop-blur-sm pointer-events-none animate-spark-flash";
+    document.body.appendChild(flash);
+
+    // 3. Clean up
+    setTimeout(() => flash.remove(), 1000);
+    
+    // 4. Show Notification Toast
+    showToast("✨ A NEW NODE HAS SPARKED YOU!");
+}
