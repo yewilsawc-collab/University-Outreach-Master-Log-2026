@@ -1,15 +1,12 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, signInAnonymously, signOut } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+// firebase.js - REFACTORED
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+  apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
   authDomain: "university-outreach-log.firebaseapp.com",
   projectId: "university-outreach-log",
   storageBucket: "university-outreach-log.firebasestorage.app",
@@ -21,7 +18,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export const database= getdatabase(app)
+export const rtdb = getDatabase(app); // Fixed typo from 'getdatabase'
 
 export const signIn = () => signInAnonymously(auth);
 export const signOutUser = () => signOut(auth);
