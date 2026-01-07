@@ -225,3 +225,10 @@ onSnapshot(collection(db, "active_sessions"), (snap) => {
     const count = snap.size || 1;
     document.getElementById('node-count').textContent = `${count} ${count === 1 ? 'NODE' : 'NODES'} ONLINE`;
 });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Neural Link Cached.'))
+      .catch(err => console.log('Offline Node Failed.'));
+  });
+}
