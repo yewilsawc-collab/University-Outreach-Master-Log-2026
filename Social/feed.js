@@ -76,3 +76,27 @@ export function listenToFeed(callback) {
         callback(posts);
     });
 }
+import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const db = getFirestore();
+
+window.resonate = async (postId) => {
+    // 1. Identify the specific post node
+    const postRef = doc(db, "posts", postId);
+
+    try {
+        // 2. Atomically increment the count (Zero-latency feel)
+        await updateDoc(postRef, {
+            resonations: increment(1)
+        });
+        
+        // 3. Trigger a haptic feedback if on Android
+        if (window.navigator.vibrate) {
+            window.navigator.vibrate(10); 
+        }
+        
+        console.log("Post Resonated!");
+    } catch (error) {
+        console.error("Link unstable:", error);
+    }
+};
