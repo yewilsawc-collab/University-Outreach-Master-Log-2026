@@ -68,6 +68,24 @@
             <span class="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-xs">AI INTEGRATION</span>
         </div>
     </div>
+    // Add to pages/profile.html or a new 'Sync' modal
+import QRCode from 'qrcode'; // Use a lightweight CDN library
+
+export function generateSyncToken(userId) {
+    const canvas = document.getElementById('sync-qr-canvas');
+    const syncData = JSON.stringify({
+        nodeId: userId,
+        timestamp: Date.now(),
+        protocol: "P2P_LINK_v1"
+    });
+
+    QRCode.toCanvas(canvas, syncData, {
+        color: { dark: '#f1c40f', light: '#02061700' }, // Gold on Transparent
+        width: 250
+    });
+}
+</script>
 </body>
               </html>
               
+
