@@ -1,4 +1,8 @@
-// js/master.js
+<script type="module">
+    import { initNavigation } from './js/master.js';
+    initNavigation();
+</script>
+    // js/master.js
 export function initNavigation() {
     const navHTML = `
     <aside class="elementa-glass glass-noise w-20 md:w-64 h-[95vh] my-[2.5vh] ml-4 rounded-3xl flex flex-col p-4 fixed left-0 z-50">
