@@ -348,3 +348,19 @@
     50% { opacity: 1; }
     100% { transform: scale(3); opacity: 0; }
 }
+/* The Architect Exclusive: Singularity Aura */
+.aura-architect {
+    border: 2px solid transparent;
+    background: linear-gradient(#020617, #020617) padding-box,
+                linear-gradient(45deg, #f1c40f, #ffffff, #f1c40f) border-box;
+    box-shadow: 0 0 30px rgba(241, 196, 15, 0.5), 
+                inset 0 0 15px rgba(241, 196, 15, 0.2);
+    backdrop-filter: blur(15px) saturate(200%);
+    animation: architect-pulse 4s linear infinite;
+}
+
+@keyframes architect-pulse {
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    50% { filter: hue-rotate(15deg) brightness(1.3); transform: scale(1.02); }
+    100% { filter: hue-rotate(0deg) brightness(1); }
+        }
