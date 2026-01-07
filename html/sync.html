@@ -1,0 +1,14 @@
+<main class="h-screen flex flex-col items-center justify-center p-6 bg-[#020617]">
+    <div class="elementa-glass p-10 rounded-[50px] text-center max-w-sm">
+        <h2 class="text-2xl font-black text-[#f1c40f] mb-2 uppercase">Neural Sync</h2>
+        <p class="text-[9px] text-slate-500 tracking-[0.3em] mb-8">LOCAL NODE DISCOVERY</p>
+        
+        <div class="bg-white p-4 rounded-3xl mb-8 shadow-[0_0_30px_rgba(241,196,15,0.2)]">
+            <canvas id="sync-qr-canvas" class="w-full h-full"></canvas>
+        </div>
+
+        <button onclick="startScanner()" class="w-full glass-interactive py-4 rounded-2xl text-[10px] font-black tracking-widest uppercase">
+            Scan Peer Node
+        </button>
+    </div>
+</main>
