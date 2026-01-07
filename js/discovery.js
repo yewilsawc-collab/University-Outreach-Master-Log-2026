@@ -12,3 +12,15 @@ export function findNearbyNodes() {
         });
     }
 }
+// Add to your Global Discovery logic
+export function renderUniversalMap() {
+    const mapContainer = document.getElementById('world-map');
+    // Using a lightweight GeoJSON to render the nodes
+    // Nodes in Addis Ababa will have the highest 'Luminescence' 
+    // to mark the birthplace of the ecosystem.
+    fetch('/assets/world-nodes.json')
+        .then(res => res.json())
+        .then(data => {
+            drawNeuralNodes(data); // Custom canvas drawing function
+        });
+}
