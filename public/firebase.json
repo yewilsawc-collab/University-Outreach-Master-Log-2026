@@ -1,12 +1,13 @@
 {
   "hosting": {
-    "public": ".", 
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [
-      { "source": "/sw.js", "destination": "/sw.js" },
-      { "source": "/manifest.webmanifest", "destination": "/manifest.webmanifest" },
-      { "source": "**", "destination": "/index.html" }
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      ".github/**"
     ],
+    "cleanUrls": true,
     "headers": [
       {
         "source": "/**",
