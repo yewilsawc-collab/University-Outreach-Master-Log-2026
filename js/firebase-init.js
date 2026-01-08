@@ -4,13 +4,13 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+  "apiKey": "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+    "authDomain": "university-outreach-log.firebaseapp.com",
+    "projectId": "university-outreach-log",
+    "storageBucket": "university-outreach-log.firebasestorage.app",
+    "messagingSenderId": "566149647802",
+    "appId": "1:566149647802:web:490c7cc3d10b7cd7732183"
+  }
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
