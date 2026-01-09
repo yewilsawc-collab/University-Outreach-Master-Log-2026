@@ -2,115 +2,133 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus P2P | PhD Research Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELEMENTA | Universal Social Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --p2p-blue: #3b82f6; --p2p-dark: #09090b; }
-        body { background: var(--p2p-dark); color: #f4f4f5; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
-        .ai-glow { box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); }
-        .msg-bubble { border-radius: 20px 20px 4px 20px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); }
+        [span_2](start_span)[span_3](start_span)[span_4](start_span)/* CSS Integrations[span_2](end_span)[span_3](end_span)[span_4](end_span) */
+        :root {
+            --accent-gold: #f1c40f;
+            --bg-obsidian: #020617;
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body { background-color: var(--bg-obsidian); color: white; overflow-x: hidden; }
+
+        .elementa-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .tab-content { display: none; animation: slideIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 10px; }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body class="transition-colors duration-500">
 
-    <nav class="p-4 glass flex justify-between items-center z-30">
-        <div class="flex items-center gap-2">
-            <div class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
-            <h1 class="font-bold tracking-tight text-lg">NEXUS<span class="text-blue-500 italic">P2P</span></h1>
-        </div>
-        <div class="flex items-center gap-3">
-            <span id="p2p-status" class="text-[10px] text-gray-500 font-mono">IDLE</span>
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-blue-600 flex items-center justify-center text-[10px] font-bold">YC</div>
+    <nav class="fixed left-0 top-0 h-full w-64 border-r border-white/10 p-6 hidden md:flex flex-col gap-6 z-50 bg-[#020617]">
+        <h1 class="text-2xl font-black tracking-tighter text-white">ELEMENTA</h1>
+        <div class="flex flex-col gap-4">
+            <button onclick="switchTab('feed-view')" class="text-left hover:text-[#f1c40f] transition-colors font-bold">🏠 STREAM</button>
+            <button onclick="switchTab('chat-view')" class="text-left hover:text-[#f1c40f] transition-colors font-bold">💬 NEURAL LINK</button>
+            <button onclick="switchTab('discovery-view')" class="text-left hover:text-[#f1c40f] transition-colors font-bold">🔍 DISCOVERY</button>
+            <button onclick="switchTab('about-view')" class="text-left hover:text-[#f1c40f] transition-colors font-bold">ℹ️ ABOUT</button>
         </div>
     </nav>
 
-    <main id="feed" class="flex-grow overflow-y-auto p-4 space-y-4 flex flex-col pt-6 scroll-smooth">
-        <div class="text-center text-[10px] text-gray-600 uppercase tracking-widest py-4">Tunnel Secured with 256-bit AES</div>
+    <main class="ml-0 md:ml-64 p-6 pt-24 min-h-screen">
+        
+        <div id="about-view" class="tab-content active max-w-xl mx-auto space-y-8">
+            <header class="text-center mb-12">
+                <p class="text-[#f1c40f] text-[10px] font-bold tracking-[0.5em] uppercase">The Mission</p>
+                <h2 class="text-4xl font-black text-white">RESONANCE OVER NOISE</h2>
+            </header>
+            <div class="elementa-glass p-8 rounded-[40px]">
+                <h3 class="text-xs font-black uppercase tracking-widest mb-4">01. Kinetic Content</h3>
+                <p class="text-sm text-slate-400 font-light leading-relaxed">
+                    Content that resonates stays in the <span class="text-white">Pulse</span>. 
+                    [span_5](start_span)Low-energy data returns to the <span class="text-white">Vault</span>.[span_5](end_span)
+                </p>
+            </div>
+        </div>
+
+        <div id="feed-view" class="tab-content max-w-2xl mx-auto">
+            <div class="elementa-glass p-6 rounded-3xl mb-8">
+                <textarea id="post-input" placeholder="What’s happening in the ecosystem?" 
+                          class="w-full bg-transparent border-none outline-none text-lg resize-none h-20 text-white"></textarea>
+                <div class="flex justify-end border-t border-white/5 pt-4">
+                    <button class="bg-[#f1c40f] text-black px-8 py-2 rounded-full font-bold">POST</button>
+                </div>
+            </div>
+            <div id="social-stream" class="space-y-6">
+                </div>
+        </div>
+
+        <div id="chat-view" class="tab-content h-[80vh] flex flex-col">
+            <div id="chat-log" class="flex-1 overflow-y-auto custom-scroll space-y-4 p-4">
+                </div>
+            <footer class="p-4 elementa-glass rounded-3xl mt-4">
+                <div class="flex gap-3">
+                    <input id="chat-input" type="text" placeholder="Type a message to the grid..." 
+                           class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-3 outline-none text-white">
+                    <button onclick="sendMessage()" class="bg-[#f1c40f] text-black px-8 py-3 rounded-2xl font-black">SEND</button>
+                </div>
+            </footer>
+        </div>
+
+        <div id="discovery-view" class="tab-content grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="elementa-glass p-6 rounded-[40px] text-center">
+                <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 to-yellow-500 rounded-3xl mx-auto mb-4"></div>
+                <h3 class="text-white font-black uppercase">Sample_Node</h3>
+                <p class="text-[9px] text-slate-500 font-mono mb-4">DISTANCE: 2.4 KM</p>
+                <button class="bg-[#f1c40f] text-black px-6 py-2 rounded-full text-[10px] font-black">LINK NODE</button>
+            </div>
+        </div>
+
     </main>
 
-    <div id="ai-panel" class="hidden mx-4 p-4 glass ai-glow rounded-2xl mb-2 animate-bounce-in">
-        <div class="flex justify-between items-start mb-2">
-            <span class="text-[10px] font-bold text-purple-400 uppercase">Gemini Research Insight</span>
-            <button onclick="document.getElementById('ai-panel').classList.add('hidden')" class="text-gray-500">×</button>
-        </div>
-        <p id="ai-content" class="text-sm text-gray-200 leading-relaxed italic">Analyzing kinetics data...</p>
-    </div>
-
-    <footer class="p-4 glass rounded-t-[40px] border-t border-white/5 pb-10">
-        <div class="flex items-center gap-3">
-            <button id="ai-trigger" class="p-4 bg-purple-900/20 text-purple-400 rounded-2xl hover:bg-purple-900/40 transition active:scale-90">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-            </button>
-            <input id="main-input" type="text" placeholder="Message or Research Topic..." class="flex-grow bg-transparent border-none focus:ring-0 text-sm py-4">
-            <button id="send-trigger" class="p-4 bg-blue-600 rounded-2xl shadow-xl shadow-blue-500/20 active:scale-95 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-            </button>
-        </div>
-    </footer>
-
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { GoogleGenAI } from "https://esm.run/@google/genai";
-
-        // CONFIGURATION INTEGRATED
-        const firebaseConfig = {
-            apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
-            authDomain: "university-outreach-log.firebaseapp.com",
-            projectId: "university-outreach-log",
-            storageBucket: "university-outreach-log.firebasestorage.app",
-            messagingSenderId: "566149647802",
-            appId: "1:566149647802:web:490c7cc3d10b7cd7732183"
+        [span_6](start_span)// Tab Logic[span_6](end_span)
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
         };
 
-        const genAI = new GoogleGenAI("AIzaSyDRHoimQpL6x1475X-KdA2cUmB7svg5-Gg");
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const feed = document.getElementById('feed');
-        const mainInput = document.getElementById('main-input');
-
-        // 1. Messaging Engine
-        const broadcast = async () => {
-            const text = mainInput.value.trim();
-            if(!text) return;
-            mainInput.value = '';
-            await addDoc(collection(db, "research_chat"), { text, timestamp: serverTimestamp(), type: 'p2p' });
-        };
-
-        onSnapshot(query(collection(db, "research_chat"), orderBy("timestamp", "desc"), limit(30)), (snap) => {
-            feed.innerHTML = '';
-            document.getElementById('p2p-status').innerText = "PEER LINK ACTIVE";
-            snap.docs.reverse().forEach(doc => {
-                const data = doc.data();
-                const div = document.createElement('div');
-                div.className = "self-end max-w-[85%] p-4 msg-bubble text-sm shadow-lg animate-fadeIn mb-2";
-                div.innerText = data.text;
-                feed.appendChild(div);
-            });
-            feed.scrollTop = feed.scrollHeight;
-        });
-
-        // 2. Gemini AI Research Assistant
-        document.getElementById('ai-trigger').onclick = async () => {
-            const panel = document.getElementById('ai-panel');
-            const content = document.getElementById('ai-content');
-            panel.classList.remove('hidden');
-            content.innerText = "Gemini is reviewing your recent discussion...";
-
-            try {
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-                const prompt = `As a Physical Chemistry expert helping a PhD student (Yewilsaw Chanie), analyze this research message for potential kinetic models or characterization methods: "${mainInput.value}"`;
-                const result = await model.generateContent(prompt);
-                content.innerText = result.response.text();
-            } catch (e) {
-                content.innerText = "Research assistant offline. Check API quota.";
+        [span_7](start_span)[span_8](start_span)// Solar Theme Logic[span_7](end_span)[span_8](end_span)
+        function updateSolarTheme() {
+            const hour = new Date().getHours();
+            const root = document.documentElement;
+            if (hour >= 6 && hour <= 18) {
+                root.style.setProperty('--accent-gold', '#f1c40f');
+                root.style.setProperty('--bg-obsidian', '#020617');
+            } else {
+                root.style.setProperty('--accent-gold', '#d4af37');
+                root.style.setProperty('--bg-obsidian', '#000000');
             }
-        };
+        }
+        setInterval(updateSolarTheme, 60000);
+        updateSolarTheme();
 
-        document.getElementById('send-trigger').onclick = broadcast;
-        mainInput.onkeydown = (e) => e.key === 'Enter' && broadcast();
+        [span_9](start_span)// Terminal Trigger[span_9](end_span)
+        let inputBuffer = "";
+        document.addEventListener('keydown', e => {
+            inputBuffer += e.key;
+            if (inputBuffer.includes("admin")) {
+                alert("UPLINK ACTIVATED: Node verification required.");
+                inputBuffer = "";
+            }
+        });
     </script>
 </body>
 </html>
