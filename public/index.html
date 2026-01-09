@@ -7,14 +7,18 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
     
     <style>
         /* Bridge for Auth Visibility */
-        #auth-overlay.active { display: flex; opacity: 1; }
-        #auth-overlay { transition: opacity 0.6s ease; }
+        #auth-overlay {
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        
+        /* Android-specific tap optimization */
+        .glass-interactive { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body class="bg-[#020617] text-white overflow-hidden">
@@ -26,12 +30,19 @@
                     <span class="text-black font-black text-3xl">Λ</span>
                 </div>
                 <h2 class="text-[#f1c40f] text-xs font-black tracking-[0.5em] uppercase">Neural Calibration</h2>
-                <p class="text-[10px] text-slate-500 mt-2">Node: Yewilsaw Chanie</p>
+                <p id="auth-status" class="text-[10px] text-slate-500 mt-2">Unidentified Node detected.</p>
             </div>
 
-            <button id="calibrate-btn" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-transform">
-                Verify Biometrics
+            <div id="auth-form" class="space-y-4 mb-6">
+                <input type="text" id="node-name" placeholder="NODE NAME (e.g., Yewilsaw Chanie)" 
+                       class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f] text-sm">
+            </div>
+
+            <button id="auth-trigger" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-transform">
+                Initialize Node
             </button>
+            
+            <p class="mt-8 text-[8px] text-slate-600 font-mono tracking-widest uppercase">Secured via WebAuthn platform biometrics</p>
         </div>
     </div>
 
@@ -40,59 +51,74 @@
 
         <main class="md:ml-64 p-6 pt-24 min-h-screen">
             <section id="feed-view" class="tab-content active">
-                <div id="social-feed" class="max-w-xl mx-auto space-y-6">
-                    </div>
+                <div class="max-w-xl mx-auto">
+                    <h2 class="text-[#f1c40f] text-xs font-black tracking-[0.4em] mb-10 uppercase text-center">The Universal Stream</h2>
+                    <div id="social-feed" class="space-y-6">
+                        </div>
+                </div>
             </section>
 
             <section id="ai-view" class="tab-content">
                 <div class="elementa-glass p-10 rounded-[40px] text-center max-w-lg mx-auto">
                     <h3 class="text-[#f1c40f] font-black uppercase tracking-widest">The Vault</h3>
-                    <p class="text-slate-400 text-sm mt-4">Low-resonance data has decayed into entropy.</p>
+                    <p class="text-slate-400 text-sm mt-4 leading-relaxed">
+                        Data entropy detected. Low-resonance interactions have been archived.
+                    </p>
                 </div>
             </section>
         </main>
     </div>
 
     <script type="module">
-        // Import your existing logic
-        import { authenticateNode } from './js/security.js';
-        import { initNavigation } from './js/master.js';
+        // Import your uploaded logic directly
+        import { authenticateNode } from './security.js';
+        import { initNavigation } from './master.js';
+        import { switchTab } from './ui.js';
 
-        const calibrateBtn = document.getElementById('calibrate-btn');
+        const authBtn = document.getElementById('auth-trigger');
         const authOverlay = document.getElementById('auth-overlay');
         const appShell = document.getElementById('app-shell');
+        const statusText = document.getElementById('auth-status');
 
-        // Initial setup on load
-        window.addEventListener('load', () => {
-            // Register Service Worker for PWA
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js');
-            }
-        });
+        // Global bridge for UI navigation calls
+        window.switchTab = switchTab;
 
-        // The Android Biometric Bridge
-        calibrateBtn.onclick = async () => {
-            // Trigger biometric prompt from your security.js
-            const isVerified = await authenticateNode();
+        authBtn.addEventListener('click', async () => {
+            statusText.innerText = "Synchronizing Biometrics...";
+            
+            // This triggers your security.js WebAuthn Android prompt
+            const isAuthorized = await authenticateNode();
 
-            if (isVerified) {
-                // Haptic feedback for Android
+            if (isAuthorized) {
+                // Android Haptic Pulse for successful entry
                 if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
 
-                // Reveal App
+                // Clear Auth Overlay
                 authOverlay.style.opacity = '0';
                 setTimeout(() => {
                     authOverlay.style.display = 'none';
                     appShell.classList.remove('hidden');
                     appShell.classList.add('opacity-100');
                     
-                    // Inject Sidebar from master.js
+                    // Inject Sidebar/Navigation from your master.js
                     initNavigation(); 
-                }, 600);
+                    console.log("Ecosystem Initialized.");
+                }, 800);
             } else {
-                alert("Calibration Failed.");
+                statusText.innerText = "Calibration Failed. Retry required.";
+                statusText.classList.add('text-red-500');
             }
-        };
+        });
+
+        // Initialize Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Neural SW Active'))
+                    .catch(err => console.log('SW Link Offline', err));
+            });
+        }
     </script>
 </body>
-</html>
+    </html>
+    
