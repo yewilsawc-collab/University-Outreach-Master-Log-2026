@@ -3,65 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
-    <title>ELEMENTA | Universal Social Ecosystem</title>
+    <title>ELEMENTA | Universal Hub</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="style.css">
-</head>
-<body class="bg-[#020617] text-white overflow-hidden">
 
-    <div id="auth-overlay" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6 transition-all duration-700">
-        <div class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center">
-            <h2 id="hub-title" class="text-[#f1c40f] text-[10px] font-black tracking-[0.4em] uppercase mb-8">Neural Hub</h2>
-            <button id="btn-auth" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all">
-                Sign In
+    <style>
+        /* Lifecycle State Management */
+        .state-hidden { display: none !important; }
+        #auth-overlay { transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Loading animation for the "Pattern Accept" state */
+        .resonance-pulse {
+            animation: pulse-gold 2s infinite;
+        }
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(241, 196, 15, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
+        }
+    </style>
+</head>
+<body class="bg-[#020617] text-white overflow-hidden font-sans">
+
+    <div id="auth-overlay" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6">
+        <div id="auth-card" class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center border border-white/5">
+            <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(241,196,15,0.3)] mb-6">
+                <span class="text-black font-black text-2xl">Λ</span>
+            </div>
+            
+            <h2 id="hub-header" class="text-[#f1c40f] text-[10px] font-black tracking-[0.5em] uppercase mb-2">Neural Calibration</h2>
+            <p id="hub-status" class="text-[10px] text-slate-500 mb-8 uppercase tracking-widest">Awaiting Node Link</p>
+
+            <button id="btn-authenticate" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all">
+                Initialize Sign-Up
             </button>
-            <p id="status-msg" class="mt-4 text-[9px] text-slate-500 uppercase tracking-widest">Awaiting Calibration</p>
         </div>
     </div>
 
     <div id="app-shell" class="hidden opacity-0 transition-opacity duration-1000">
         <div id="nav-anchor"></div> 
-        <main class="p-6 pt-24 min-h-screen">
-             <div id="social-feed" class="max-w-xl mx-auto space-y-6">
-                 </div>
+
+        <main class="md:ml-64 p-6 pt-24 min-h-screen">
+            <section id="feed-view" class="tab-content active">
+                <div id="social-feed" class="max-w-xl mx-auto space-y-6">
+                    </div>
+            </section>
+
+            <div class="fixed bottom-6 right-6 z-[100]">
+                <button id="btn-signout" class="bg-red-500/10 border border-red-500/50 text-red-500 px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md active:scale-90 transition-all">
+                    Sign Out
+                </button>
+            </div>
         </main>
     </div>
 
     <script type="module">
+        // Linking all your core shards
         import { authenticateNode } from './security.js';
         import { initNavigation } from './master.js';
+        import { switchTab } from './ui.js';
 
-        const btn = document.getElementById('btn-auth');
-        const overlay = document.getElementById('auth-overlay');
-        const shell = document.getElementById('app-shell');
-        const status = document.getElementById('status-msg');
+        // Set global bridge for tab switching
+        window.switchTab = switchTab;
 
-        btn.onclick = async () => {
-            status.innerText = "VERIFYING...";
+        const authOverlay = document.getElementById('auth-overlay');
+        const authCard = document.getElementById('auth-card');
+        const appShell = document.getElementById('app-shell');
+        const status = document.getElementById('hub-status');
+
+        // --- THE SIGN-UP / SIGN-IN FLOW ---
+        document.getElementById('btn-authenticate').onclick = async () => {
+            status.innerText = "CALIBRATING...";
+            authCard.classList.add('resonance-pulse');
             
-            // Calls your phone's biometric system
-            const isAuthorized = await authenticateNode();
+            // This pulls the Android Pattern/Fingerprint prompt
+            const success = await authenticateNode();
 
-            if (isAuthorized) {
-                status.innerText = "ACCESS GRANTED";
-                
-                // 1. Android Haptic Pulse
+            if (success) {
+                // Android Haptic Pulse for successful entry
                 if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
 
-                // 2. Clear the Loading screen
-                overlay.style.opacity = '0';
-                overlay.style.pointerEvents = 'none';
+                // Clear Hub
+                authOverlay.style.opacity = '0';
+                authOverlay.style.pointerEvents = 'none';
 
-                // 3. Reveal the actual App
-                shell.classList.remove('hidden');
-                setTimeout(() => shell.classList.add('opacity-100'), 50);
-
-                // 4. Inject your Sidebar from master.js
+                // Reveal App
+                appShell.classList.remove('hidden');
+                setTimeout(() => appShell.classList.add('opacity-100'), 50);
+                
+                // Initialize Sidebar navigation
                 initNavigation(); 
+                console.log("Node Active: Yewilsaw Chanie");
             } else {
                 status.innerText = "CALIBRATION FAILED";
+                status.classList.add('text-red-500');
+                authCard.classList.remove('resonance-pulse');
             }
         };
+
+        // --- THE SIGN-OUT FLOW ---
+        document.getElementById('btn-signout').onclick = () => {
+            if ("vibrate" in navigator) navigator.vibrate(50);
+            // Refreshing is the safest way to clear the biometric session
+            window.location.reload(); 
+        };
+
+        // Register Service Worker for offline capability
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
     </script>
 </body>
 </html>
