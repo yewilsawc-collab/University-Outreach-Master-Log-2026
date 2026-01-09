@@ -1,0 +1,26 @@
+<div class="elementa-glass p-8 rounded-[40px] border border-[#f1c40f]/20">
+    <h3 class="text-xs font-black tracking-widest text-white mb-6 uppercase text-center">System Evolution Poll</h3>
+    
+    <div class="space-y-4">
+        <button onclick="castVote('solar')" class="w-full p-5 rounded-3xl bg-white/5 border border-white/10 hover:border-[#f1c40f] transition-all text-left group">
+            <div class="flex justify-between items-center">
+                <span class="text-sm font-light text-slate-300 group-hover:text-white">Solar Sync UI</span>
+                <span class="text-[10px] font-mono text-slate-500">DYNAMIC</span>
+            </div>
+            <div class="mt-3 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                <div id="bar-solar" class="h-full bg-[#f1c40f]" style="width: 45%"></div>
+            </div>
+        </button>
+
+        <button onclick="castVote('aura')" class="w-full p-5 rounded-3xl bg-white/5 border border-white/10 hover:border-[#f1c40f] transition-all text-left group">
+            <div class="flex justify-between items-center">
+                <span class="text-sm font-light text-slate-300 group-hover:text-white">Aura Status</span>
+                <span class="text-[10px] font-mono text-slate-500">SOCIAL</span>
+            </div>
+            <div class="mt-3 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                <div id="bar-aura" class="h-full bg-purple-500" style="width: 55%"></div>
+            </div>
+        </button>
+    </div>
+  </div>
+  

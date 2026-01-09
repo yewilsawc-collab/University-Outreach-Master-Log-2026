@@ -1,0 +1,14 @@
+<main class="ml-0 md:ml-72 p-6 pt-24 h-screen relative overflow-hidden">
+    <div class="absolute top-10 left-10 z-10">
+        <h2 class="text-4xl font-black tracking-tighter uppercase text-[#f1c40f]">Network Topology</h2>
+        <p id="node-stats" class="text-[10px] text-slate-500 tracking-[0.3em]">MAPPING ACTIVE RESONANCE...</p>
+    </div>
+
+    <canvas id="networkCanvas" class="absolute inset-0 w-full h-full cursor-move"></canvas>
+    
+    <div class="absolute bottom-10 right-10 elementa-glass p-4 rounded-2xl flex gap-4">
+        <button onclick="zoomIn()" class="p-2 hover:text-[#f1c40f]">➕</button>
+        <button onclick="zoomOut()" class="p-2 hover:text-[#f1c40f]">➖</button>
+        <button onclick="resetGraph()" class="p-2 hover:text-[#f1c40f]">🔄</button>
+    </div>
+</main>
