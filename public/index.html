@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* Essential Bridge Styles */
-        #auth-overlay { transition: opacity 0.8s ease, visibility 0.8s; }
+        /* Bridge Styles */
+        #auth-overlay { transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hidden-auth { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(1.1); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .hidden-overlay { opacity: 0; visibility: hidden; pointer-events: none; }
     </style>
 </head>
 <body class="bg-[#020617] text-white overflow-hidden">
@@ -26,14 +26,17 @@
                     <span class="text-black font-black text-3xl">Λ</span>
                 </div>
                 <h2 class="text-[#f1c40f] text-xs font-black tracking-[0.5em] uppercase">Neural Calibration</h2>
-                <p id="status-text" class="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">Node: Yewilsaw Chanie</p>
+                <p id="status-text" class="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">Unlinked Node Detected</p>
             </div>
 
-            <button id="login-trigger" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-transform">
-                Verify Identity
+            <input type="text" id="node-alias" placeholder="ENTER NODE ALIAS" 
+                   class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f] text-center mb-6 text-sm uppercase tracking-widest">
+
+            <button id="auth-trigger" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-transform">
+                Initialize & Sign In
             </button>
             
-            <p class="mt-8 text-[8px] text-slate-600 font-mono tracking-widest uppercase">Encryption: ES256 Biometric Hub</p>
+            <p class="mt-8 text-[8px] text-slate-600 font-mono tracking-widest uppercase">Secure P2P Node v1.0</p>
         </div>
     </div>
 
@@ -45,54 +48,52 @@
                 <div id="social-feed" class="max-w-xl mx-auto space-y-6">
                     </div>
             </section>
-
-            <section id="ai-view" class="tab-content">
-                <div class="elementa-glass p-10 rounded-[40px] text-center max-w-lg mx-auto mt-20">
-                    <h3 class="text-[#f1c40f] font-black uppercase tracking-widest">The Vault</h3>
-                    <p class="text-slate-400 text-sm mt-4">Data energy too low for active resonance.</p>
-                </div>
-            </section>
         </main>
     </div>
 
     <script type="module">
+        // Linking your existing files
         import { authenticateNode } from './security.js';
         import { initNavigation } from './master.js';
         import { switchTab } from './ui.js';
 
-        // Set global bridge so ui.js functions work from buttons
+        // Set global bridge so buttons work
         window.switchTab = switchTab;
 
-        const loginBtn = document.getElementById('login-trigger');
+        const authBtn = document.getElementById('auth-trigger');
         const status = document.getElementById('status-text');
 
-        // Handle the login/Sign-up attempt
-        loginBtn.addEventListener('click', async () => {
-            status.innerText = "Synchronizing Biometrics...";
+        authBtn.addEventListener('click', async () => {
+            status.innerText = "Sensing Biometric Resonance...";
             
-            // This calls YOUR security.js logic
-            const success = await authenticateNode();
+            try {
+                // Trigger the Android Fingerprint prompt from your security.js
+                const verified = await authenticateNode();
 
-            if (success) {
-                // Android Haptic Pulse (from master.js logic style)
-                if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
+                if (verified) {
+                    // Android Haptic Confirmation
+                    if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
 
-                // Clear UI
-                document.getElementById('auth-overlay').classList.add('hidden-overlay');
-                const shell = document.getElementById('app-shell');
-                shell.classList.remove('hidden');
-                setTimeout(() => shell.classList.add('opacity-100'), 50);
+                    // Unlock the Ecosystem
+                    document.getElementById('auth-overlay').classList.add('hidden-auth');
+                    const shell = document.getElementById('app-shell');
+                    shell.classList.remove('hidden');
+                    setTimeout(() => shell.classList.add('opacity-100'), 50);
 
-                // Initialize your master.js sidebar
-                initNavigation();
-                console.log("Ecosystem Online.");
-            } else {
-                status.innerText = "Calibration Failed. Try Again.";
-                status.classList.add('text-red-500');
+                    // Initialize your master.js sidebar and UI
+                    initNavigation();
+                    console.log("Node Linked Successfully.");
+                } else {
+                    status.innerText = "Calibration Failed. Try Again.";
+                    status.classList.add('text-red-500');
+                }
+            } catch (error) {
+                status.innerText = "Error: Check HTTPS connection.";
+                console.error(error);
             }
         });
 
-        // Register your sw.js
+        // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js');
@@ -100,5 +101,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
