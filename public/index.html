@@ -1,121 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
-    <title>ELEMENTA | Universal Hub</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <style>
-        /* Lifecycle State Management */
-        .state-hidden { display: none !important; }
-        #auth-overlay { transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        /* Loading animation for the "Pattern Accept" state */
-        .resonance-pulse {
-            animation: pulse-gold 2s infinite;
-        }
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); }
-            70% { box-shadow: 0 0 0 20px rgba(241, 196, 15, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
-        }
-    </style>
+    <title>Elementa — Universal Social Ecosystem</title>
+
+    <!-- Manifest + PWA -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#020617" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="themes.css" />
+
+    <!-- Icon -->
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+
+    <!-- Meta -->
+    <meta name="description" content="Elementa — A universal social ecosystem governed by resonance, entropy, and scientific intuition." />
 </head>
-<body class="bg-[#020617] text-white overflow-hidden font-sans">
 
-    <div id="auth-overlay" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6">
-        <div id="auth-card" class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center border border-white/5">
-            <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(241,196,15,0.3)] mb-6">
-                <span class="text-black font-black text-2xl">Λ</span>
-            </div>
-            
-            <h2 id="hub-header" class="text-[#f1c40f] text-[10px] font-black tracking-[0.5em] uppercase mb-2">Neural Calibration</h2>
-            <p id="hub-status" class="text-[10px] text-slate-500 mb-8 uppercase tracking-widest">Awaiting Node Link</p>
+<body>
 
-            <button id="btn-authenticate" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all">
-                Initialize Sign-Up
+    <!-- Global Loader -->
+    <div id="loader-overlay">
+        <div class="node-pulse">E</div>
+        <p class="text-[10px] text-slate-500 mt-4 tracking-[0.3em] uppercase">Initializing Node...</p>
+    </div>
+
+    <!-- Neural Glow -->
+    <div class="neural-glow"></div>
+
+    <!-- Welcome / Activation Screen -->
+    <section id="welcome-screen" class="screen active" style="text-align:center; padding-top:30vh;">
+        <h1 class="title" style="font-size:3rem; font-weight:900; letter-spacing:-2px;">ELEMENTA</h1>
+        <p class="subtitle" style="margin-top:10px; color:#f1c40f; font-size:12px; letter-spacing:0.3em;">
+            UNIVERSAL SOCIAL ECOSYSTEM
+        </p>
+
+        <button id="enter-btn" class="primary-btn glass-interactive" 
+                style="margin-top:40px; padding:14px 40px; border-radius:30px; font-weight:900; text-transform:uppercase;">
+            Activate Node
+        </button>
+    </section>
+
+    <!-- Main App Shell -->
+    <section id="app-shell" class="screen hidden">
+
+        <!-- Top Bar -->
+        <header class="elementa-glass" 
+                style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:space-between;">
+            <h2 class="logo" style="font-weight:900; letter-spacing:-1px;">Elementa</h2>
+            <button onclick="openComposer()" class="glass-interactive" style="padding:10px 16px; border-radius:20px;">
+                ✦
             </button>
-        </div>
-    </div>
+        </header>
 
-    <div id="app-shell" class="hidden opacity-0 transition-opacity duration-1000">
-        <div id="nav-anchor"></div> 
-
-        <main class="md:ml-64 p-6 pt-24 min-h-screen">
-            <section id="feed-view" class="tab-content active">
-                <div id="social-feed" class="max-w-xl mx-auto space-y-6">
-                    </div>
-            </section>
-
-            <div class="fixed bottom-6 right-6 z-[100]">
-                <button id="btn-signout" class="bg-red-500/10 border border-red-500/50 text-red-500 px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md active:scale-90 transition-all">
-                    Sign Out
-                </button>
-            </div>
+        <!-- Main View -->
+        <main id="main-view" class="view-container" style="height:calc(100vh - 140px);">
+            <iframe id="view-frame" src="feed.html" class="view-frame" 
+                    style="border:none; width:100%; height:100%;"></iframe>
         </main>
-    </div>
 
-    <script type="module">
-        // Linking all your core shards
-        import { authenticateNode } from './security.js';
-        import { initNavigation } from './master.js';
-        import { switchTab } from './ui.js';
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav elementa-glass" 
+             style="position:fixed; bottom:0; left:0; right:0; padding:12px 0; display:flex; justify-content:space-around;">
 
-        // Set global bridge for tab switching
-        window.switchTab = switchTab;
+            <button data-target="feed.html" class="nav-btn active">Feed</button>
+            <button data-target="messages.html" class="nav-btn">eChat</button>
+            <button data-target="discovery.html" class="nav-btn">Discovery</button>
+            <button data-target="profile.html" class="nav-btn">Profile</button>
+            <button data-target="support.html" class="nav-btn">Support</button>
 
-        const authOverlay = document.getElementById('auth-overlay');
-        const authCard = document.getElementById('auth-card');
-        const appShell = document.getElementById('app-shell');
-        const status = document.getElementById('hub-status');
+        </nav>
+    </section>
 
-        // --- THE SIGN-UP / SIGN-IN FLOW ---
-        document.getElementById('btn-authenticate').onclick = async () => {
-            status.innerText = "CALIBRATING...";
-            authCard.classList.add('resonance-pulse');
-            
-            // This pulls the Android Pattern/Fingerprint prompt
-            const success = await authenticateNode();
+    <!-- Scripts -->
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
+    <script src="navigation.js"></script>
+    <script src="welcome.js"></script>
+    <script src="uplink.js"></script>
 
-            if (success) {
-                // Android Haptic Pulse for successful entry
-                if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
-
-                // Clear Hub
-                authOverlay.style.opacity = '0';
-                authOverlay.style.pointerEvents = 'none';
-
-                // Reveal App
-                appShell.classList.remove('hidden');
-                setTimeout(() => appShell.classList.add('opacity-100'), 50);
-                
-                // Initialize Sidebar navigation
-                initNavigation(); 
-                console.log("Node Active: Yewilsaw Chanie");
-            } else {
-                status.innerText = "CALIBRATION FAILED";
-                status.classList.add('text-red-500');
-                authCard.classList.remove('resonance-pulse');
-            }
-        };
-
-        // --- THE SIGN-OUT FLOW ---
-        document.getElementById('btn-signout').onclick = () => {
-            if ("vibrate" in navigator) navigator.vibrate(50);
-            // Refreshing is the safest way to clear the biometric session
-            window.location.reload(); 
-        };
-
-        // Register Service Worker for offline capability
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
-        }
-    </script>
 </body>
 </html>
