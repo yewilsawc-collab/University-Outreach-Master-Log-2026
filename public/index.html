@@ -6,11 +6,10 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Elementa | The Universal Social Hub</title>
 
-  <!-- UI -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- Firebase config: replace with your own if needed -->
+  <!-- Firebase config -->
   <script id="firebase-config" type="application/json">
   {
     "apiKey": "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
@@ -22,110 +21,83 @@
   }
   </script>
 </head>
-<body class="bg-[#0f172a] text-slate-100 min-h-screen flex flex-col font-sans overflow-x-hidden">
+
+<body class="bg">
 
   <!-- Header -->
-  <header class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center">
+  <header class="elementa-glass flex justify-between items-center p-4 border-b">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-        <span class="font-black text-white text-lg">Y</span>
+      <div class="elementa-glass rounded-xl flex items-center justify-center" style="width:40px;height:40px;">
+        <span style="font-weight:900;color:white;font-size:16px;">Y</span>
       </div>
       <div>
-        <h1 class="text-xs font-black tracking-widest text-blue-400 uppercase leading-none">Elementa</h1>
-        <p id="user-display" class="text-[9px] text-slate-500 font-bold uppercase mt-1 tracking-tighter">Guest User</p>
+        <h1 style="font-size:12px;font-weight:900;color:var(--accent);text-transform:uppercase;">Elementa</h1>
+        <p id="user-display" style="font-size:9px;color:#94a3b8;font-weight:bold;text-transform:uppercase;">Guest User</p>
       </div>
     </div>
-
     <div class="flex items-center gap-2">
-      <div id="stats-total" class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-[10px] font-bold text-emerald-400">0 logs</div>
-      <button id="logout" onclick="window.processLogout()" class="hidden bg-red-900/20 border border-red-500/30 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-red-400">Logout</button>
+      <div id="stats-total" class="elementa-glass" style="padding:4px 8px;border-radius:20px;font-size:10px;font-weight:bold;color:#00ff88;">0 logs</div>
+      <button id="logout" onclick="window.processLogout()" class="glass-interactive" style="padding:4px 8px;border-radius:8px;font-size:9px;font-weight:900;text-transform:uppercase;color:#ff4444;display:none;">Logout</button>
     </div>
   </header>
 
   <!-- Tabs -->
-  <nav class="sticky top-[73px] z-40 bg-[#0f172a] border-b border-slate-800 flex overflow-x-auto no-scrollbar">
-    <button onclick="window.switchTab('Messages')" id="tab-Messages"
-            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-blue-500 text-blue-400">
-      Messages
-    </button>
-    <button onclick="window.switchTab('chat')" id="tab-chat"
-            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
-      Chat
-    </button>
-    <button onclick="window.switchTab('accounts')" id="tab-accounts"
-            class="flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent text-slate-500">
-      Accounts
-    </button>
+  <nav class="elementa-glass flex">
+    <button onclick="window.switchTab('Messages')" id="tab-Messages" class="glass-interactive">Messages</button>
+    <button onclick="window.switchTab('chat')" id="tab-chat" class="glass-interactive">Chat</button>
+    <button onclick="window.switchTab('accounts')" id="tab-accounts" class="glass-interactive">Accounts</button>
   </nav>
 
-  <!-- Main: swipe zone -->
-  <main id="swipe-zone" class="flex-1 p-4 pb-40 max-w-2xl mx-auto w-full" style="touch-action: pan-y;">
-
+  <!-- Main -->
+  <main id="swipe-zone" class="custom-scroll" style="flex:1;padding:16px;max-width:600px;margin:auto;">
     <!-- Messages -->
-    <div id="log-view" class="space-y-4">
-      <div id="Messages" class="grid grid-cols-1 gap-3"></div>
+    <div id="log-view">
+      <div id="messages-list"></div>
     </div>
 
     <!-- Chat -->
     <div id="chat-view" class="hidden">
-      <div id="chat-container" class="space-y-4 mb-8 min-h-[60vh]"></div>
+      <div id="chat-container" class="custom-scroll" style="min-height:60vh;"></div>
     </div>
 
     <!-- Accounts -->
-    <div id="accounts-view" class="hidden space-y-6">
-      <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50">
-        <h2 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-4 text-center">Add or switch account</h2>
+    <div id="accounts-view" class="hidden">
+      <div class="elementa-glass p-6 rounded-2xl">
+        <h2 style="font-size:12px;font-weight:900;color:var(--accent);text-transform:uppercase;text-align:center;">Add or switch account</h2>
         <div class="space-y-4">
-          <input id="identity-email" type="email" placeholder="Email address"
-                 class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
-          <input id="identity-pass" type="password" placeholder="Password"
-                 class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500" />
+          <input id="identity-email" type="email" placeholder="Email address" class="elementa-glass" />
+          <input id="identity-pass" type="password" placeholder="Password" class="elementa-glass" />
           <div class="flex gap-2">
-            <button onclick="window.processAuth()" class="flex-1 bg-blue-600 py-3 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-blue-500/20">
-              Sign in / Switch
-            </button>
-            <button onclick="window.processSignUp()" class="flex-1 bg-slate-800 border border-slate-700 py-3 rounded-xl text-[10px] font-black uppercase">
-              Create new
-            </button>
+            <button onclick="window.processAuth()" class="elementa-glass glass-interactive">Sign in / Switch</button>
+            <button onclick="window.processSignUp()" class="elementa-glass glass-interactive">Create new</button>
           </div>
         </div>
       </div>
-      <div id="account-status" class="text-center p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-        <p class="text-[9px] text-emerald-400 font-bold uppercase">Current secure session active</p>
+      <div id="account-status" class="elementa-glass p-4 rounded-xl" style="text-align:center;">
+        <p style="font-size:9px;color:#00ff88;font-weight:bold;text-transform:uppercase;">Current secure session active</p>
       </div>
     </div>
   </main>
 
-  <!-- Footer: chat composer -->
-  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0f172a] via-[#0f172a] to-transparent">
-    <form id="chat-form" class="max-w-md mx-auto relative flex items-center gap-2">
+  <!-- Footer -->
+  <footer class="elementa-glass p-4">
+    <form id="chat-form" class="flex gap-2">
       <input type="file" id="chat-file" class="hidden" multiple />
-      <button type="button"
-              onclick="document.getElementById('chat-file').click()"
-              class="bg-slate-800/80 border border-slate-700 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 text-xl font-bold shadow-xl">+</button>
-      <div class="relative flex-1">
-        <input id="chat-input" type="text" autocomplete="off"
-               placeholder="Add school (e.g., 'add Yale') or message..."
-               class="w-full bg-slate-800/80 border border-slate-700 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none" />
-        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 p-2.5 rounded-xl text-white">
-          ➤
-        </button>
+      <button type="button" onclick="document.getElementById('chat-file').click()" class="elementa-glass glass-interactive">+</button>
+      <div class="flex-1 relative">
+        <input id="chat-input" type="text" autocomplete="off" placeholder="Type a message..." class="elementa-glass" />
+        <button type="submit" class="elementa-glass glass-interactive">➤</button>
       </div>
     </form>
   </footer>
 
   <!-- App logic -->
   <script type="module">
-    // Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {
-      getAuth, signInAnonymously, onAuthStateChanged, signOut,
-      signInWithEmailAndPassword, createUserWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    import {
-      getFirestore, doc, setDoc, getDoc, updateDoc, collection,
-      onSnapshot, query, orderBy, addDoc, deleteDoc, getDocs
-    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, signOut,
+             signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection,
+             onSnapshot, query, orderBy, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
     const config = JSON.parse(document.getElementById("firebase-config").textContent);
     const app = initializeApp(config);
@@ -140,35 +112,37 @@
       if (user) {
         currentUser = user;
         document.getElementById("user-display").textContent = user.isAnonymous ? "Guest user" : user.email;
-        document.getElementById("logout-btn").classList.toggle("hidden", user.isAnonymous);
+        document.getElementById("logout").style.display = user.isAnonymous ? "none" : "inline-block";
         init();
       } else {
         signInAnonymously(auth);
       }
     });
 
-    // Accounts: auth/sign up/logout
+    // Accounts
     window.processAuth = async () => {
       const email = document.getElementById("identity-email").value;
       const pass = document.getElementById("identity-pass").value;
       try {
         await signInWithEmailAndPassword(auth, email, pass);
-        window.switchTab("log");
+        window.switchTab("Messages");
       } catch (e) {
         alert("Switch failed: " + e.message);
       }
     };
+
     window.processSignUp = async () => {
       const email = document.getElementById("identity-email").value;
       const pass = document.getElementById("identity-pass").value;
       try {
         await createUserWithEmailAndPassword(auth, email, pass);
         alert("Account created!");
-        window.switchTab("log");
+        window.switchTab("Messages");
       } catch (e) {
         alert(e.message);
       }
     };
+
     window.processLogout = () => signOut(auth).then(() => location.reload());
 
     // Init
@@ -192,85 +166,47 @@
         if (idx > 0) window.switchTab(tabs[idx - 1]);
       });
     }
+
     function getActiveTab() {
       return tabs.find(t => !document.getElementById(`${t}-view`).classList.contains("hidden"));
     }
+
     window.switchTab = (tab) => {
       tabs.forEach(t => {
         document.getElementById(`${t}-view`).classList.add("hidden");
-        const btn = document.getElementById(`tab-${t}`);
-        btn.className = "flex-1 min-w-[100px] py-3 text-[10px] font-black uppercase tracking-widest border-b-2 " +
-                        (t === tab ? "border-blue-500 text-blue-400" : "border-transparent text-slate-500");
       });
       document.getElementById(`${tab}-view`).classList.remove("hidden");
     };
 
-    // Message lists: sync and render (with intel + contacts + delete)
+    // Messages
     function syncmessages() {
       if (!currentUser) return;
       const qMessages = query(collection(db, "users", currentUser.uid, "messages"), orderBy("timestamp", "desc"));
       onSnapshot(qMessages, (snap) => {
-        document.getElementById("stats-total").textContent = `${snap.docs.length} Schools`;
+        document.getElementById("stats-total").textContent = `${snap.document.getElementById("stats-total").textContent = `${snap.docs.length} Messages`;
         document.getElementById("messages-list").innerHTML = snap.docs.map(d => {
-          const u = d.data();
+          const m = d.data();
           const id = d.id;
-          const googleUrl = `https://google.com/scholar?q=${encodeURIComponent(u.name + " details")}`;
+          const googleUrl = `https://google.com/scholar?q=${encodeURIComponent(m.name + " details")}`;
+
           return `
-            <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+            <div class="elementa-glass p-4 rounded-xl">
               <div class="flex justify-between items-start mb-2">
                 <div>
-                  <h3 class="text-[11px] font-black text-blue-400 uppercase">${m.name}</h3>
-                  <span class="text-[7px] text-emerald-400 font-bold uppercase bg-emerald-400/10 px-1 rounded">${m.tier || "elementa classified"}</span>
+                  <h3 style="font-size:11px;font-weight:900;color:var(--accent);text-transform:uppercase;">${m.name}</h3>
+                  <span style="font-size:7px;color:#00ff88;font-weight:bold;text-transform:uppercase;">
+                    ${m.tier || "elementa classified"}
+                  </span>
                 </div>
                 <div class="flex gap-3">
-                  <a href="${googleUrl}" target="_blank"
-                     class="text-[8px] font-black px-2 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-widest">Profile</a>
-                  <button onclick="window.deleteUni('${id}','${m.name}')"
-                          class="text-slate-600 hover:text-red-400" title="Delete">${trashIcon()}</button>
+                  <a href="${googleUrl}" target="_blank" class="glass-interactive">Profile</a>
+                  <button onclick="window.deleteMessages('${id}','${m.name}')" class="glass-interactive">Delete</button>
                 </div>
               </div>
-
-              <div class="flex items-center gap-2 text-[9px]">
-                <button onclick="window.toggleSection('intel-${id}')"
-                        class="bg-slate-700/40 text-slate-300 px-2 py-1 rounded font-black uppercase">messanger Intel</button>
-                <button onclick="window.toggleSection('contact-${id}')"
-                        class="bg-slate-700/40 text-slate-300 px-2 py-1 rounded font-black uppercase">Contacts</button>
-              </div>
-
-              <div id="intel-${id}" class="hidden mt-4 pt-4 border-t border-slate-700/50 space-y-3">
-                <div class="space-y-1">
-                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Personal Details</label>
-                  <textarea id="dept-${id}" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" rows="2"
-                            placeholder="e.g. elementa user...">${m.personalDetails || ""}</textarea>
-                </div>
-                <div class="space-y-1">
-                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Facility / environment</label>
-                  <input id="fac-${id}" value="${u.facility || ""}" type="text"
-                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="e.g. inviting environment" />
-                </div>
-                <div class="space-y-1">
-                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Location advantage</label>
-                  <input id="loc-${id}" value="${u.locationNote || ""}" type="text"
-                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="e.g. Proximity to Elementa hubs" />
-                </div>
-                <div class="space-y-1">
-                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">PI / match</label>
-                  <input id="pi-${id}" value="${m.piMatch || ""}" type="text"
-                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="e.g. specializing in..." />
-                </div>
-                <button onclick="window.saveIntel('${id}')"
-                        class="w-full py-2 bg-blue-600/20 text-blue-400 text-[8px] font-black uppercase rounded border border-blue-600/30">Save personal details</button>
-              </div>
-
-              
-          
-                <div>
-                  <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Phone / WhatsApp</label>
-                  <input id="phone-${id}" value="${u.phone || ""}" type="text"
-                         class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-[10px] text-white" placeholder="+1 ..." />
-                </div>
-                <button onclick="window.saveContact('${id}')"
-                        class="w-full py-2 bg-blue-600/20 text-blue-400 text-[8px] font-black uppercase rounded border border-blue-600/30">Save contact address</button>
+              <div>
+                <label style="font-size:8px;font-weight:900;color:#94a3b8;text-transform:uppercase;">Phone / WhatsApp</label>
+                <input id="phone-${id}" value="${m.phone || ""}" type="text" class="elementa-glass" placeholder="+1 ..." />
+                <button onclick="window.saveContact('${id}')" class="glass-interactive">Save contact address</button>
               </div>
             </div>
           `;
@@ -278,42 +214,9 @@
       });
     }
 
-    window.toggleSection = (id) => {
-      const el = document.getElementById(id);
-      el.classList.toggle("hidden");
-    };
-    window.saveIntel = async (id) => {
-      const data = {
-        deptStrength: document.getElementById(`dept-${id}`)?.value || "",
-        facility: document.getElementById(`fac-${id}`)?.value || "",
-        locationNote: document.getElementById(`loc-${id}`)?.value || "",
-        piMatch: document.getElementById(`pi-${id}`)?.value || ""
-      };
-      await updateDoc(doc(db, "users", currentUser.uid, "messages", id), data);
-      alert("personal specific details updated!");
-    };
-    window.saveContact = async (id) => {
-      const data = {
-        Email: document.getElementById(`email-${id}`)?.value || "",
-        coordName: document.getElementById(`coord-${id}`)?.value || "",
-        phone: document.getElementById(`phone-${id}`)?.value || ""
-      };
-      await updateDoc(doc(db, "users", currentUser.uid, "messages", id), data);
-      alert("Contact address saved.");
-    };
-    window.deleteMessages = async (id, name) => {
-      if (confirm(`Remove ${name}?`)) {
-        await deleteDoc(doc(db, "users", currentUser.uid, "messages", id));
-        await addDoc(collection(db, "global_chat"), {
-          text: `Entry deleted: ${name}`, uid: currentUser.uid, timestamp: Date.now()
-        });
-      }
-    };
-
-
-    // Chat: sync and composer
+    // Chat
     function syncChat() {
-      const qChat = query(collection(db, "global_chat"), orderBy("timestamp", "asc"));
+      const qChat = query(collection(db, "chat"), orderBy("timestamp", "asc"));
       onSnapshot(qChat, (snap) => {
         const container = document.getElementById("chat-container");
         container.innerHTML = snap.docs.map(docSnap => {
@@ -321,7 +224,7 @@
           const isMe = d.uid === (auth.currentUser?.uid);
           return `
             <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-              <div class="max-w-[85%] p-3 rounded-2xl text-[11px] ${isMe ? 'bg-blue-600' : 'bg-slate-800 border border-slate-700'}">
+              <div class="elementa-glass p-3 rounded-2xl" style="font-size:11px;">
                 ${d.text}
               </div>
             </div>
@@ -331,13 +234,13 @@
       });
     }
 
-    // File upload handler (logs uploads to chat)
+    // File upload
     function wireFileUpload() {
       const f = document.getElementById("chat-file");
       f.addEventListener("change", async (e) => {
         if (!currentUser) return;
         for (const file of e.target.files) {
-          await addDoc(collection(db, "global_chat"), {
+          await addDoc(collection(db, "chat"), {
             text: `Document uploaded: ${file.name}`,
             uid: currentUser.uid,
             timestamp: Date.now()
@@ -347,90 +250,22 @@
       });
     }
 
-    // Intent parser: add university via chat (with authentic lookup)
-    document.getElementById("chat-form").onsubmit = async (e) => {
-      e.preventDefault();
-      if (!currentUser) return;
-      const input = document.getElementById("chat-input");
-      const text = input.value.trim();
-      if (!text) return;
-
-      if (text.toLowerCase().startsWith("add ")) {
-        const target = text.replace(/^add\s+/i, "").trim();
-        // Feedback
-        await addDoc(collection(db, "global_chat"), {
-          text: `Authenticating: ${target} ...`,
-          uid: currentUser.uid, timestamp: Date.now()
-        });
-
-        try {
-          const res = await fetch(`https://universities.hipolabs.com/search?name=${encodeURIComponent(target)}`);
-          const results = await res.json();
-          if (Array.isArray(results) && results.length > 0) {
-            const uni = results[0];
-            const id = uni.name.toLowerCase().replace(/\s/g, "-");
-            const ref = doc(db, "users", currentUser.uid, "universities", id);
-            const exists = await getDoc(ref);
-            const r1Keywords = ["Berkeley", "Yale", "Stanford", "Purdue", "MIT", "Columbia", "Chicago", "Princeton", "UCLA", "UCSB"];
-            const tier = r1Keywords.some(k => uni.name.includes(k)) ? "Carnegie R1" : "Carnegie R2";
-
-            if (exists.exists()) {
-              await addDoc(collection(db, "global_chat"), {
-                text: `${uni.name} is already in your log.`,
-                uid: currentUser.uid, timestamp: Date.now()
-              });
-            } else {
-              await setDoc(ref, {
-                name: uni.name,
-                domain: Array.isArray(uni.domains) ? uni.domains[0] : "",
-                tier,
-                timestamp: Date.now()
-              });
-              await addDoc(collection(db, "global_chat"), {
-                text: `Authenticated & Logged: ${uni.name} (${tier})`,
-                uid: currentUser.uid, timestamp: Date.now()
-              });
-            }
-          } else {
-            await addDoc(collection(db, "global_chat"), {
-              text: `Could not find ${target} in global databases.`,
-              uid: currentUser.uid, timestamp: Date.now()
-            });
-          }
-        } catch (err) {
-          // Fallback manual log
-          const id = target.toLowerCase().replace(/\s/g, "-");
-          await setDoc(doc(db, "users", currentUser.uid, "universities", id), {
-            name: target, timestamp: Date.now()
-          });
-          await addDoc(collection(db, "global_chat"), {
-            text: `Manual log added for ${target}.`,
-            uid: currentUser.uid, timestamp: Date.now()
-          });
-        }
-      } else {
-        await addDoc(collection(db, "global_chat"), {
-          text, uid: currentUser.uid, timestamp: Date.now()
-        });
-      }
-
-      input.value = "";
-    };
-
     // Helpers
     function trashIcon() {
       return `
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" 
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1
-          2-2h4a2 2 0 0 1 2 2v2"></path>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6
+                   m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
         </svg>
       `;
     }
-    <div id="search-container"></div>
+  </script>
 
+  <!-- Global components -->
+  <div id="search-container"></div>
   <script type="module" src="firebase-init.js"></script>
-  
   <script type="module">
     import { initNav } from './nav.js';
     import { router } from './app.js';
@@ -438,13 +273,11 @@
     import { initStatus } from './status.js';
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Initialize Global Components
-      initNav();           // Loads Sign In/Up UI
-      mountSearchOverlay(); // Prepares search functionality
-      initStatus();        // Starts the latency/node monitor
-      router();            // Boots the Social Feed / Chat router
+      initNav();
+      mountSearchOverlay();
+      initStatus();
+      router();
 
-      // Register PWA Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(console.error);
       }
