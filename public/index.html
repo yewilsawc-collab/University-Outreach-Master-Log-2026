@@ -4,54 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
     <title>ELEMENTA | Universal Social Ecosystem</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* Bridge for Auth Visibility */
+        #auth-overlay.active { display: flex; opacity: 1; }
+        #auth-overlay { transition: opacity 0.6s ease; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
 </head>
-<body class="bg-[#020617] text-white overflow-hidden transition-colors duration-1000">
+<body class="bg-[#020617] text-white overflow-hidden">
 
-    <div id="auth-overlay" class="fixed inset-0 z-[100] bg-[#020617] flex items-center justify-center p-6">
+    <div id="auth-overlay" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6">
         <div class="elementa-glass p-10 rounded-[50px] max-w-md w-full text-center">
-            <h2 class="text-[#f1c40f] text-xs font-black tracking-[0.4em] mb-6">NEURAL CALIBRATION</h2>
-            
-            <div id="auth-form" class="space-y-4 mb-8">
-                <input type="email" id="user-email" placeholder="NODE IDENTITY (EMAIL)" 
-                       class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f]">
-                <input type="password" id="user-pass" placeholder="ACCESS KEY" 
-                       class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f]">
+            <div class="mb-8">
+                <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(241,196,15,0.4)] mb-4">
+                    <span class="text-black font-black text-3xl">Λ</span>
+                </div>
+                <h2 class="text-[#f1c40f] text-xs font-black tracking-[0.5em] uppercase">Neural Calibration</h2>
+                <p class="text-[10px] text-slate-500 mt-2">Node: Yewilsaw Chanie</p>
             </div>
 
-            <div class="flex flex-col gap-3">
-                <button id="auth-trigger" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest">Sign In</button>
-                <button class="text-[10px] text-slate-500 uppercase tracking-widest">Request New Node</button>
-            </div>
-            
-            <p class="mt-8 text-[9px] text-slate-500 font-mono">ENCRYPTED P2P TUNNEL v1.0</p>
+            <button id="calibrate-btn" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-transform">
+                Verify Biometrics
+            </button>
         </div>
     </div>
 
     <div id="app-shell" class="hidden opacity-0 transition-opacity duration-1000">
-        <main class="p-6 pt-24 min-h-screen">
+        <div id="nav-container"></div>
+
+        <main class="md:ml-64 p-6 pt-24 min-h-screen">
             <section id="feed-view" class="tab-content active">
                 <div id="social-feed" class="max-w-xl mx-auto space-y-6">
                     </div>
+            </section>
+
+            <section id="ai-view" class="tab-content">
+                <div class="elementa-glass p-10 rounded-[40px] text-center max-w-lg mx-auto">
+                    <h3 class="text-[#f1c40f] font-black uppercase tracking-widest">The Vault</h3>
+                    <p class="text-slate-400 text-sm mt-4">Low-resonance data has decayed into entropy.</p>
+                </div>
             </section>
         </main>
     </div>
 
     <script type="module">
+        // Import your existing logic
         import { authenticateNode } from './js/security.js';
-        
-        document.getElementById('auth-trigger').onclick = async () => {
-            // Triggers the Android Biometric prompt via your security.js
-            const success = await authenticateNode();
-            if(success) {
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('app-shell').classList.remove('hidden');
-                setTimeout(() => document.getElementById('app-shell').classList.add('opacity-100'), 50);
-                if(navigator.vibrate) navigator.vibrate(100); 
+        import { initNavigation } from './js/master.js';
+
+        const calibrateBtn = document.getElementById('calibrate-btn');
+        const authOverlay = document.getElementById('auth-overlay');
+        const appShell = document.getElementById('app-shell');
+
+        // Initial setup on load
+        window.addEventListener('load', () => {
+            // Register Service Worker for PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js');
+            }
+        });
+
+        // The Android Biometric Bridge
+        calibrateBtn.onclick = async () => {
+            // Trigger biometric prompt from your security.js
+            const isVerified = await authenticateNode();
+
+            if (isVerified) {
+                // Haptic feedback for Android
+                if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
+
+                // Reveal App
+                authOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    authOverlay.style.display = 'none';
+                    appShell.classList.remove('hidden');
+                    appShell.classList.add('opacity-100');
+                    
+                    // Inject Sidebar from master.js
+                    initNavigation(); 
+                }, 600);
+            } else {
+                alert("Calibration Failed.");
             }
         };
     </script>
-    <script type="module" src="js/ui.js"></script>
 </body>
 </html>
