@@ -3,101 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
-    <title>ELEMENTA | Universal Social Ecosystem</title>
-    
+    <title>ELEMENTA | Lifecycle Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="style.css">
-
     <style>
-        /* Bridge Styles */
-        #auth-overlay { transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .hidden-auth { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(1.1); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .state-hidden { display: none !important; }
+        #hub-container { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Custom haptic button feel */
+        .btn-pulse:active { transform: scale(0.95); filter: brightness(1.2); }
     </style>
 </head>
 <body class="bg-[#020617] text-white overflow-hidden">
 
-    <div id="auth-overlay" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6">
-        <div class="elementa-glass p-10 rounded-[50px] max-w-md w-full text-center">
-            <div class="mb-8">
-                <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(241,196,15,0.4)] mb-4">
-                    <span class="text-black font-black text-3xl">Λ</span>
-                </div>
-                <h2 class="text-[#f1c40f] text-xs font-black tracking-[0.5em] uppercase">Neural Calibration</h2>
-                <p id="status-text" class="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">Unlinked Node Detected</p>
+    <div id="hub-container" class="fixed inset-0 flex items-center justify-center p-6">
+        <div class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center">
+            
+            <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(241,196,15,0.3)] mb-6">
+                <span class="text-black font-black text-2xl">Λ</span>
             </div>
 
-            <input type="text" id="node-alias" placeholder="ENTER NODE ALIAS" 
-                   class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#f1c40f] text-center mb-6 text-sm uppercase tracking-widest">
+            <div class="mb-10">
+                <h2 id="hub-title" class="text-[#f1c40f] text-[10px] font-black tracking-[0.4em] uppercase">Neural Hub</h2>
+                <p id="hub-status" class="text-xs text-slate-500 mt-2 font-mono">NODE: DISCONNECTED</p>
+            </div>
 
-            <button id="auth-trigger" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-transform">
-                Initialize & Sign In
-            </button>
-            
-            <p class="mt-8 text-[8px] text-slate-600 font-mono tracking-widest uppercase">Secure P2P Node v1.0</p>
+            <div id="auth-actions" class="space-y-4">
+                <button id="btn-login" class="btn-pulse w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest transition-all">
+                    Initialize Node
+                </button>
+                <p class="text-[9px] text-slate-600 uppercase tracking-widest leading-loose">
+                    Android Biometric Calibration Required
+                </p>
+            </div>
+
+            <div id="session-actions" class="state-hidden space-y-6">
+                <div class="p-4 border border-[#f1c40f]/20 rounded-2xl bg-[#f1c40f]/5">
+                    <p class="text-[10px] text-[#f1c40f] font-bold uppercase tracking-widest">Resonance Active</p>
+                    <p class="text-[9px] text-slate-400 mt-1 uppercase">Yewilsaw Chanie @ Nexus</p>
+                </div>
+                <button id="btn-logout" class="btn-pulse w-full border border-red-500/50 text-red-500 py-4 rounded-2xl font-black uppercase tracking-widest transition-all">
+                    Terminate Link
+                </button>
+            </div>
+
         </div>
     </div>
 
-    <div id="app-shell" class="hidden opacity-0 transition-opacity duration-1000">
-        <div id="nav-anchor"></div> 
-
-        <main class="md:ml-64 p-6 pt-24 min-h-screen">
-            <section id="feed-view" class="tab-content active">
-                <div id="social-feed" class="max-w-xl mx-auto space-y-6">
-                    </div>
-            </section>
-        </main>
+    <div id="app-overlay" class="state-hidden fixed inset-0 z-[-1] opacity-10">
+        <div id="nav-anchor"></div>
     </div>
 
     <script type="module">
-        // Linking your existing files
         import { authenticateNode } from './security.js';
         import { initNavigation } from './master.js';
-        import { switchTab } from './ui.js';
 
-        // Set global bridge so buttons work
-        window.switchTab = switchTab;
+        const authZone = document.getElementById('auth-actions');
+        const sessionZone = document.getElementById('session-actions');
+        const status = document.getElementById('hub-status');
+        const title = document.getElementById('hub-title');
 
-        const authBtn = document.getElementById('auth-trigger');
-        const status = document.getElementById('status-text');
-
-        authBtn.addEventListener('click', async () => {
-            status.innerText = "Sensing Biometric Resonance...";
+        // --- SIGN UP / SIGN IN LOGIC ---
+        document.getElementById('btn-login').onclick = async () => {
+            status.innerText = "CALIBRATING...";
             
-            try {
-                // Trigger the Android Fingerprint prompt from your security.js
-                const verified = await authenticateNode();
+            // Triggers the fingerprint/face prompt from your security.js
+            const success = await authenticateNode();
 
-                if (verified) {
-                    // Android Haptic Confirmation
-                    if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
+            if (success) {
+                // Physical Haptic Pulse (Android Only)
+                if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
 
-                    // Unlock the Ecosystem
-                    document.getElementById('auth-overlay').classList.add('hidden-auth');
-                    const shell = document.getElementById('app-shell');
-                    shell.classList.remove('hidden');
-                    setTimeout(() => shell.classList.add('opacity-100'), 50);
-
-                    // Initialize your master.js sidebar and UI
-                    initNavigation();
-                    console.log("Node Linked Successfully.");
-                } else {
-                    status.innerText = "Calibration Failed. Try Again.";
-                    status.classList.add('text-red-500');
-                }
-            } catch (error) {
-                status.innerText = "Error: Check HTTPS connection.";
-                console.error(error);
+                // Transition UI
+                authZone.classList.add('state-hidden');
+                sessionZone.classList.remove('state-hidden');
+                
+                status.innerText = "STATUS: RESONATING";
+                title.innerText = "NODE ONLINE";
+                
+                // Load your existing navigation shell from master.js
+                try { initNavigation(); } catch(e) { console.warn("Nav Shell Ready"); }
+            } else {
+                status.innerText = "CALIBRATION FAILED";
+                status.classList.add('text-red-500');
             }
-        });
+        };
 
-        // Register Service Worker for PWA
+        // --- SIGN OUT LOGIC ---
+        document.getElementById('btn-logout').onclick = () => {
+            // Android Haptic for Terminating connection
+            if ("vibrate" in navigator) navigator.vibrate(50);
+
+            // Revert UI states
+            sessionZone.classList.add('state-hidden');
+            authZone.classList.remove('state-hidden');
+            
+            status.innerText = "NODE: DISCONNECTED";
+            title.innerText = "NEURAL HUB";
+            status.classList.remove('text-red-500');
+            
+            // Clear navigation injection
+            document.getElementById('nav-anchor').innerHTML = '';
+        };
+
+        // Register Service Worker for offline PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js');
-            });
+            navigator.serviceWorker.register('./sw.js');
         }
     </script>
 </body>
