@@ -3,85 +3,48 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elementa</title>
 
-    <title>Elementa — Universal Social Ecosystem</title>
-
-    <!-- Manifest + PWA -->
-    <link rel="manifest" href="manifest.webmanifest" />
-    <meta name="theme-color" content="#020617" />
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="themes.css" />
-
-    <!-- Icon -->
-    <link rel="icon" type="image/png" href="assets/icon.png" />
-
-    <!-- Meta -->
-    <meta name="description" content="Elementa — A universal social ecosystem governed by resonance, entropy, and scientific intuition." />
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/components.css" />
 </head>
 
 <body>
 
-    <!-- Global Loader -->
-    <div id="loader-overlay">
-        <div class="node-pulse">E</div>
-        <p class="text-[10px] text-slate-500 mt-4 tracking-[0.3em] uppercase">Initializing Node...</p>
+    <!-- Splash / Expansion Protocol -->
+    <div id="splash-screen">
+        <div class="splash-logo">Elementa</div>
     </div>
 
-    <!-- Neural Glow -->
-    <div class="neural-glow"></div>
-
-    <!-- Welcome / Activation Screen -->
-    <section id="welcome-screen" class="screen active" style="text-align:center; padding-top:30vh;">
-        <h1 class="title" style="font-size:3rem; font-weight:900; letter-spacing:-2px;">ELEMENTA</h1>
-        <p class="subtitle" style="margin-top:10px; color:#f1c40f; font-size:12px; letter-spacing:0.3em;">
-            UNIVERSAL SOCIAL ECOSYSTEM
-        </p>
-
-        <button id="enter-btn" class="primary-btn glass-interactive" 
-                style="margin-top:40px; padding:14px 40px; border-radius:30px; font-weight:900; text-transform:uppercase;">
-            Activate Node
-        </button>
-    </section>
-
-    <!-- Main App Shell -->
-    <section id="app-shell" class="screen hidden">
+    <!-- Persistent Shell -->
+    <div id="main-ecosystem">
 
         <!-- Top Bar -->
-        <header class="elementa-glass" 
-                style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:space-between;">
-            <h2 class="logo" style="font-weight:900; letter-spacing:-1px;">Elementa</h2>
-            <button onclick="openComposer()" class="glass-interactive" style="padding:10px 16px; border-radius:20px;">
-                ✦
-            </button>
+        <header id="top-bar">
+            <h1 class="app-title">Elementa</h1>
         </header>
 
-        <!-- Main View -->
-        <main id="main-view" class="view-container" style="height:calc(100vh - 140px);">
-            <iframe id="view-frame" src="feed.html" class="view-frame" 
-                    style="border:none; width:100%; height:100%;"></iframe>
+        <!-- Dynamic View Container -->
+        <main id="view-container">
+            <!-- Views will be injected here -->
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav elementa-glass" 
-             style="position:fixed; bottom:0; left:0; right:0; padding:12px 0; display:flex; justify-content:space-around;">
-
-            <button data-target="feed.html" class="nav-btn active">Feed</button>
-            <button data-target="messages.html" class="nav-btn">eChat</button>
-            <button data-target="discovery.html" class="nav-btn">Discovery</button>
-            <button data-target="profile.html" class="nav-btn">Profile</button>
-            <button data-target="support.html" class="nav-btn">Support</button>
-
+        <nav id="bottom-nav">
+            <button data-view="feed">Feed</button>
+            <button data-view="messages">Messages</button>
+            <button data-view="profile">Profile</button>
+            <button data-view="discovery">Discover</button>
+            <button data-view="support">Support</button>
         </nav>
-    </section>
 
-    <!-- Scripts -->
-    <script src="firebase.js"></script>
-    <script src="app.js"></script>
-    <script src="navigation.js"></script>
-    <script src="welcome.js"></script>
-    <script src="uplink.js"></script>
+    </div>
+
+    <!-- Global Scripts -->
+    <script type="module" src="/js/app.js"></script>
+    <script type="module" src="/js/navigation.js"></script>
+    <script type="module" src="/js/splash.js"></script>
 
 </body>
 </html>
