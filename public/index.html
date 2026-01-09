@@ -3,112 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
-    <title>ELEMENTA | Lifecycle Hub</title>
+    <title>ELEMENTA | Node Registration</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="style.css">
+
     <style>
-        .state-hidden { display: none !important; }
-        #hub-container { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        /* Custom haptic button feel */
-        .btn-pulse:active { transform: scale(0.95); filter: brightness(1.2); }
+        /* Smooth transitions for the lifecycle states */
+        #auth-container { transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .success-glow { box-shadow: 0 0 50px rgba(241, 196, 15, 0.4); border-color: #f1c40f; }
+        .hidden-state { display: none !important; }
     </style>
 </head>
-<body class="bg-[#020617] text-white overflow-hidden">
+<body class="bg-[#020617] text-white flex items-center justify-center min-h-screen p-6 overflow-hidden">
 
-    <div id="hub-container" class="fixed inset-0 flex items-center justify-center p-6">
-        <div class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center">
+    <div id="auth-container" class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center relative z-10">
+        
+        <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30_rgba(241,196,15,0.3)] mb-6">
+            <span class="text-black font-black text-2xl">Λ</span>
+        </div>
+
+        <div id="prompt-view">
+            <h2 class="text-[#f1c40f] text-[10px] font-black tracking-[0.5em] uppercase mb-2">New Node detected</h2>
+            <p class="text-xs text-slate-500 mb-8 font-mono">LOCATION: ADDIS ABABA GRID</p>
+
+            <button id="signup-btn" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all shadow-lg">
+                Register Node
+            </button>
             
-            <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(241,196,15,0.3)] mb-6">
-                <span class="text-black font-black text-2xl">Λ</span>
-            </div>
+            <p class="mt-6 text-[8px] text-slate-600 uppercase tracking-widest">Uses Android Platform Authenticator</p>
+        </div>
 
-            <div class="mb-10">
-                <h2 id="hub-title" class="text-[#f1c40f] text-[10px] font-black tracking-[0.4em] uppercase">Neural Hub</h2>
-                <p id="hub-status" class="text-xs text-slate-500 mt-2 font-mono">NODE: DISCONNECTED</p>
+        <div id="success-view" class="hidden-state animate-pulse">
+            <h2 class="text-green-500 text-[10px] font-black tracking-[0.5em] uppercase mb-2">Registration Complete</h2>
+            <p class="text-xs text-slate-300 font-mono">NODE IDENTITY: YEWILSAW CHANIE</p>
+            <div class="mt-8 flex justify-center">
+                <div class="w-2 h-2 bg-[#f1c40f] rounded-full mx-1"></div>
+                <div class="w-2 h-2 bg-[#f1c40f] rounded-full mx-1"></div>
+                <div class="w-2 h-2 bg-[#f1c40f] rounded-full mx-1"></div>
             </div>
-
-            <div id="auth-actions" class="space-y-4">
-                <button id="btn-login" class="btn-pulse w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest transition-all">
-                    Initialize Node
-                </button>
-                <p class="text-[9px] text-slate-600 uppercase tracking-widest leading-loose">
-                    Android Biometric Calibration Required
-                </p>
-            </div>
-
-            <div id="session-actions" class="state-hidden space-y-6">
-                <div class="p-4 border border-[#f1c40f]/20 rounded-2xl bg-[#f1c40f]/5">
-                    <p class="text-[10px] text-[#f1c40f] font-bold uppercase tracking-widest">Resonance Active</p>
-                    <p class="text-[9px] text-slate-400 mt-1 uppercase">Yewilsaw Chanie @ Nexus</p>
-                </div>
-                <button id="btn-logout" class="btn-pulse w-full border border-red-500/50 text-red-500 py-4 rounded-2xl font-black uppercase tracking-widest transition-all">
-                    Terminate Link
-                </button>
-            </div>
-
         </div>
     </div>
 
-    <div id="app-overlay" class="state-hidden fixed inset-0 z-[-1] opacity-10">
-        <div id="nav-anchor"></div>
+    <div class="fixed inset-0 pointer-events-none opacity-20">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#f1c40f] rounded-full blur-[150px]"></div>
     </div>
 
     <script type="module">
+        // Import the biometric logic from your file
         import { authenticateNode } from './security.js';
-        import { initNavigation } from './master.js';
 
-        const authZone = document.getElementById('auth-actions');
-        const sessionZone = document.getElementById('session-actions');
-        const status = document.getElementById('hub-status');
-        const title = document.getElementById('hub-title');
+        const signupBtn = document.getElementById('signup-btn');
+        const promptView = document.getElementById('prompt-view');
+        const successView = document.getElementById('success-view');
+        const container = document.getElementById('auth-container');
 
-        // --- SIGN UP / SIGN IN LOGIC ---
-        document.getElementById('btn-login').onclick = async () => {
-            status.innerText = "CALIBRATING...";
+        signupBtn.addEventListener('click', async () => {
+            console.log("Initializing Biometric Registration...");
             
-            // Triggers the fingerprint/face prompt from your security.js
+            // This triggers the Android system prompt
             const success = await authenticateNode();
 
             if (success) {
-                // Physical Haptic Pulse (Android Only)
+                // Physical Haptic Confirmation for Android
                 if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
 
                 // Transition UI
-                authZone.classList.add('state-hidden');
-                sessionZone.classList.remove('state-hidden');
+                promptView.classList.add('hidden-state');
+                successView.classList.remove('hidden-state');
+                container.classList.add('success-glow');
                 
-                status.innerText = "STATUS: RESONATING";
-                title.innerText = "NODE ONLINE";
+                console.log("Node Registered on Android Grid.");
                 
-                // Load your existing navigation shell from master.js
-                try { initNavigation(); } catch(e) { console.warn("Nav Shell Ready"); }
+                // Redirect or unlock further logic after 2 seconds
+                setTimeout(() => {
+                    // window.location.href = 'feed.html'; // Example redirect
+                }, 2000);
             } else {
-                status.innerText = "CALIBRATION FAILED";
-                status.classList.add('text-red-500');
+                alert("Registration Failed. Ensure you are on HTTPS and have a screen lock set.");
             }
-        };
-
-        // --- SIGN OUT LOGIC ---
-        document.getElementById('btn-logout').onclick = () => {
-            // Android Haptic for Terminating connection
-            if ("vibrate" in navigator) navigator.vibrate(50);
-
-            // Revert UI states
-            sessionZone.classList.add('state-hidden');
-            authZone.classList.remove('state-hidden');
-            
-            status.innerText = "NODE: DISCONNECTED";
-            title.innerText = "NEURAL HUB";
-            status.classList.remove('text-red-500');
-            
-            // Clear navigation injection
-            document.getElementById('nav-anchor').innerHTML = '';
-        };
-
-        // Register Service Worker for offline PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
-        }
+        });
     </script>
 </body>
-</html>
+    </html>
+                
