@@ -3,88 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
-    <title>ELEMENTA | Node Registration</title>
-    
+    <title>ELEMENTA | Universal Social Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="style.css">
-
-    <style>
-        /* Smooth transitions for the lifecycle states */
-        #auth-container { transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .success-glow { box-shadow: 0 0 50px rgba(241, 196, 15, 0.4); border-color: #f1c40f; }
-        .hidden-state { display: none !important; }
-    </style>
 </head>
-<body class="bg-[#020617] text-white flex items-center justify-center min-h-screen p-6 overflow-hidden">
+<body class="bg-[#020617] text-white overflow-hidden">
 
-    <div id="auth-container" class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center relative z-10">
-        
-        <div class="w-16 h-16 bg-[#f1c40f] rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30_rgba(241,196,15,0.3)] mb-6">
-            <span class="text-black font-black text-2xl">Λ</span>
-        </div>
-
-        <div id="prompt-view">
-            <h2 class="text-[#f1c40f] text-[10px] font-black tracking-[0.5em] uppercase mb-2">New Node detected</h2>
-            <p class="text-xs text-slate-500 mb-8 font-mono">LOCATION: ADDIS ABABA GRID</p>
-
-            <button id="signup-btn" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all shadow-lg">
-                Register Node
+    <div id="auth-overlay" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6 transition-all duration-700">
+        <div class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center">
+            <h2 id="hub-title" class="text-[#f1c40f] text-[10px] font-black tracking-[0.4em] uppercase mb-8">Neural Hub</h2>
+            <button id="btn-auth" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all">
+                Sign In
             </button>
-            
-            <p class="mt-6 text-[8px] text-slate-600 uppercase tracking-widest">Uses Android Platform Authenticator</p>
-        </div>
-
-        <div id="success-view" class="hidden-state animate-pulse">
-            <h2 class="text-green-500 text-[10px] font-black tracking-[0.5em] uppercase mb-2">Registration Complete</h2>
-            <p class="text-xs text-slate-300 font-mono">NODE IDENTITY: YEWILSAW CHANIE</p>
-            <div class="mt-8 flex justify-center">
-                <div class="w-2 h-2 bg-[#f1c40f] rounded-full mx-1"></div>
-                <div class="w-2 h-2 bg-[#f1c40f] rounded-full mx-1"></div>
-                <div class="w-2 h-2 bg-[#f1c40f] rounded-full mx-1"></div>
-            </div>
+            <p id="status-msg" class="mt-4 text-[9px] text-slate-500 uppercase tracking-widest">Awaiting Calibration</p>
         </div>
     </div>
 
-    <div class="fixed inset-0 pointer-events-none opacity-20">
-        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#f1c40f] rounded-full blur-[150px]"></div>
+    <div id="app-shell" class="hidden opacity-0 transition-opacity duration-1000">
+        <div id="nav-anchor"></div> 
+        <main class="p-6 pt-24 min-h-screen">
+             <div id="social-feed" class="max-w-xl mx-auto space-y-6">
+                 </div>
+        </main>
     </div>
 
     <script type="module">
-        // Import the biometric logic from your file
         import { authenticateNode } from './security.js';
+        import { initNavigation } from './master.js';
 
-        const signupBtn = document.getElementById('signup-btn');
-        const promptView = document.getElementById('prompt-view');
-        const successView = document.getElementById('success-view');
-        const container = document.getElementById('auth-container');
+        const btn = document.getElementById('btn-auth');
+        const overlay = document.getElementById('auth-overlay');
+        const shell = document.getElementById('app-shell');
+        const status = document.getElementById('status-msg');
 
-        signupBtn.addEventListener('click', async () => {
-            console.log("Initializing Biometric Registration...");
+        btn.onclick = async () => {
+            status.innerText = "VERIFYING...";
             
-            // This triggers the Android system prompt
-            const success = await authenticateNode();
+            // Calls your phone's biometric system
+            const isAuthorized = await authenticateNode();
 
-            if (success) {
-                // Physical Haptic Confirmation for Android
+            if (isAuthorized) {
+                status.innerText = "ACCESS GRANTED";
+                
+                // 1. Android Haptic Pulse
                 if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
 
-                // Transition UI
-                promptView.classList.add('hidden-state');
-                successView.classList.remove('hidden-state');
-                container.classList.add('success-glow');
-                
-                console.log("Node Registered on Android Grid.");
-                
-                // Redirect or unlock further logic after 2 seconds
-                setTimeout(() => {
-                    // window.location.href = 'feed.html'; // Example redirect
-                }, 2000);
+                // 2. Clear the Loading screen
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+
+                // 3. Reveal the actual App
+                shell.classList.remove('hidden');
+                setTimeout(() => shell.classList.add('opacity-100'), 50);
+
+                // 4. Inject your Sidebar from master.js
+                initNavigation(); 
             } else {
-                alert("Registration Failed. Ensure you are on HTTPS and have a screen lock set.");
+                status.innerText = "CALIBRATION FAILED";
             }
-        });
+        };
     </script>
 </body>
-    </html>
-                
+</html>
