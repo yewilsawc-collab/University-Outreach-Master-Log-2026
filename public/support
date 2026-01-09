@@ -1,0 +1,49 @@
+/**
+ * Handles the submission of support tickets
+ * to the "Architect" uplink.
+ */
+function sendUplinkReport() {
+    // 1. Capture form elements
+    const reportType = document.getElementById('report-type');
+    const reportBody = document.getElementById('report-body');
+    const submitBtn = event.target;
+
+    // 2. Validate input
+    if (!reportBody.value.trim()) {
+        alert("Transmission failed: Neural link requires content.");
+        return;
+    }
+
+    // 3. Visual Feedback: Entering "Transmitting" state
+    const originalText = submitBtn.innerText;
+    submitBtn.innerText = "INITIALIZING UPLINK...";
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = "0.7";
+
+    // 4. Data Payload
+    const payload = {
+        category: reportType.value,
+        content: reportBody.value,
+        timestamp: new Date().toISOString(),
+        origin: "Addis Ababa Node" // Based on your profile location
+    };
+
+    // 5. Simulated Network Latency
+    setTimeout(() => {
+        console.log("Transmission Successful:", payload);
+        
+        // Reset Form
+        submitBtn.innerText = "TRANSMISSION SUCCESSFUL";
+        submitBtn.style.backgroundColor = "#f1c40f"; // Change to your signature yellow
+        
+        // Clear fields after short delay
+        setTimeout(() => {
+            reportBody.value = "";
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = "1";
+            submitBtn.style.backgroundColor = "white";
+        }, 2000);
+
+    }, 1500);
+}

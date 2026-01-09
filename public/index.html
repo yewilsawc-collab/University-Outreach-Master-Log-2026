@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
+    <title>ELEMENTA | Universal Social Ecosystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#020617] text-white overflow-hidden">
+
+    <div id="auth-overlay" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6 transition-all duration-700">
+        <div class="elementa-glass p-10 rounded-[50px] max-w-sm w-full text-center">
+            <h2 id="hub-title" class="text-[#f1c40f] text-[10px] font-black tracking-[0.4em] uppercase mb-8">Neural Hub</h2>
+            <button id="btn-auth" class="w-full bg-[#f1c40f] text-black py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all">
+                Sign In
+            </button>
+            <p id="status-msg" class="mt-4 text-[9px] text-slate-500 uppercase tracking-widest">Awaiting Calibration</p>
+        </div>
+    </div>
+
+    <div id="app-shell" class="hidden opacity-0 transition-opacity duration-1000">
+        <div id="nav-anchor"></div> 
+        <main class="p-6 pt-24 min-h-screen">
+             <div id="social-feed" class="max-w-xl mx-auto space-y-6">
+                 </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { authenticateNode } from './security.js';
+        import { initNavigation } from './master.js';
+
+        const btn = document.getElementById('btn-auth');
+        const overlay = document.getElementById('auth-overlay');
+        const shell = document.getElementById('app-shell');
+        const status = document.getElementById('status-msg');
+
+        btn.onclick = async () => {
+            status.innerText = "VERIFYING...";
+            
+            // Calls your phone's biometric system
+            const isAuthorized = await authenticateNode();
+
+            if (isAuthorized) {
+                status.innerText = "ACCESS GRANTED";
+                
+                // 1. Android Haptic Pulse
+                if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]);
+
+                // 2. Clear the Loading screen
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+
+                // 3. Reveal the actual App
+                shell.classList.remove('hidden');
+                setTimeout(() => shell.classList.add('opacity-100'), 50);
+
+                // 4. Inject your Sidebar from master.js
+                initNavigation(); 
+            } else {
+                status.innerText = "CALIBRATION FAILED";
+            }
+        };
+    </script>
+</body>
+</html>
