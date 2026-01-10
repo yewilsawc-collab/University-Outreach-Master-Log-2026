@@ -1,219 +1,370 @@
-
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elementa | P2P Social Network</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass-header { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.8); }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Elementa SPA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { margin:0; font-family:system-ui,sans-serif; background:#f4f7fa; }
+    header { background:#007bff; color:white; padding:16px; text-align:center; }
+    nav { display:flex; justify-content:center; background:#0056b3; flex-wrap:wrap; }
+    nav button { flex:1; padding:12px; border:none; background:#0056b3; color:white; cursor:pointer; }
+    nav button.active { background:#003d80; }
+    main { max-width:960px; margin:20px auto; padding:0 20px; }
+    section { display:none; background:white; border-radius:8px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    section.active { display:block; }
+    h2 { color:#007bff; }
+    .inputRow { display:flex; gap:8px; margin-top:12px; }
+    .inputRow input[type="text"] { flex:1; padding:8px; }
+    .inputRow button { padding:8px 12px; background:#007bff; color:white; border:none; cursor:pointer; }
+    #logoutBtn { margin-top:12px; padding:8px 12px; background:#dc3545; color:white; border:none; cursor:pointer; }
+    #messageList p, #uploadList p { margin:4px 0; }
+    aside h3 { margin-top:0; }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-    <div id="root"></div>
+<body>
+  <header>
+    <h1>Elementa</h1>
+    <p>Universal hub: feed, messages, calls, streams</p>
+  </header>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+  <!-- Guest view -->
+  <section id="guest" class="active">
+    <h2>Welcome to Elementa</h2>
+    <form id="signupForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p id="signupStatus"></p>
+    <div class="preview">
+      <h3>Trending Posts</h3>
+      <p>Sample post preview...</p>
+    </div>
+  </section>
 
-        // --- Icon Component Wrapper ---
-        const Icon = ({ name, className = "w-5 h-5" }) => {
-            const [iconSvg, setIconSvg] = useState('');
-            useEffect(() => {
-                if (window.lucide) {
-                    const icon = window.lucide.icons[name];
-                    if (icon) setIconSvg(icon.toSvg({ class: className }));
-                }
-            }, [name, className]);
-            return <span dangerouslySetInnerHTML={{ __html: iconSvg }} />;
-        };
+  <!-- Dashboard view -->
+  <section id="dashboard" style="display:none;">
+    <nav>
+      <button data-tab="home" class="active">Home</button>
+      <button data-tab="feed">Feed</button>
+      <button data-tab="messages">Messages</button>
+      <button data-tab="calls">Calls</button>
+      <button data-tab="streams">Streams</button>
+      <button data-tab="uploads">Uploads</button>
+    </nav>
+    <main>
+      <section id="home" class="active">
+        <h2>Home</h2>
+        <p>Welcome back, <span id="username">User</span>!</p>
+        <button id="logoutBtn">Logout</button>
+      </section>
 
-        function App() {
-            const [activeTab, setActiveTab] = useState('home'); // 'home', 'messages', 'network'
-            const [newPost, setNewPost] = useState("");
-            const [posts, setPosts] = useState([
-                { id: 1, author: "Alex Chen", avatar: "AC", content: "Just launched the Elementa P2P protocol. Privacy is the new standard! 🔐", timestamp: "2h ago", likes: 42, isLiked: false },
-                { id: 2, author: "Sarah Martinez", avatar: "SM", content: "Code should be clean, readable, and decentralized. 🌐", timestamp: "4h ago", likes: 128, isLiked: true }
-            ]);
-            const [messages, setMessages] = useState([
-                { id: 1, text: "Is the peer discovery active?", isMe: false, time: "12:01" },
-                { id: 2, text: "Yes, fully encrypted and direct.", isMe: true, time: "12:02" }
-            ]);
-            const [currentChat, setCurrentChat] = useState("");
+      <!-- Feed with sidebar -->
+      <section id="feed">
+        <h2>Feed</h2>
+        <div style="display:flex; gap:20px;">
+          <div style="flex:3;">
+            <input type="search" id="feedSearch" placeholder="Search topics, posts, or users..." />
+            <div id="feedPosts"></div>
+          </div>
+          <aside style="flex:1; background:#f9f9f9; padding:12px; border-radius:8px;">
+            <h3>Trending Topics</h3>
+            <ul id="trendingList"></ul>
+            <h3 style="margin-top:20px;">Trending Streams</h3>
+            <ul id="streamList"></ul>
+          </aside>
+        </div>
+      </section>
 
-            const currentUser = { name: "Yewilsaw Chanie", handle: "@y_chanie", avatar: "YC" };
+      <!-- Messages -->
+      <section id="messages">
+        <h2>Messages</h2>
+        <div id="messageList"></div>
+        <div class="inputRow">
+          <input type="text" id="messageInput" placeholder="Type a message..." />
+          <button id="sendMessageBtn">Send</button>
+        </div>
+      </section>
 
-            const handlePost = () => {
-                if (!newPost.trim()) return;
-                const post = { id: Date.now(), author: currentUser.name, avatar: currentUser.avatar, content: newPost, timestamp: "Just now", likes: 0, isLiked: false };
-                setPosts([post, ...posts]);
-                setNewPost("");
-            };
+      <!-- Calls -->
+      <section id="calls"><h2>Calls</h2><p>1:1 and group calls via WebRTC.</p></section>
 
-            const handleSendMsg = () => {
-                if (!currentChat.trim()) return;
-                setMessages([...messages, { id: Date.now(), text: currentChat, isMe: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
-                setCurrentChat("");
-            };
+      <!-- Streams -->
+      <section id="streams">
+        <h2>Streams</h2>
+        <p>Discover trending streams in the sidebar, or start your own broadcast.</p>
+        <button id="goLiveBtn">Go Live</button>
+        <video id="localStream" autoplay playsinline muted style="width:100%; margin-top:12px; border-radius:8px;"></video>
+      </section>
 
-            return (
-                <div className="min-h-screen">
-                    {/* Navigation */}
-                    <header className="sticky top-0 z-50 border-b border-slate-200 glass-header">
-                        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-                            <div className="flex items-center space-x-8">
-                                <h1 className="text-2xl font-black bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">Elementa</h1>
-                                <nav className="hidden md:flex space-x-1">
-                                    {['home', 'network', 'messages'].map(tab => (
-                                        <button 
-                                            key={tab}
-                                            onClick={() => setActiveTab(tab)}
-                                            className={`px-4 py-2 rounded-full capitalize font-medium transition-all ${activeTab === tab ? 'bg-violet-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
-                                        >
-                                            {tab}
-                                        </button>
-                                    ))}
-                                </nav>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                <div className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white font-bold text-xs">{currentUser.avatar}</div>
-                            </div>
-                        </div>
-                    </header>
+      <!-- Uploads -->
+      <section id="uploads">
+        <h2>Uploads</h2>
+        <input type="file" id="fileInput" />
+        <button id="uploadBtn">Upload</button>
+        <div id="uploadStatus"></div>
+        <div id="uploadList"></div>
+      </section>
+    </main>
+  </section>
 
-                    <main className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        {/* Sidebar */}
-                        <aside className="lg:col-span-3 space-y-6">
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
-                                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-violet-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mb-4 shadow-lg">
-                                    {currentUser.avatar}
-                                </div>
-                                <h2 className="font-bold text-lg">{currentUser.name}</h2>
-                                <p className="text-slate-400 text-sm mb-4">{currentUser.handle}</p>
-                                <div className="grid grid-cols-2 border-t pt-4">
-                                    <div><p className="font-bold">1.2k</p><p className="text-xs text-slate-400">Followers</p></div>
-                                    <div><p className="font-bold">567</p><p className="text-xs text-slate-400">Following</p></div>
-                                </div>
-                            </div>
-                        </aside>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, onAuthStateChanged, signOut } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, orderBy, query, where, limit, doc, getDoc } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-                        {/* Main Feed or Messaging View */}
-                        <div className="lg:col-span-6 space-y-6">
-                            {activeTab === 'home' ? (
-                                <>
-                                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-                                        <textarea 
-                                            value={newPost}
-                                            onChange={(e) => setNewPost(e.target.value)}
-                                            placeholder="What's on your mind?" 
-                                            className="w-full bg-slate-50 rounded-xl p-4 border-none focus:ring-2 focus:ring-violet-500 outline-none transition-all"
-                                            rows="3"
-                                        />
-                                        <div className="flex justify-between items-center mt-3">
-                                            <span className="text-xs text-slate-400 flex items-center font-medium">
-                                                <Icon name="Shield" className="w-3 h-3 mr-1 text-green-500" /> P2P Encrypted
-                                            </span>
-                                            <button onClick={handlePost} className="bg-violet-600 text-white px-6 py-2 rounded-full font-bold hover:bg-violet-700 transition-colors">Post</button>
-                                        </div>
-                                    </div>
+    // Replace with your Firebase config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-                                    {posts.map(post => (
-                                        <div key={post.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                                            <div className="flex items-center space-x-3 mb-4">
-                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600">{post.avatar}</div>
-                                                <div>
-                                                    <p className="font-bold text-sm">{post.author}</p>
-                                                    <p className="text-xs text-slate-400">{post.timestamp}</p>
-                                                </div>
-                                            </div>
-                                            <p className="text-slate-700 leading-relaxed mb-4">{post.content}</p>
-                                            <div className="flex space-x-6 border-t pt-4">
-                                                <button className="flex items-center space-x-2 text-slate-400 hover:text-red-500 transition-colors">
-                                                    <Icon name="Heart" className={post.isLiked ? "fill-red-500 text-red-500" : ""} />
-                                                    <span className="text-sm font-medium">{post.likes}</span>
-                                                </button>
-                                                <button className="flex items-center space-x-2 text-slate-400 hover:text-violet-600 transition-colors">
-                                                    <Icon name="MessageCircle" />
-                                                    <span className="text-sm font-medium text-slate-400">Reply</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </>
-                            ) : activeTab === 'messages' ? (
-                                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 h-[600px] flex flex-col overflow-hidden">
-                                    <div className="p-4 border-b flex justify-between items-center bg-white">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">SM</div>
-                                            <h3 className="font-bold text-slate-800">Sarah Martinez</h3>
-                                        </div>
-                                        <div className="flex items-center text-[10px] font-mono text-green-500 uppercase tracking-widest bg-green-50 px-2 py-1 rounded">
-                                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
-                                            Secure P2P
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/30 custom-scrollbar">
-                                        {messages.map(m => (
-                                            <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
-                                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${m.isMe ? 'bg-violet-600 text-white rounded-tr-none' : 'bg-white border text-slate-700 rounded-tl-none shadow-sm'}`}>
-                                                    {m.text}
-                                                    <div className={`text-[9px] mt-1 opacity-60 ${m.isMe ? 'text-right' : 'text-left'}`}>{m.time}</div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="p-4 bg-white border-t">
-                                        <div className="flex space-x-2">
-                                            <input 
-                                                value={currentChat}
-                                                onChange={(e) => setCurrentChat(e.target.value)}
-                                                onKeyDown={(e) => e.key === 'Enter' && handleSendMsg()}
-                                                type="text" 
-                                                placeholder="Type an encrypted message..." 
-                                                className="flex-1 bg-slate-100 rounded-full px-5 py-2 outline-none focus:ring-2 focus:ring-violet-500 transition-all"
-                                            />
-                                            <button onClick={handleSendMsg} className="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 transition-transform">
-                                                <Icon name="Send" className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="text-center py-20 text-slate-400">
-                                    <Icon name="Users" className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                    <p>Network management feature coming soon.</p>
-                                </div>
-                            )}
-                        </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-                        {/* Trending Sidebar */}
-                        <aside className="lg:col-span-3 space-y-6">
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                                <h3 className="font-bold text-slate-800 mb-4">Trending Tech</h3>
-                                {["#WebRTC", "#ZeroKnowledge", "#Decentralized", "#React2026"].map(tag => (
-                                    <div key={tag} className="flex justify-between items-center mb-4 group cursor-pointer">
-                                        <p className="text-violet-600 font-medium group-hover:underline text-sm">{tag}</p>
-                                        <Icon name="TrendingUp" className="w-3 h-3 text-slate-300" />
-                                    </div>
-                                ))}
-                            </div>
-                        </aside>
-                    </main>
-                </div>
-            );
-        }
+    // Sign-up
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(userCredential.user);
+        document.getElementById("signupStatus").textContent = "Account created! Verification email sent.";
+      } catch (error) {
+        document.getElementById("signupStatus").textContent = `Error: ${error.code}`;
+      }
+    });
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+    // Auth state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById("guest").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        document.getElementById("username").textContent = user.email;
+      } else {
+        document.getElementById("guest").style.display = "block";
+        document.getElementById("dashboard").style.display = "none";
+      }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+    });
+
+    // Tab navigation
+    const buttons = document.querySelectorAll("nav button");
+    const sections = document.querySelectorAll("#dashboard main section");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    // Messages
+    const sendBtn = document.getElementById("sendMessageBtn");
+    const messageInput = document.getElementById("messageInput");
+    const messageList = document.getElementById("messageList");
+
+    sendBtn.addEventListener("click", async () => {
+      const text = message
+            // Messages handler (continued)
+      const text = messageInput.value.trim();
+      if (text) {
+        await addDoc(collection(db, "messages"), {
+          text,
+          uid: auth.currentUser ? auth.currentUser.uid : "guest",
+          createdAt: serverTimestamp()
+        });
+        messageInput.value = "";
+      }
+    });
+
+    // Real-time listener for messages
+    const messagesQuery = query(collection(db, "messages"), orderBy("createdAt", "asc"));
+    onSnapshot(messagesQuery, (snapshot) => {
+      messageList.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const p = document.createElement("p");
+        p.textContent = `${data.uid}: ${data.text}`;
+        messageList.appendChild(p);
+      });
+    });
+
+    // Uploads
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("fileInput");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const uploadList = document.getElementById("uploadList");
+
+    uploadBtn.addEventListener("click", () => {
+      const file = fileInput.files[0];
+      if (file) {
+        const path = `uploads/${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, path);
+        const task = uploadBytesResumable(storageRef, file);
+
+        task.on("state_changed",
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            uploadStatus.textContent = `Upload is ${progress.toFixed(0)}% done`;
+          },
+          (error) => {
+            uploadStatus.textContent = "Error: " + error.message;
+          },
+          async () => {
+            const url = await getDownloadURL(task.snapshot.ref);
+            uploadStatus.textContent = `Uploaded! File URL: ${url}`;
+            await addDoc(collection(db, "uploads"), {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              url,
+              uid: auth.currentUser ? auth.currentUser.uid : "guest",
+              createdAt: serverTimestamp()
+            });
+          }
+        );
+      } else {
+        uploadStatus.textContent = "No file selected.";
+      }
+    });
+
+    // Real-time listener for uploads
+    const uploadsQuery = query(collection(db, "uploads"), orderBy("createdAt", "desc"));
+    onSnapshot(uploadsQuery, (snapshot) => {
+      uploadList.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const p = document.createElement("p");
+        p.innerHTML = `<strong>${data.name}</strong> (${data.type}) - <a href="${data.url}" target="_blank">View</a>`;
+        uploadList.appendChild(p);
+      });
+    });
+
+    // Feed
+    const feedPosts = document.getElementById("feedPosts");
+    const feedSearch = document.getElementById("feedSearch");
+    const trendingList = document.getElementById("trendingList");
+    const streamList = document.getElementById("streamList");
+
+    let currentQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+
+    function renderPosts(snapshot) {
+      feedPosts.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const article = document.createElement("article");
+        article.className = "post";
+        article.innerHTML = `
+          <h3>@${data.author}</h3>
+          <p>${data.content}</p>
+          <div class="actions">
+            <button>Like</button>
+            <button>Comment</button>
+            <button>Share</button>
+          </div>`;
+        feedPosts.appendChild(article);
+      });
+    }
+
+    onSnapshot(currentQuery, renderPosts);
+
+    feedSearch.addEventListener("input", (e) => {
+      const term = e.target.value.trim().toLowerCase();
+      if (term) {
+        const searchQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        onSnapshot(searchQuery, renderPosts);
+      } else {
+        onSnapshot(currentQuery, renderPosts);
+      }
+    });
+
+    // Trending topics
+    const trendingQuery = query(collection(db, "topics"), orderBy("count", "desc"), limit(5));
+    onSnapshot(trendingQuery, (snapshot) => {
+      trendingList.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.textContent = `${data.name} (${data.count})`;
+        li.style.cursor = "pointer";
+        li.addEventListener("click", () => {
+          const topicQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+          onSnapshot(topicQuery, renderPosts);
+        });
+        trendingList.appendChild(li);
+      });
+    });
+
+    // Trending streams
+    const streamsQuery = query(collection(db, "streams"), orderBy("viewers", "desc"), limit(5));
+    onSnapshot(streamsQuery, (snapshot) => {
+      streamList.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${data.title}</strong> by @${data.host} (${data.viewers} viewers) 
+          <a href="${data.url}" target="_blank">Watch</a>`;
+        li.style.cursor = "pointer";
+        li.addEventListener("click", async () => {
+          // Viewer join flow (simplified)
+          const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+          const remoteVideo = document.createElement("video");
+          remoteVideo.autoplay = true;
+          remoteVideo.playsInline = true;
+          remoteVideo.style.width = "100%";
+          document.getElementById("streams").appendChild(remoteVideo);
+          pc.ontrack = (event) => { remoteVideo.srcObject = event.streams[0]; };
+          // Placeholder: fetch offer/answer via Firestore signaling
+          console.log("Viewer clicked stream:", data.title);
+        });
+        streamList.appendChild(li);
+      });
+    });
+
+    // Go Live
+    const goLiveBtn = document.getElementById("goLiveBtn");
+    const localVideo = document.getElementById("localStream");
+
+    goLiveBtn.addEventListener("click", async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = stream;
+        const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+        stream.getTracks().forEach(track => pc.addTrack(track, stream));
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        await addDoc(collection(db, "streams"), {
+          title: "My Live Stream",
+          host: auth.currentUser ? auth.currentUser.uid : "guest",
+          viewers: 0,
+          createdAt: serverTimestamp(),
+          url: "webrtc://placeholder",
+          offer: offer.sdp
+        });
+        console.log("Go Live started. Offer created.");
+      } catch (err) {
+        console.error("Error starting live stream:", err);
+      }
+    });
+  </script>
 </body>
-</html>
- 
+   </html>
+   
