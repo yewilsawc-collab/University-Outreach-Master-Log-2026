@@ -12,53 +12,28 @@
     <style>
         :root { --accent-gold: #f1c40f; --bg-obsidian: #020617; }
         body { background-color: var(--bg-obsidian); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
-        
-        .elementa-glass { 
-            background: rgba(15, 23, 42, 0.8); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255,255,255,0.1); 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Cascading Animation */
-        .pane-entry {
-            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(30px) scale(0.95); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
-        .nav-link { cursor: pointer; opacity: 0.5; transition: 0.3s; font-weight: 900; }
-        .nav-link.active { opacity: 1; color: var(--accent-gold); }
-        
-        #stack-container { position: relative; width: 100%; height: 100vh; perspective: 1000px; }
+        .elementa-glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); }
+        .pane { position: absolute; inset: 0; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s; }
+        .nav-link { cursor: pointer; opacity: 0.4; transition: 0.3s; font-weight: 900; letter-spacing: 0.2em; }
+        .nav-link.active { opacity: 1; color: var(--accent-gold); border-right: 3px solid var(--accent-gold); }
     </style>
 </head>
-<body class="flex">
+<body class="flex h-screen">
 
-    <nav class="w-72 border-r border-white/10 p-8 flex flex-col gap-10 elementa-glass z-[1000]">
+    <nav id="main-nav" class="hidden w-72 border-r border-white/10 p-8 flex flex-col gap-10 elementa-glass z-[5000]">
         <div class="text-4xl font-black tracking-tighter">ELEMENTA</div>
-        <div class="flex flex-col gap-6 uppercase text-[11px] tracking-widest">
-            <div onclick="cascade('feed')" id="nav-feed" class="nav-link active">🏠 Stream</div>
-            <div onclick="cascade('discovery')" id="nav-discovery" class="nav-link">🌐 Discovery</div>
-            <div onclick="cascade('vault')" id="nav-vault" class="nav-link">📂 Vault</div>
-            <div onclick="cascade('profile')" id="nav-profile" class="nav-link">👤 Identity</div>
+        <div class="flex flex-col gap-8 uppercase text-[10px]">
+            <div onclick="show('feed')" id="nav-feed" class="nav-link active">🏠 Stream</div>
+            <div onclick="show('discovery')" id="nav-discovery" class="nav-link">🌐 Discovery</div>
+            <div onclick="show('vault')" id="nav-vault" class="nav-link">📂 Vault</div>
+            <div onclick="show('profile')" id="nav-profile" class="nav-link">👤 Identity</div>
         </div>
-        <div class="mt-auto text-[9px] font-mono opacity-40">SYSTEM VERSION 1.0.4 // CASCADING ENABLED</div>
     </nav>
 
-    <main id="stack-container" class="flex-1 overflow-hidden bg-black"></main>
+    <main id="viewport" class="relative flex-1 bg-black overflow-hidden"></main>
 
     <script type="module">
-        // --- 1. CONFIGURATION ---
-        const firebaseConfig = {
+        const config = {
             apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
             authDomain: "university-outreach-log.firebaseapp.com",
             projectId: "university-outreach-log",
@@ -66,93 +41,46 @@
             messagingSenderId: "566149647802",
             appId: "1:566149647802:web:490c7cc3d10b7cd7732183"
         };
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(config);
         const db = firebase.firestore();
 
-        // --- 2. TEMPLATES ---
-        const Views = {
-            feed: `
-                <div class="pane-entry p-10 overflow-y-auto">
-                    <h2 class="text-5xl font-black uppercase mb-10">Universal Stream</h2>
-                    <div id="social-stream" class="space-y-6 max-w-2xl"></div>
-                </div>`,
-            discovery: `
-                <div class="pane-entry p-10 overflow-y-auto bg-[#020617]/90">
-                    <h2 class="text-5xl font-black uppercase mb-4">Discovery</h2>
-                    <p class="text-xs text-slate-500 mb-10 tracking-[0.4em]">LOCAL NODES NEAR ADDIS ABABA</p>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="elementa-glass p-8 rounded-[40px] text-center">
-                            <div class="w-20 h-20 bg-yellow-500 rounded-2xl mx-auto mb-4"></div>
-                            <h3 class="font-bold">NODE_ALPHA</h3>
-                            <button class="mt-4 text-[10px] font-black uppercase">Link</button>
-                        </div>
+        const Templates = {
+            login: `
+                <div class="pane flex items-center justify-center bg-[#020617] z-[9999]">
+                    <div class="elementa-glass p-12 rounded-[60px] max-w-sm text-center">
+                        <h2 class="text-[#f1c40f] text-[10px] font-black tracking-[0.5em] mb-10 uppercase">Neural Calibration</h2>
+                        <button onclick="login()" class="w-full bg-[#f1c40f] text-black py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all">Establish Link</button>
                     </div>
                 </div>`,
-            vault: `
-                <div class="pane-entry p-10 overflow-y-auto bg-slate-900/95">
-                    <h2 class="text-5xl font-black uppercase mb-10">Data Vault</h2>
-                    <div class="grid grid-cols-4 gap-4">
-                        <div class="aspect-square elementa-glass rounded-2xl animate-pulse"></div>
-                        <div class="aspect-square elementa-glass rounded-2xl animate-pulse"></div>
-                    </div>
-                </div>`,
-            profile: `
-                <div class="pane-entry p-10 flex items-center justify-center bg-black/90">
-                    <div class="text-center">
-                        <div class="w-40 h-40 bg-gradient-to-tr from-yellow-500 to-red-600 rounded-[50px] mx-auto mb-8 shadow-2xl rotate-3"></div>
-                        <h1 class="text-6xl font-black tracking-tighter uppercase">Yewilsaw Chanie</h1>
-                        <p class="text-slate-500 mt-4 uppercase tracking-widest text-xs">Computational Lead</p>
-                    </div>
-                </div>`
+            feed: `<div class="pane p-10 overflow-y-auto">
+                    <h2 class="text-5xl font-black uppercase mb-10">Stream</h2>
+                    <div id="feed-content" class="max-w-xl space-y-6"></div>
+                  </div>`,
+            profile: `<div class="pane p-10 flex flex-col items-center justify-center">
+                        <div class="w-40 h-40 bg-gradient-to-tr from-yellow-500 to-red-600 rounded-[40px] mb-8 rotate-6 shadow-2xl"></div>
+                        <h1 class="text-5xl font-black uppercase">Yewilsaw Chanie</h1>
+                        <p class="text-slate-500 tracking-[0.3em] uppercase text-[10px] mt-4">Computational Lead</p>
+                      </div>`
         };
 
-        let activeZIndex = 10;
-
-        // --- 3. CASCADING ENGINE ---
-        window.cascade = (view) => {
-            const container = document.getElementById('stack-container');
-            
-            // Create a new pane element
+        window.show = (view) => {
+            const vp = document.getElementById('viewport');
             const newPane = document.createElement('div');
-            newPane.id = `pane-${view}`;
-            newPane.innerHTML = Views[view];
-            newPane.style.zIndex = activeZIndex++;
+            newPane.innerHTML = Templates[view];
+            vp.appendChild(newPane);
             
-            // Add a close button to the pane for true cascading feel
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = "✕";
-            closeBtn.className = "absolute top-8 right-8 z-[100] text-slate-500 hover:text-white text-xl font-bold";
-            closeBtn.onclick = () => newPane.remove();
-            newPane.firstChild.appendChild(closeBtn);
-
-            container.appendChild(newPane);
-
-            // Update Nav Highlighting
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(`nav-${view}`).classList.add('active');
-
-            // Initialize logic if feed
-            if (view === 'feed') startFeed();
+            if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
         };
 
-        function startFeed() {
-            db.collection("posts").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
-                const stream = document.getElementById('social-stream');
-                if (!stream) return;
-                stream.innerHTML = '';
-                snap.forEach(doc => {
-                    stream.innerHTML += `
-                        <div class="elementa-glass p-8 rounded-[40px] border-t border-white/10">
-                            <p class="text-lg font-light leading-relaxed">${doc.data().text}</p>
-                        </div>`;
-                });
-            });
-        }
-
-        // Boot
-        window.onload = () => {
-            firebase.auth().signInAnonymously().then(() => cascade('feed'));
+        window.login = async () => {
+            await firebase.auth().signInAnonymously();
+            document.getElementById('main-nav').classList.remove('hidden');
+            document.getElementById('viewport').innerHTML = "";
+            show('feed');
         };
+
+        window.onload = () => { document.getElementById('viewport').innerHTML = Templates.login; };
     </script>
 </body>
 </html>
