@@ -1,138 +1,219 @@
-<!DOCTYPE html>
+
+   <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Elementa</title>
-
-  <!-- Global + Component CSS -->
-  <style>
-    /* RESET */
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html,body { height:100%; font-family:Inter,system-ui,sans-serif; background:#0f0f0f; color:#fff; }
-
-    /* SHELL */
-    #main-ecosystem { display:flex; flex-direction:column; height:100%; opacity:0; transition:opacity .6s ease; }
-    #top-bar { height:56px; display:flex; align-items:center; padding:0 16px; backdrop-filter:blur(20px); background:rgba(255,255,255,.05); border-bottom:1px solid rgba(255,255,255,.08); }
-    .app-title { font-size:20px; font-weight:600; }
-    #view-container { flex:1; overflow-y:auto; padding:16px; }
-    #bottom-nav { height:60px; display:flex; justify-content:space-around; align-items:center; backdrop-filter:blur(20px); background:rgba(255,255,255,.05); border-top:1px solid rgba(255,255,255,.08); }
-    #bottom-nav button { background:none; border:none; color:#fff; font-size:14px; cursor:pointer; }
-
-    /* SPLASH */
-    #splash-screen { position:fixed; inset:0; background:#000; display:flex; justify-content:center; align-items:center; z-index:999; transition:opacity .8s ease; }
-    #splash-screen.reveal-ecosystem { opacity:0; pointer-events:none; }
-    .splash-logo { font-size:32px; font-weight:700; letter-spacing:2px; }
-
-    /* COMPONENTS */
-    .post-card { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px; margin-bottom:16px; backdrop-filter:blur(20px); }
-    .message-bubble { max-width:70%; padding:10px 14px; border-radius:14px; margin-bottom:10px; }
-    .message-bubble.sent { background:rgba(255,255,255,.12); align-self:flex-end; }
-    .message-bubble.received { background:rgba(255,255,255,.06); align-self:flex-start; }
-    .profile-card { background:rgba(255,255,255,.08); border:2px solid rgba(255,255,255,.2); border-radius:18px; padding:20px; text-align:center; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elementa | P2P Social Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass-header { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900">
+    <div id="root"></div>
 
-  <!-- Splash -->
-  <div id="splash-screen"><div class="splash-logo">Elementa</div></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-  <!-- Shell -->
-  <div id="main-ecosystem">
-    <header id="top-bar"><h1 class="app-title">Elementa</h1></header>
-    <main id="view-container"></main>
-    <nav id="bottom-nav">
-      <button data-view="feed">Feed</button>
-      <button data-view="messages">Messages</button>
-      <button data-view="profile">Profile</button>
-      <button data-view="discovery">Discover</button>
-      <button data-view="support">Support</button>
-    </nav>
-  </div>
+        // --- Icon Component Wrapper ---
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            const [iconSvg, setIconSvg] = useState('');
+            useEffect(() => {
+                if (window.lucide) {
+                    const icon = window.lucide.icons[name];
+                    if (icon) setIconSvg(icon.toSvg({ class: className }));
+                }
+            }, [name, className]);
+            return <span dangerouslySetInnerHTML={{ __html: iconSvg }} />;
+        };
 
-  <!-- Scripts -->
-  <script type="module">
-    // prompts.js
-    export const prompts = {
-      feed: {
-        professional: (topic) => `Draft a concise professional update about ${topic}.`,
-        casual: (topic) => `Write a casual post about ${topic}.`,
-        academic: (topic) => `Summarize ${topic} with academic tone.`
-      },
-      messages: {
-        friendly: (msg) => `Generate a warm reply to: "${msg}".`,
-        professional: (msg) => `Respond professionally to: "${msg}".`,
-        humorous: (msg) => `Craft a witty reply to: "${msg}".`
-      }
-    };
-  </script>
+        function App() {
+            const [activeTab, setActiveTab] = useState('home'); // 'home', 'messages', 'network'
+            const [newPost, setNewPost] = useState("");
+            const [posts, setPosts] = useState([
+                { id: 1, author: "Alex Chen", avatar: "AC", content: "Just launched the Elementa P2P protocol. Privacy is the new standard! 🔐", timestamp: "2h ago", likes: 42, isLiked: false },
+                { id: 2, author: "Sarah Martinez", avatar: "SM", content: "Code should be clean, readable, and decentralized. 🌐", timestamp: "4h ago", likes: 128, isLiked: true }
+            ]);
+            const [messages, setMessages] = useState([
+                { id: 1, text: "Is the peer discovery active?", isMe: false, time: "12:01" },
+                { id: 2, text: "Yes, fully encrypted and direct.", isMe: true, time: "12:02" }
+            ]);
+            const [currentChat, setCurrentChat] = useState("");
 
-  <script type="module">
-    // ai.js
-    export async function getGeminiResponse(prompt) {
-      try {
-        const res = await fetch("/api/gemini", {
-          method:"POST", headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ prompt })
-        });
-        const data = await res.json();
-        return data.output || "AI unavailable.";
-      } catch { return "AI error."; }
-    }
-  </script>
+            const currentUser = { name: "Yewilsaw Chanie", handle: "@y_chanie", avatar: "YC" };
 
-  <script type="module">
-    // navigation.js
-    const viewContainer = document.getElementById("view-container");
-    const cache = new Map();
+            const handlePost = () => {
+                if (!newPost.trim()) return;
+                const post = { id: Date.now(), author: currentUser.name, avatar: currentUser.avatar, content: newPost, timestamp: "Just now", likes: 0, isLiked: false };
+                setPosts([post, ...posts]);
+                setNewPost("");
+            };
 
-    async function loadView(view) {
-      if (cache.has(view)) { viewContainer.innerHTML = cache.get(view); return; }
-      let html = "";
-      switch(view) {
-        case "feed": html = `<section><h2>Feed</h2><textarea id="post-input"></textarea><button id="ai-draft-btn">AI Draft</button><button id="share-btn">Post</button><div id="social-feed"></div></section>`; break;
-        case "messages": html = `<section><h2>Messages</h2><div id="messages-list"></div><div id="message-composer"><input id="message-input"/><button id="send-message-btn">Send</button></div></section>`; break;
-        case "profile": html = `<section><h2>Profile</h2><div class="profile-card"><h2>User</h2><p>Status: Active</p></div></section>`; break;
-        case "discovery": html = `<section><h2>Discover</h2><p>Discovery engine coming soon...</p></section>`; break;
-        case "support": html = `<section><h2>Support</h2><button>Report Issue</button><button>Contact Support</button></section>`; break;
-      }
-      cache.set(view, html);
-      viewContainer.innerHTML = html;
-    }
+            const handleSendMsg = () => {
+                if (!currentChat.trim()) return;
+                setMessages([...messages, { id: Date.now(), text: currentChat, isMe: true, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
+                setCurrentChat("");
+            };
 
-    function bindNav() {
-      document.querySelectorAll("[data-view]").forEach(btn=>{
-        btn.addEventListener("click",()=>loadView(btn.dataset.view));
-      });
-    }
+            return (
+                <div className="min-h-screen">
+                    {/* Navigation */}
+                    <header className="sticky top-0 z-50 border-b border-slate-200 glass-header">
+                        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center space-x-8">
+                                <h1 className="text-2xl font-black bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">Elementa</h1>
+                                <nav className="hidden md:flex space-x-1">
+                                    {['home', 'network', 'messages'].map(tab => (
+                                        <button 
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab)}
+                                            className={`px-4 py-2 rounded-full capitalize font-medium transition-all ${activeTab === tab ? 'bg-violet-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </nav>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <div className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white font-bold text-xs">{currentUser.avatar}</div>
+                            </div>
+                        </div>
+                    </header>
 
-    export function initRouter() { bindNav(); loadView("feed"); }
-  </script>
+                    <main className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        {/* Sidebar */}
+                        <aside className="lg:col-span-3 space-y-6">
+                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
+                                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-violet-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mb-4 shadow-lg">
+                                    {currentUser.avatar}
+                                </div>
+                                <h2 className="font-bold text-lg">{currentUser.name}</h2>
+                                <p className="text-slate-400 text-sm mb-4">{currentUser.handle}</p>
+                                <div className="grid grid-cols-2 border-t pt-4">
+                                    <div><p className="font-bold">1.2k</p><p className="text-xs text-slate-400">Followers</p></div>
+                                    <div><p className="font-bold">567</p><p className="text-xs text-slate-400">Following</p></div>
+                                </div>
+                            </div>
+                        </aside>
 
-  <script type="module">
-    // splash.js
-    export function runSplash() {
-      const splash = document.getElementById("splash-screen");
-      const app = document.getElementById("main-ecosystem");
-      setTimeout(()=>{ splash.classList.add("reveal-ecosystem"); app.style.opacity="1"; },1500);
-    }
-  </script>
+                        {/* Main Feed or Messaging View */}
+                        <div className="lg:col-span-6 space-y-6">
+                            {activeTab === 'home' ? (
+                                <>
+                                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                                        <textarea 
+                                            value={newPost}
+                                            onChange={(e) => setNewPost(e.target.value)}
+                                            placeholder="What's on your mind?" 
+                                            className="w-full bg-slate-50 rounded-xl p-4 border-none focus:ring-2 focus:ring-violet-500 outline-none transition-all"
+                                            rows="3"
+                                        />
+                                        <div className="flex justify-between items-center mt-3">
+                                            <span className="text-xs text-slate-400 flex items-center font-medium">
+                                                <Icon name="Shield" className="w-3 h-3 mr-1 text-green-500" /> P2P Encrypted
+                                            </span>
+                                            <button onClick={handlePost} className="bg-violet-600 text-white px-6 py-2 rounded-full font-bold hover:bg-violet-700 transition-colors">Post</button>
+                                        </div>
+                                    </div>
 
-  <script type="module">
-    // master.js
-    import { initRouter } from "./navigation.js";
-    import { runSplash } from "./splash.js";
-    import { getGeminiResponse } from "./ai.js";
-    import { prompts } from "./prompts.js";
+                                    {posts.map(post => (
+                                        <div key={post.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                                            <div className="flex items-center space-x-3 mb-4">
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600">{post.avatar}</div>
+                                                <div>
+                                                    <p className="font-bold text-sm">{post.author}</p>
+                                                    <p className="text-xs text-slate-400">{post.timestamp}</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-slate-700 leading-relaxed mb-4">{post.content}</p>
+                                            <div className="flex space-x-6 border-t pt-4">
+                                                <button className="flex items-center space-x-2 text-slate-400 hover:text-red-500 transition-colors">
+                                                    <Icon name="Heart" className={post.isLiked ? "fill-red-500 text-red-500" : ""} />
+                                                    <span className="text-sm font-medium">{post.likes}</span>
+                                                </button>
+                                                <button className="flex items-center space-x-2 text-slate-400 hover:text-violet-600 transition-colors">
+                                                    <Icon name="MessageCircle" />
+                                                    <span className="text-sm font-medium text-slate-400">Reply</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
+                            ) : activeTab === 'messages' ? (
+                                <div className="bg-white rounded-2xl shadow-lg border border-slate-100 h-[600px] flex flex-col overflow-hidden">
+                                    <div className="p-4 border-b flex justify-between items-center bg-white">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">SM</div>
+                                            <h3 className="font-bold text-slate-800">Sarah Martinez</h3>
+                                        </div>
+                                        <div className="flex items-center text-[10px] font-mono text-green-500 uppercase tracking-widest bg-green-50 px-2 py-1 rounded">
+                                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
+                                            Secure P2P
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/30 custom-scrollbar">
+                                        {messages.map(m => (
+                                            <div key={m.id} className={`flex ${m.isMe ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${m.isMe ? 'bg-violet-600 text-white rounded-tr-none' : 'bg-white border text-slate-700 rounded-tl-none shadow-sm'}`}>
+                                                    {m.text}
+                                                    <div className={`text-[9px] mt-1 opacity-60 ${m.isMe ? 'text-right' : 'text-left'}`}>{m.time}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="p-4 bg-white border-t">
+                                        <div className="flex space-x-2">
+                                            <input 
+                                                value={currentChat}
+                                                onChange={(e) => setCurrentChat(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleSendMsg()}
+                                                type="text" 
+                                                placeholder="Type an encrypted message..." 
+                                                className="flex-1 bg-slate-100 rounded-full px-5 py-2 outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+                                            />
+                                            <button onClick={handleSendMsg} className="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 transition-transform">
+                                                <Icon name="Send" className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-20 text-slate-400">
+                                    <Icon name="Users" className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                                    <p>Network management feature coming soon.</p>
+                                </div>
+                            )}
+                        </div>
 
-    window.addEventListener("load", async ()=>{
-      runSplash();
-      initRouter();
-      const preview = await getGeminiResponse(prompts.feed.professional("Elementa launch"));
-      console.log("AI preview:", preview);
-    });
-  </script>
+                        {/* Trending Sidebar */}
+                        <aside className="lg:col-span-3 space-y-6">
+                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                                <h3 className="font-bold text-slate-800 mb-4">Trending Tech</h3>
+                                {["#WebRTC", "#ZeroKnowledge", "#Decentralized", "#React2026"].map(tag => (
+                                    <div key={tag} className="flex justify-between items-center mb-4 group cursor-pointer">
+                                        <p className="text-violet-600 font-medium group-hover:underline text-sm">{tag}</p>
+                                        <Icon name="TrendingUp" className="w-3 h-3 text-slate-300" />
+                                    </div>
+                                ))}
+                            </div>
+                        </aside>
+                    </main>
+                </div>
+            );
+        }
 
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
-    </html>
-    
+</html>
+ 
