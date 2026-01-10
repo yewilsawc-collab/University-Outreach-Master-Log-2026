@@ -1,0 +1,114 @@
+/* ------------------------------
+   FEED COMPONENTS
+------------------------------ */
+
+.post-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(20px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-author {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.post-time {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* ------------------------------
+   MESSAGE COMPONENTS
+------------------------------ */
+
+.message-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.message-bubble.sent {
+    background: rgba(255, 255, 255, 0.12);
+    align-self: flex-end;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.message-bubble.received {
+    background: rgba(255, 255, 255, 0.06);
+    align-self: flex-start;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ------------------------------
+   PROFILE COMPONENTS
+------------------------------ */
+
+.profile-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 18px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(24px);
+}
+
+.profile-card h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.profile-card p {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+/* ------------------------------
+   DISCOVERY COMPONENTS
+------------------------------ */
+
+.discovery-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    transition: background 0.2s ease;
+}
+
+.discovery-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ------------------------------
+   SYSTEM / UPLINK COMPONENTS
+------------------------------ */
+
+.system-panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #9ef;
+}
+
