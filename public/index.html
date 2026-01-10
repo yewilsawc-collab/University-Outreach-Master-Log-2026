@@ -12,34 +12,52 @@
     <style>
         :root { --accent-gold: #f1c40f; --bg-obsidian: #020617; }
         body { background-color: var(--bg-obsidian); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
-        .elementa-glass { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
-        .nav-link { cursor: pointer; transition: 0.3s; opacity: 0.5; font-weight: 900; letter-spacing: 0.1em; }
-        .nav-link.active { opacity: 1; color: var(--accent-gold); border-right: 3px solid var(--accent-gold); }
-        #view-port { height: 100vh; overflow-y: auto; scrollbar-width: none; transition: opacity 0.2s ease; }
-        #view-port::-webkit-scrollbar { display: none; }
+        
+        .elementa-glass { 
+            background: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Cascading Animation */
+        .pane-entry {
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(30px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .nav-link { cursor: pointer; opacity: 0.5; transition: 0.3s; font-weight: 900; }
+        .nav-link.active { opacity: 1; color: var(--accent-gold); }
+        
+        #stack-container { position: relative; width: 100%; height: 100vh; perspective: 1000px; }
     </style>
 </head>
 <body class="flex">
 
-    <nav class="w-72 border-r border-white/10 p-8 flex flex-col gap-10 elementa-glass z-50">
+    <nav class="w-72 border-r border-white/10 p-8 flex flex-col gap-10 elementa-glass z-[1000]">
         <div class="text-4xl font-black tracking-tighter">ELEMENTA</div>
-        <div class="flex flex-col gap-8 uppercase text-[11px]">
-            <div onclick="navigate('feed')" id="nav-feed" class="nav-link active">🏠 Universal Stream</div>
-            <div onclick="navigate('discovery')" id="nav-discovery" class="nav-link">🌐 Discovery</div>
-            <div onclick="navigate('vault')" id="nav-vault" class="nav-link">📂 The Vault</div>
-            <div onclick="navigate('profile')" id="nav-profile" class="nav-link">👤 Identity</div>
-            <div onclick="navigate('settings')" id="nav-settings" class="nav-link">⚙️ Configuration</div>
+        <div class="flex flex-col gap-6 uppercase text-[11px] tracking-widest">
+            <div onclick="cascade('feed')" id="nav-feed" class="nav-link active">🏠 Stream</div>
+            <div onclick="cascade('discovery')" id="nav-discovery" class="nav-link">🌐 Discovery</div>
+            <div onclick="cascade('vault')" id="nav-vault" class="nav-link">📂 Vault</div>
+            <div onclick="cascade('profile')" id="nav-profile" class="nav-link">👤 Identity</div>
         </div>
-        <div class="mt-auto pt-6 border-t border-white/5 flex items-center gap-3">
-            <div id="status-dot" class="w-2 h-2 rounded-full bg-red-500"></div>
-            <span id="node-id" class="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Node: Offline</span>
-        </div>
+        <div class="mt-auto text-[9px] font-mono opacity-40">SYSTEM VERSION 1.0.4 // CASCADING ENABLED</div>
     </nav>
 
-    <main id="view-port" class="flex-1 p-10"></main>
+    <main id="stack-container" class="flex-1 overflow-hidden bg-black"></main>
 
     <script type="module">
-        // 1. Firebase Plug-and-Play Configuration
+        // --- 1. CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
             authDomain: "university-outreach-log.firebaseapp.com",
@@ -51,126 +69,89 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. Integrated Module Templates
+        // --- 2. TEMPLATES ---
         const Views = {
             feed: `
-                <div class="max-w-2xl mx-auto">
-                    <h2 class="text-4xl font-black uppercase tracking-tighter mb-10">Stream</h2>
-                    <div class="elementa-glass p-6 rounded-3xl mb-10 border-t border-white/10">
-                        <textarea id="post-input" class="w-full bg-transparent border-none outline-none text-xl h-24 placeholder:text-slate-700" placeholder="Broadcast to the ecosystem..."></textarea>
-                        <button onclick="broadcast()" class="mt-4 bg-[#f1c40f] text-black px-10 py-3 rounded-2xl font-black text-[10px] uppercase">Deploy Shard</button>
-                    </div>
-                    <div id="social-stream" class="space-y-6"></div>
+                <div class="pane-entry p-10 overflow-y-auto">
+                    <h2 class="text-5xl font-black uppercase mb-10">Universal Stream</h2>
+                    <div id="social-stream" class="space-y-6 max-w-2xl"></div>
                 </div>`,
-
             discovery: `
-                <h2 class="text-4xl font-black tracking-tighter uppercase mb-4">Node Discovery</h2>
-                <p class="text-[10px] text-slate-500 tracking-[0.3em] uppercase mb-10">Expanding the Ecosystem</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="elementa-glass p-8 rounded-[40px] text-center border-t border-white/10">
-                        <div class="w-24 h-24 bg-gradient-to-tr from-pink-500 to-yellow-500 rounded-3xl mx-auto mb-6 rotate-3 shadow-2xl"></div>
-                        <h3 class="text-xl font-black uppercase">Selam_Tech</h3>
-                        <p class="text-[9px] text-slate-500 font-mono mb-6">DISTANCE: 2.4 KM</p>
-                        <button class="w-full bg-white/5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#f1c40f] hover:text-black transition-all">Link Node</button>
+                <div class="pane-entry p-10 overflow-y-auto bg-[#020617]/90">
+                    <h2 class="text-5xl font-black uppercase mb-4">Discovery</h2>
+                    <p class="text-xs text-slate-500 mb-10 tracking-[0.4em]">LOCAL NODES NEAR ADDIS ABABA</p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="elementa-glass p-8 rounded-[40px] text-center">
+                            <div class="w-20 h-20 bg-yellow-500 rounded-2xl mx-auto mb-4"></div>
+                            <h3 class="font-bold">NODE_ALPHA</h3>
+                            <button class="mt-4 text-[10px] font-black uppercase">Link</button>
+                        </div>
                     </div>
                 </div>`,
-
             vault: `
-                <div class="flex justify-between items-center mb-10">
-                    <div>
-                        <h2 class="text-4xl font-black tracking-tighter uppercase">The Vault</h2>
-                        <p class="text-[10px] text-slate-500 tracking-[0.3em] uppercase">Encrypted Asset Repository</p>
+                <div class="pane-entry p-10 overflow-y-auto bg-slate-900/95">
+                    <h2 class="text-5xl font-black uppercase mb-10">Data Vault</h2>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="aspect-square elementa-glass rounded-2xl animate-pulse"></div>
+                        <div class="aspect-square elementa-glass rounded-2xl animate-pulse"></div>
                     </div>
-                    <button class="bg-[#f1c40f] text-black px-8 py-3 rounded-2xl font-black text-[10px] uppercase">Upload Asset</button>
-                </div>
-                <div id="vault-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="aspect-square elementa-glass rounded-3xl bg-white/5 animate-pulse"></div>
-                    <div class="aspect-square elementa-glass rounded-3xl bg-white/5 animate-pulse"></div>
                 </div>`,
-
             profile: `
-                <div class="max-w-lg mx-auto text-center pt-10">
-                    <div class="w-40 h-40 bg-gradient-to-br from-[#f1c40f] to-rose-600 rounded-[40px] mx-auto mb-8 rotate-6 shadow-2xl border-4 border-white/10"></div>
-                    <h1 class="text-5xl font-black tracking-tighter uppercase">YEWILSAW CHANIE</h1>
-                    <p class="text-slate-400 mt-3 font-mono uppercase tracking-[0.2em] text-[10px]">Physical Chemist | Computational Lead</p>
-                    <div class="grid grid-cols-2 gap-4 mt-12">
-                        <div class="elementa-glass p-8 rounded-[40px]">
-                            <p class="text-4xl font-black text-[#f1c40f]">1.2k</p>
-                            <p class="text-[9px] uppercase tracking-widest text-slate-500">Resonations</p>
-                        </div>
-                        <div class="elementa-glass p-8 rounded-[40px]">
-                            <p class="text-4xl font-black text-[#f1c40f]">0.02ms</p>
-                            <p class="text-[9px] uppercase tracking-widest text-slate-500">Latency Rank</p>
-                        </div>
-                    </div>
-                </div>`,
-
-            settings: `
-                <h2 class="text-4xl font-black tracking-tighter uppercase mb-10">Settings</h2>
-                <div class="space-y-4 max-w-xl">
-                    <div class="elementa-glass p-6 rounded-[35px] flex justify-between items-center border-t border-white/5">
-                        <span class="text-sm font-black uppercase tracking-widest">Ghost Mode</span>
-                        <div class="w-12 h-6 bg-white/10 rounded-full relative"><div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
-                    </div>
-                    <div class="elementa-glass p-6 rounded-[35px] border-t border-white/5">
-                        <span class="text-sm font-black uppercase tracking-widest block mb-4">Neural Haptics</span>
-                        <input type="range" class="w-full accent-[#f1c40f]">
+                <div class="pane-entry p-10 flex items-center justify-center bg-black/90">
+                    <div class="text-center">
+                        <div class="w-40 h-40 bg-gradient-to-tr from-yellow-500 to-red-600 rounded-[50px] mx-auto mb-8 shadow-2xl rotate-3"></div>
+                        <h1 class="text-6xl font-black tracking-tighter uppercase">Yewilsaw Chanie</h1>
+                        <p class="text-slate-500 mt-4 uppercase tracking-widest text-xs">Computational Lead</p>
                     </div>
                 </div>`
         };
 
-        // 3. SPA Navigation Engine
-        window.navigate = (view) => {
-            const vp = document.getElementById('view-port');
-            vp.style.opacity = '0';
-            setTimeout(() => {
-                vp.innerHTML = Views[view];
-                vp.style.opacity = '1';
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                document.getElementById(`nav-${view}`).classList.add('active');
-                if (view === 'feed') startStreamListener();
-            }, 150);
+        let activeZIndex = 10;
+
+        // --- 3. CASCADING ENGINE ---
+        window.cascade = (view) => {
+            const container = document.getElementById('stack-container');
+            
+            // Create a new pane element
+            const newPane = document.createElement('div');
+            newPane.id = `pane-${view}`;
+            newPane.innerHTML = Views[view];
+            newPane.style.zIndex = activeZIndex++;
+            
+            // Add a close button to the pane for true cascading feel
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = "✕";
+            closeBtn.className = "absolute top-8 right-8 z-[100] text-slate-500 hover:text-white text-xl font-bold";
+            closeBtn.onclick = () => newPane.remove();
+            newPane.firstChild.appendChild(closeBtn);
+
+            container.appendChild(newPane);
+
+            // Update Nav Highlighting
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(`nav-${view}`).classList.add('active');
+
+            // Initialize logic if feed
+            if (view === 'feed') startFeed();
         };
 
-        // 4. Global Firebase Logic
-        window.broadcast = async () => {
-            const input = document.getElementById('post-input');
-            if (!input?.value.trim()) return;
-            await db.collection("posts").add({
-                text: input.value,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                resonations: 0,
-                sender: "YEWILSAW CHANIE"
-            });
-            input.value = '';
-        };
-
-        function startStreamListener() {
-            db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snap => {
+        function startFeed() {
+            db.collection("posts").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
                 const stream = document.getElementById('social-stream');
                 if (!stream) return;
                 stream.innerHTML = '';
                 snap.forEach(doc => {
-                    const post = doc.data();
                     stream.innerHTML += `
-                        <div class="elementa-glass p-8 rounded-[40px] border-t border-white/5">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-[10px] font-black text-[#f1c40f] uppercase">${post.sender}</span>
-                                <span class="text-[8px] font-mono text-slate-500 uppercase">⚡ ${post.resonations || 0}</span>
-                            </div>
-                            <p class="text-lg font-light">${post.text}</p>
+                        <div class="elementa-glass p-8 rounded-[40px] border-t border-white/10">
+                            <p class="text-lg font-light leading-relaxed">${doc.data().text}</p>
                         </div>`;
                 });
             });
         }
 
-        // 5. System Boot
+        // Boot
         window.onload = () => {
-            firebase.auth().signInAnonymously().then(user => {
-                document.getElementById('node-id').innerText = `NODE: ${user.user.uid.slice(0,8)}`;
-                document.getElementById('status-dot').classList.replace('bg-red-500', 'bg-green-500');
-                navigate('feed');
-            });
+            firebase.auth().signInAnonymously().then(() => cascade('feed'));
         };
     </script>
 </body>
