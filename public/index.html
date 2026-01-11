@@ -332,14 +332,22 @@ body {
 
       // Streams Sidebar
       const streamQuery = query(collection(db, "streams"), orderBy("createdAt", "desc"), limit(5));
-      onSnapshot(streamQuery, (snap) => {
-        const list = document.getElementById("activeStreams");
-        list.innerHTML = snap.empty ? "<li>No active streams</li>" : "";
-        snap.forEach(doc => {
-          const s = doc.data();
-          list.innerHTML += `<li>LIVE: ${s.title} (By ${s.host.split('@')[0]})</li>`;
-        });
-      });
+onSnapshot(streamQuery, (snap) => {
+  const list = document.getElementById("activeStreams");
+  list.innerHTML = snap.empty ? "<li>No active streams</li>" : "";
+  snap.forEach(doc => {
+    const s = doc.data();
+    const li = document.createElement('li');
+    li.innerHTML = `LIVE: ${s.title} (By ${s.host.split('@')[0]})`;
+    
+    // Clicking the list item joins the P2P stream
+    li.onclick = async () => {
+      await startWebcam();
+      await joinCall(s.callId);
+    };
+    list.appendChild(li);
+  });
+});       
     }
 
     // --- ACTIONS ---
@@ -365,6 +373,7 @@ body {
       document.getElementById("msgInput").value = "";
     });
     // --- Messaging Yewilsaw ---
+    
     const servers = {
   iceServers: [
     { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] },
@@ -477,8 +486,37 @@ async function joinCall(callId) {
     });
   });
 }
+    snap.forEach(doc => {
+  const m = doc.data();
+  // Fallback to "Anonymous" if m.user is missing
+  const username = m.user || (m.senderEmail ? m.senderEmail.split('@')[0] : "Anonymous");
+  container.innerHTML += `<p><strong>${username}:</strong> ${m.text}</p>`;
+});
 
-
+--- Go Live ---
+document.getElementById("goLiveBtn").addEventListener("click", async () => {
+  try {
+    // 1. Initialize camera
+    await startWebcam(); 
+    
+    // 2. Start the WebRTC Handshake (Signaling)
+    const callId = await createCall(); 
+    
+    // 3. Broadcast this Call ID so others can join
+    await addDoc(collection(db, "streams"), {
+      host: auth.currentUser.email,
+      title: "Live Peer Connection",
+      callId: callId, // Crucial: others need this ID to connect to you
+      createdAt: serverTimestamp()
+    });
+    
+    document.getElementById("goLiveBtn").textContent = "🔴 LIVE";
+  } catch (err) {
+    console.error(err);
+    alert("Check console for errors: " + err.message);
+  }
+});
+    
     // --- UPLOADS ---
     document.getElementById("uploadBtn").addEventListener("click", () => {
       const file = document.getElementById("fileInput").files[0];
