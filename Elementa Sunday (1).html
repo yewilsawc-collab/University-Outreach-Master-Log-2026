@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Elementa | Universal Social Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+  /* CONSOLIDATED FULL style.css 
+  Theme: Elementa Glass / Physical Chemistry 
+*/
+
+:root {
+  --primary: #0a2a66;
+  --accent: #f1c40f;
+  --gold: #f1c40f;
+  --bg: #0f172a;
+  --surface: rgba(30, 41, 59, 0.7);
+  --glass-bg: rgba(15, 23, 42, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(241, 196, 15, 0.15);
+}
+
+/* --- Base Elements & Glass --- */
+body {
+    background-color: var(--bg);
+    color: white;
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+}
+
+.elementa-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Specific Glass Tuning for Mobile Performance */
+@media (max-width: 768px) {
+    .elementa-glass {
+        backdrop-filter: blur(8px) saturate(150%);
+        -webkit-backdrop-filter: blur(8px) saturate(150%);
+        background: rgba(15, 23, 42, 0.75);
+    }
+}
+
+/* Noise Texture Overlay */
+.glass-noise { position: relative; }
+.glass-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* --- Navigation & Tabs --- */
+.tab-content {
+    display: none;
+    animation: slideIn 0.3s ease-out;
+}
+.tab-content.active { display: block; }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- Feed & Social Cards --- */
+.feed-container {
+    scroll-snap-type: y mandatory;
+    perspective: 1000px;
+}
+
+.post-card {
+    background: var(--surface);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    scroll-snap-align: center;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.post-card:not(:focus-within) {
+    transform: scale(0.9) rotateX(5deg);
+    opacity: 0.5;
+}
+
+/* --- Interactive Elements --- */
+.glass-interactive {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.glass-interactive:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--glass-highlight);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(241, 196, 15, 0.1);
+}
+
+.resonated {
+    animation: resonance-pulse 0.6s ease-out;
+    border-color: var(--gold) !important;
+}
+
+#grid-search-input:focus {
+    text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+/* --- Visual Shards & Media --- */
+.visual-shard {
+    break-inside: avoid;
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.visual-shard img, .visual-shard video {
+    width: 100%;
+    display: block;
+    border-radius: 20px;
+}
+
+.shard-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    transition: opacity 0.3s;
+}
+
+.visual-shard:hover .shard-overlay, 
+.visual-shard:active .shard-overlay { opacity: 1; }
+
+/* --- Aura & Specialized FX --- */
+.neural-glow {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(241, 196, 15, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(40px);
+}
+
+.aura-architect {
+    border: 2px solid transparent;
+    background: linear-gradient(#020617, #020617) padding-box,
+                linear-gradient(45deg, #f1c40f, #ffffff, #f1c40f) border-box;
+    box-shadow: 0 0 30px rgba(241, 196, 15, 0.5), inset 0 0 15px rgba(241, 196, 15, 0.2);
+    backdrop-filter: blur(15px) saturate(200%);
+    animation: architect-pulse 4s linear infinite;
+}
+
+/* --- Status & Loaders --- */
+.status-shard {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: monospace;
+    font-size: 10px;
+    z-index: 1000;
+    background: var(--surface);
+}
+
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+.status-dot.online { background: #00ff88; box-shadow: 0 0 10px #00ff88; animation: pulse 2s infinite; }
+
+#loader-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.node-pulse {
+    width: 60px;
+    height: 60px;
+    background: #f1c40f;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    animation: pulse-node 1.5s infinite ease-in-out;
+}
+
+/* --- Keyframes --- */
+@keyframes architect-pulse {
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    50% { filter: hue-rotate(15deg) brightness(1.3); transform: scale(1.02); }
+    100% { filter: hue-rotate(0deg) brightness(1); }
+}
+
+@keyframes pulse-node {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; box-shadow: 0 0 50px rgba(241, 196, 15, 0.6); }
+}
+
+@keyframes resonance-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(241, 196, 15, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
+}
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+
+    :root {
+      --primary: #007bff;
+      --primary-dark: #0056b3;
+      --bg: #f4f7fa;
+      --white: #ffffff;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --text: #333;
+    }
+    body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); }
+    header { background: var(--primary); color: white; padding: 20px; text-align: center; box-shadow: var(--shadow); }
+    
+    /* Navigation */
+    nav { display: flex; justify-content: center; background: var(--primary-dark); sticky; top: 0; z-index: 100; overflow-x: auto; }
+    nav button { flex: 1; padding: 14px; border: none; background: transparent; color: white; font-size: 15px; cursor: pointer; transition: 0.3s; min-width: 100px; }
+    nav button:hover { background: rgba(255,255,255,0.1); }
+    nav button.active { background: #003d80; font-weight: bold; border-bottom: 3px solid white; }
+
+    /* Layout Containers */
+    main { max-width: 1100px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 850px) { main.dashboard-grid { grid-template-columns: 3fr 1fr; } }
+    
+    section { display: none; background: var(--white); border-radius: 12px; padding: 25px; box-shadow: var(--shadow); animation: fadeIn 0.4s; }
+    section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Components */
+    .post { border-bottom: 1px solid #eee; padding: 15px 0; }
+    .post h3 { margin: 0; color: var(--primary); font-size: 16px; }
+    .actions { display: flex; gap: 15px; margin-top: 10px; }
+    .actions button { background: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    
+    .sidebar-card { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .sidebar-card h3 { margin-top: 0; font-size: 18px; border-bottom: 2px solid var(--primary); display: inline-block; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 8px 0; border-bottom: 1px solid #e0e0e0; cursor: pointer; font-size: 14px; }
+    li:hover { color: var(--primary); }
+
+    input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    button.main-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    
+    #video-container { position: relative; background: #000; border-radius: 8px; overflow: hidden; margin-top: 15px; }
+    video { width: 100%; display: block; }
+    .status-msg { font-size: 14px; margin: 10px 0; color: #666; }
+  </style>
+</head>
+<head>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --glass: rgba(255, 255, 255, 0.05);
+    --accent: #00d2ff;
+    --text: #e0e0e0;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+}
+
+.app-container {
+    display: grid;
+    grid-template-columns: 240px 1fr 300px; /* Three-Pane Layout */
+    height: 100-vh;
+}
+
+/* Glassmorphism Effect */
+.sidebar, .right-panel, .top-bar {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.nav-links li {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-links li.active, .nav-links li:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.top-bar {
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.connection-status {
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.content-area {
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.post-card {
+    background: var(--glass);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.status-dot {
+    height: 8px;
+    width: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+</style></head>
+<body>
+
+  <header>
+    <h1>Elementa</h1>
+    <p>Universal Hub: Feed, Messages, Calls & Streams</p>
+  </header>
+
+  <div id="auth-gate">
+    <section id="guest" class="active" style="max-width: 400px; margin: 40px auto; display: block;">
+      <h2>Join the Community</h2>
+      <form id="signupForm">
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="password" id="password" placeholder="Create Password" required>
+        <button type="submit" class="main-btn">Sign Up / Login</button>
+      </form>
+      <p id="signupStatus" class="status-msg"></p>
+    </section>
+
+    <div id="dashboard" style="display:none;">
+      <nav>
+        <button data-tab="home" class="active">Home</button>
+        <button data-tab="feed">Feed</button>
+        <button data-tab="messages">Messages</button>
+        <button data-tab="streams">Streams</button>
+        <button data-tab="uploads">Uploads</button>
+      </nav>
+
+      <main class="dashboard-grid">
+        <div id="tab-content">
+          <section id="home" class="active">
+            <h2>Welcome, <span id="display-email"></span></h2>
+            <p>You are connected to the Elementa P2P Node.</p>
+            <button id="logoutBtn" style="background:#dc3545; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">Sign Out</button>
+          </section>
+
+          <section id="feed">
+            <h2>Community Feed</h2>
+            <input type="text" id="postInput" placeholder="What's happening?">
+            <button id="submitPost" class="main-btn" style="width: auto; margin-bottom: 20px;">Post</button>
+            <div id="feedPosts"></div>
+          </section>
+
+          <section id="messages">
+            <h2>Direct Messages</h2>
+            <div id="messageList" style="height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px;"></div>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="msgInput" placeholder="Type a message...">
+              <button id="sendMsgBtn" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px;">Send</button>
+            </div>
+          </section>
+
+          <section id="streams">
+            <h2>Live Broadcast</h2>
+            <button id="goLiveBtn" class="main-btn">Start Streaming</button>
+            <div id="video-container">
+              <video id="localStream" autoplay playsinline muted></video>
+            </div>
+          </section>
+
+          <section id="uploads">
+            <h2>Cloud Storage</h2>
+            <input type="file" id="fileInput">
+            <button id="uploadBtn" class="main-btn">Upload to Firebase</button>
+            <div id="uploadStatus" class="status-msg"></div>
+            <div id="uploadList"></div>
+          </section>
+        </div>
+
+        <aside id="sidebar">
+          <div class="sidebar-card">
+            <h3>Trending Topics</h3>
+            <ul id="trendingTopics">
+              <li>#javascript</li>
+              <li>#web3</li>
+              <li>#elementa</li>
+            </ul>
+          </div>
+          <div class="sidebar-card">
+            <h3>Active Streams</h3>
+            <ul id="activeStreams">
+              <li style="color: #666; font-style: italic;">No streams live...</li>
+            </ul>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    // PROJECT CONFIG (Using your provided details)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+      authDomain: "university-outreach-log.firebaseapp.com",
+      projectId: "university-outreach-log",
+      storageBucket: "university-outreach-log.firebasestorage.app",
+      messagingSenderId: "566149647802",
+      appId: "1:566149647802:web:490c7cc3d10b7cd7732183"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // --- AUTH LOGIC ---
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (loginErr) {
+          document.getElementById("signupStatus").textContent = `Error: ${loginErr.message}`;
+        }
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      const guestView = document.getElementById("guest");
+      const dashView = document.getElementById("dashboard");
+      if (user) {
+        guestView.style.display = "none";
+        dashView.style.display = "block";
+        document.getElementById("display-email").textContent = user.email;
+        initRealtimeData();
+      } else {
+        guestView.style.display = "block";
+        dashView.style.display = "none";
+      }
+    });
+
+    // --- NAVIGATION ---
+    const buttons = document.querySelectorAll("nav button");
+    const sections = document.querySelectorAll("#tab-content section");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    // --- REAL-TIME ENGINE ---
+    function initRealtimeData() {
+      // Feed
+      const feedQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(20));
+      onSnapshot(feedQuery, (snap) => {
+        const container = document.getElementById("feedPosts");
+        container.innerHTML = "";
+        snap.forEach(doc => {
+          const post = doc.data();
+          container.innerHTML += `
+            <article class="post">
+              <h3>@${post.author.split('@')[0]}</h3>
+              <p>${post.content}</p>
+              <div class="actions"><button>Like</button><button>Comment</button></div>
+            </article>`;
+        });
+      });
+
+      // Global Chat
+      const msgQuery = query(collection(db, "messages"), orderBy("createdAt", "asc"), limit(50));
+      onSnapshot(msgQuery, (snap) => {
+        const container = document.getElementById("messageList");
+        container.innerHTML = "";
+        snap.forEach(doc => {
+          const m = doc.data();
+          container.innerHTML += `<p><strong>${m.user}:</strong> ${m.text}</p>`;
+        });
+        container.scrollTop = container.scrollHeight;
+      });
+
+      // Streams Sidebar
+      const streamQuery = query(collection(db, "streams"), orderBy("createdAt", "desc"), limit(5));
+      onSnapshot(streamQuery, (snap) => {
+        const list = document.getElementById("activeStreams");
+        list.innerHTML = snap.empty ? "<li>No active streams</li>" : "";
+        snap.forEach(doc => {
+          const s = doc.data();
+          list.innerHTML += `<li>LIVE: ${s.title} (By ${s.host.split('@')[0]})</li>`;
+        });
+      });
+    }
+
+    // --- ACTIONS ---
+    document.getElementById("submitPost").addEventListener("click", async () => {
+      const content = document.getElementById("postInput").value;
+      if (!content) return;
+      await addDoc(collection(db, "posts"), {
+        author: auth.currentUser.email,
+        content: content,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById("postInput").value = "";
+    });
+
+    document.getElementById("sendMsgBtn").addEventListener("click", async () => {
+      const text = document.getElementById("msgInput").value;
+      if (!text) return;
+      await addDoc(collection(db, "messages"), {
+        user: auth.currentUser.email.split('@')[0],
+        text: text,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById("msgInput").value = "";
+    });
+
+    // --- UPLOADS ---
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) return;
+      const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on('state_changed', 
+        (snap) => {
+          const progress = (snap.bytesTransferred / snap.totalBytes) * 100;
+          document.getElementById("uploadStatus").textContent = `Uploading: ${progress.toFixed(0)}%`;
+        }, 
+        null, 
+        async () => {
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          await addDoc(collection(db, "uploads"), { name: file.name, url, createdAt: serverTimestamp() });
+          document.getElementById("uploadStatus").textContent = "Upload Complete!";
+        }
+      );
+    });
+
+    // --- WEB RTC / STREAMING ---
+    document.getElementById("goLiveBtn").addEventListener("click", async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById("localStream").srcObject = stream;
+        
+        // Signaling mock (in a full SFU setup, you'd send the SDP offer here)
+        await addDoc(collection(db, "streams"), {
+          host: auth.currentUser.email,
+          title: "Community Hangout",
+          createdAt: serverTimestamp()
+        });
+        
+        document.getElementById("goLiveBtn").textContent = "🔴 LIVE";
+        document.getElementById("goLiveBtn").style.background = "#dc3545";
+      } catch (err) {
+        alert("Camera access denied or unavailable.");
+      }
+    });
+  
+          
+
+                
+                
+// ai.js 
+
+/**
+ * Generic function to call your Gemini proxy
+ * @param {string} prompt - The full text/instruction to send
+ */
+export async function getGeminiResponse(prompt) {
+    try {
+        const response = await fetch("/gemini-proxy", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt })
+        });
+
+        if (!response.ok) throw new Error(`Status: ${response.status}`);
+
+        const data = await response.json();
+        return data.reply || "Gemini could not generate a response.";
+    } catch (err) {
+        console.error("Gemini request failed:", err);
+        return null; // Return null so the UI can handle the error specifically
+    }
+}
+
+// UI Logic
+const postBtn = document.getElementById("ai-draft-btn");
+const inputField = document.getElementById("chat-input");
+
+if (postBtn && inputField) {
+    postBtn.addEventListener("click", async () => {
+        const topic = inputField.value.trim();
+        if (!topic) return alert("Please enter a topic first!");
+
+        const originalPlaceholder = inputField.placeholder;
+        inputField.value = "";
+        inputField.placeholder = "✨ Gemini is drafting your post...";
+        postBtn.disabled = true; // Prevent double-clicks
+
+        const customPrompt = `Draft a professional social media post about: ${topic}. 
+        Mention my interest in Physical Chemistry and interfacial phenomena. 
+        Keep it engaging but academic.`;
+
+        const draft = await getGeminiResponse(customPrompt);
+
+        if (draft) {
+            inputField.value = draft;
+        } else {
+            inputField.value = topic; // Restore original text on error
+            alert("⚠️ Error: Unable to connect to Gemini.");
+        }
+
+        inputField.placeholder = originalPlaceholder;
+        postBtn.disabled = false;
+    });
+}
+
+export function updateNodeAura(score) {
+    const profileRing = document.querySelector('.user-aura-ring');
+    
+    if (score > 500) {
+        profileRing.className = "aura-ring apex-glow"; // Amethyst
+    } else if (score > 100) {
+        profileRing.className = "aura-ring resonant-glow"; // Gold
+    } else {
+        profileRing.className = "aura-ring initiate-glow"; // White
+    }
+}
+  
+export function triggerAuraLevelUp(newTier) {
+    // 1. Specialized Haptic Pattern: "The Ascent"
+    // Three short pulses followed by one deep resonance
+    if ("vibrate" in navigator) {
+        navigator.vibrate([50, 30, 50, 30, 50, 100, 500]);
+    }
+
+    // 2. Visual Gold Surge
+    const surge = document.createElement('div');
+    surge.className = "fixed inset-0 z-[3000] pointer-events-none aura-surge-animation";
+    document.body.appendChild(surge);
+
+    // 3. Status Notification
+    const alert = document.createElement('div');
+    alert.className = "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-[3001]";
+    alert.innerHTML = `
+        <h1 class="text-[#f1c40f] text-xs font-black tracking-[0.6em] animate-bounce">LEVEL UP</h1>
+        <p class="text-white text-4xl font-black uppercase tracking-tighter">NODE ${newTier}</p>
+        <p class="text-[8px] text-slate-500 mt-4 tracking-[0.3em]">YOUR RESONANCE HAS STABILIZED</p>
+    `;
+    document.body.appendChild(alert);
+
+    // Cleanup after 4 seconds
+    setTimeout(() => {
+        surge.remove();
+        alert.remove();
+    }, 4000);
+}
+
+
+// chat.js - Consolidated Full Version
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { 
+    collection, addDoc, serverTimestamp, doc, updateDoc, setDoc, 
+    query, where, orderBy, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getGeminiResponse } from "./ai.js";
+import { db as firestore } from "./firebase.js"; // Renamed to avoid conflict
+
+// Initialize Realtime Database for Public Chat
+const rtdb = getDatabase();
+const publicChatRef = ref(rtdb, "phd_chat_logs");
+
+// --- Haptics & Feedback ---
+const Haptics = {
+    success: () => { if ("vibrate" in navigator) navigator.vibrate(40); },
+    notification: () => { if ("vibrate" in navigator) navigator.vibrate([50, 30, 50]); },
+    error: () => { if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]); }
+};
+
+// --- Helper Functions ---
+const getRoomId = (uid1, uid2) => [uid1, uid2].sort().join("_");
+
+// --- Public Chat Logic ---
+export async function sendUserMessage(text) {
+    try {
+        // 1. Push user message to RTDB
+        await push(publicChatRef, {
+            sender: "Yewilsaw",
+            text,
+            timestamp: Date.now()
+        });
+        Haptics.success(); //
+
+        // 2. Request Gemini AI response
+        const reply = await getGeminiResponse(text);
+
+        // 3. Push Gemini's reply to RTDB
+        await push(publicChatRef, {
+            sender: "Gemini",
+            text: reply || "No response generated.",
+            timestamp: Date.now()
+        });
+    } catch (err) {
+        console.error("Public chat error:", err);
+        Haptics.error(); //
+    }
+}
+
+// Listen for public messages and render
+onChildAdded(publicChatRef, (snapshot) => {
+    const message = snapshot.val();
+    renderMessageToScreen(message.text, message.sender, message.timestamp);
+});
+
+// --- Private Messaging Logic (Firestore) ---
+export async function sendPrivateMessage(recipientUid, text) {
+    const roomId = getRoomId(currentUser.uid, recipientUid); //
+    const messagesRef = collection(firestore, "conversations", roomId, "messages");
+
+    try {
+        // 1. Add message to sub-collection
+        await addDoc(messagesRef, {
+            senderId: currentUser.uid,
+            text: text,
+            timestamp: serverTimestamp()
+        });
+
+        // 2. Update parent doc for Inbox preview
+        await setDoc(doc(firestore, "conversations", roomId), {
+            participants: [currentUser.uid, recipientUid],
+            lastMessage: text,
+            lastUpdate: serverTimestamp()
+        }, { merge: true });
+
+        Haptics.success(); //
+    } catch (err) {
+        console.error("Private message error:", err);
+        Haptics.error();
+    }
+}
+
+// --- Inbox Loading ---
+export function loadInbox(callback) {
+    const q = query(
+        collection(firestore, "conversations"), 
+        where("participants", "array-contains", currentUser.uid),
+        orderBy("lastUpdate", "desc")
+    ); //
+
+    onSnapshot(q, (snapshot) => {
+        const convos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(convos);
+    });
+}
+
+// --- UI Rendering ---
+function renderMessageToScreen(text, sender, timestamp) {
+    const container = document.getElementById("chat-log");
+    if (!container) return;
+
+    const messageEl = document.createElement("div");
+    messageEl.className = sender === "Yewilsaw" ? "user-message" : "ai-message"; //
+    messageEl.textContent = `${sender}: ${text} (${new Date(timestamp).toLocaleTimeString()})`;
+    
+    container.appendChild(messageEl);
+    container.scrollTop = container.scrollHeight; // Auto-scroll
+}
+    
+
+
+// js/discovery.js
+export function findNearbyNodes() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // Query Firestore for users within a specific radius
+            // Note: This uses "Geohashes" for high-performance free-tier querying
+            console.log(`Scanning ecosystem at: ${lat}, ${lng}`);
+            renderDiscoveryGrid(lat, lng);
+        });
+    }
+}
+// Add to your Global Discovery logic
+export function renderUniversalMap() {
+    const mapContainer = document.getElementById('world-map');
+    // Using a lightweight GeoJSON to render the nodes
+    // Nodes in Addis Ababa will have the highest 'Luminescence' 
+    // to mark the birthplace of the ecosystem.
+    fetch('/assets/world-nodes.json')
+        .then(res => res.json())
+        .then(data => {
+            drawNeuralNodes(data); // Custom canvas drawing function
+        });
+}
+
+
+// echat-nexus.js - Full Implementation
+import { auth, db } from "./firebase.js";
+import { query, collection, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+export function syncNexus() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(
+        collection(db, "conversations"), 
+        where("participants", "array-contains", user.uid),
+        orderBy("lastActivity", "desc")
+    );
+
+    onSnapshot(q, (snapshot) => {
+        const listContainer = document.getElementById('chat-list');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = ""; // Clear for re-render
+
+        snapshot.docs.forEach(doc => {
+            const data = doc.data();
+            const chatRow = document.createElement('div');
+            chatRow.className = "chat-nexus-row p-3 border-b border-slate-800 hover:bg-slate-900 cursor-pointer";
+            
+            // Format preview: Shows last message and timestamp
+            chatRow.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-400">SESSION ID: ${doc.id.substring(0,8)}...</span>
+                    <span class="text-[10px] text-slate-600">${new Date(data.lastActivity?.toDate()).toLocaleTimeString()}</span>
+                </div>
+                <p class="text-sm truncate text-white">${data.lastMessage || "No messages yet."}</p>
+            `;
+            
+            listContainer.appendChild(chatRow);
+        });
+
+        // Trigger notification haptic if new messages arrive
+        if (!snapshot.metadata.hasPendingWrites) {
+            if ("vibrate" in navigator) navigator.vibrate([50, 30, 50]);
+        }
+    });
+                              }
+                              
+
+
+import { db } from "./firebase.js"; 
+import { collection, doc, deleteDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const ENTROPY_THRESHOLD = 10; // Minimum energy to stay on Feed
+const DECAY_CONSTANT = 0.05;  // Speed of decay
+
+/**
+ * Iterates through active posts and archives those that have lost 
+ * enough "Social Energy" based on the decay formula:
+ * Energy = Initial * e^(-decay * time)
+ */
+export async function processEcosystemEntropy() {
+    const feedRef = collection(db, "posts");
+    
+    try {
+        const snapshot = await getDocs(feedRef);
+        const now = Date.now();
+
+        // Using map to track all promises for concurrent execution
+        const tasks = snapshot.docs.map(async (postDoc) => {
+            const data = postDoc.data();
+            
+            // Handle potential missing timestamps safely
+            const postTime = data.timestamp?.toMillis ? data.timestamp.toMillis() : (data.timestamp || now);
+            const hoursActive = (now - postTime) / (1000 * 60 * 60);
+            
+            // Calculate Social Energy
+            const initialEnergy = (data.resonations || 0) + 100; // Base energy
+            const currentEnergy = initialEnergy * Math.exp(-DECAY_CONSTANT * hoursActive);
+
+            if (currentEnergy < ENTROPY_THRESHOLD) {
+                console.log(`Shard ${postDoc.id} reached maximum entropy (${currentEnergy.toFixed(2)}). Archiving...`);
+                
+                // 1. Move to Archive (Vault)
+                await setDoc(doc(db, "archive", postDoc.id), {
+                    ...data,
+                    archivedAt: now,
+                    finalResonance: data.resonations || 0,
+                    entropyStatus: "archived"
+                });
+
+                // 2. Remove from Feed
+                await deleteDoc(doc(db, "posts", postDoc.id));
+            }
+        });
+
+        await Promise.all(tasks);
+        console.log("Entropy processing complete.");
+    } catch (error) {
+        console.error("Entropy calculation failed:", error);
+    }
+                                 }
+                                    
+
+
+// firebase.js - REFACTORED
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+  authDomain: "university-outreach-log.firebaseapp.com",
+  projectId: "university-outreach-log",
+  storageBucket: "university-outreach-log.firebasestorage.app",
+  messagingSenderId: "566149647802",
+  appId: "1:566149647802:web:490c7cc3d10b7cd7732183"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+export const rtdb = getDatabase(app); // Fixed typo from 'getdatabase'
+
+export const signIn = () => signInAnonymously(auth);
+export const signOutUser = () => signOut(auth);
+// Sign up with email + password
+export async function signUp(email, password) {
+  return await createUserWithEmailAndPassword(auth, email, password);
+}
+
+// Sign in with email + password
+export async function signInWithEmail(email, password) {
+  return await signInWithEmailAndPassword(auth, email, password);
+}
+
+
+
+
+// Stream State Management
+function acceptStream() {
+    const overlay = document.getElementById('call-overlay');
+    
+    // 1. Initial Resonance: Visual feedback for link establishment
+    overlay.classList.add('animate-pulse');
+    console.log("Establishing secure biometric tunnel...");
+
+    // 2. Transition to eChat: Move to the active neural link session
+    setTimeout(() => {
+        window.location.href = 'echat.html?id=node_alex_nyc&status=active';
+    }, 800);
+}
+
+function rejectStream() {
+    const overlay = document.getElementById('call-overlay');
+    
+    // 3. Entropy: Content/Interactions that lose energy decay
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.remove();
+    }, 500);
+}
+
+
+// link-engine.js 
+
+
+export function parseUniversalLinks(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, (url) => {
+        return `
+            <a href="${url}" target="_blank" class="elementa-link-card group">
+                <span class="link-icon">🔗</span>
+                <span class="link-text">${url.replace('https://', '').split('/')[0]}</span>
+                <div class="link-hover-glow"></div>
+            </a>
+        `;
+    });
+}
+
+
+// master.js
+
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Initialize Firestore for real-time monitoring
+const db = getFirestore();
+
+/**
+ * CORE INITIALIZER
+ * Call this in your HTML module script to boot the ecosystem.
+ */
+export function initNavigation() {
+    injectLoader();
+    injectBaseLayout();
+    initSolarSync();
+    initStatusMonitor();
+    setupInteractions();
+    handleActiveState();
+    registerServiceWorker();
+}
+
+// --- 1. UI INJECTION MODULES ---
+
+function injectLoader() {
+    const loaderHTML = `
+    <div id="loader-overlay" style="position:fixed; inset:0; z-index:1000; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity 0.5s ease;">
+        <div class="node-pulse bg-[#f1c40f] w-16 h-16 rounded-2xl flex items-center justify-center text-black font-black text-2xl mb-4 shadow-[0_0_30px_rgba(241,196,15,0.4)]">E</div>
+        <div class="loader-text text-[#f1c40f] text-[10px] font-bold tracking-[0.3em] animate-pulse uppercase">Node Connecting...</div>
+    </div>`;
+    document.body.insertAdjacentHTML('afterbegin', loaderHTML);
+
+    window.addEventListener('load', () => {
+        const loader = document.getElementById('loader-overlay');
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 500);
+        }, 300);
+    });
+}
+
+function injectBaseLayout() {
+    const navHTML = `
+    <div class="neural-glow fixed w-[300px] h-[300px] rounded-full bg-[#f1c40f]/5 blur-[100px] pointer-events-none z-0" id="glow"></div>
+    
+    <aside class="elementa-glass glass-noise w-full md:w-64 h-16 md:h-[95vh] fixed bottom-0 md:top-[2.5vh] md:left-4 z-[100] md:rounded-3xl flex md:flex-col items-center p-2 md:p-4 transition-all">
+        <div class="logo-node hidden md:flex items-center gap-3 mb-10 px-2 cursor-pointer" onclick="window.location.href='index.html'">
+            <div class="w-10 h-10 bg-[#f1c40f] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(241,196,15,0.3)]">
+                <span class="text-black font-black text-xl">E</span>
+            </div>
+            <h1 class="font-black tracking-tighter text-lg">ELEMENTA</h1>
+        </div>
+
+        <nav class="flex-1 flex flex-row md:flex-col gap-2 w-full justify-around md:justify-start">
+            <a href="feed.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
+                <span>🏠</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Stream</span>
+            </a>
+            <a href="messages.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
+                <span>💬</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Neural Link</span>
+            </a>
+            <a href="vault.html" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl hover:text-[#f1c40f] transition-all">
+                <span>📂</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Vault</span>
+            </a>
+            <button onclick="toggleSearch()" class="glass-interactive flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:text-[#f1c40f]">
+                <span>🔍</span> <span class="hidden md:block font-bold text-[10px] uppercase tracking-widest">Search</span>
+            </button>
+        </nav>
+
+        <a href="profile.html" class="glass-interactive mt-auto p-2 rounded-2xl border border-white/5 hidden md:flex items-center gap-3 w-full">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#f1c40f] to-orange-500"></div>
+            <div class="overflow-hidden">
+                <p class="text-[9px] font-black truncate uppercase">Yewilsaw Chanie</p>
+                <p class="text-[7px] text-slate-500 uppercase tracking-tighter">Physical Chemist</p>
+            </div>
+        </a>
+    </aside>
+
+    <div id="search-modal" class="hidden fixed inset-0 z-[200] elementa-glass backdrop-blur-3xl p-6 flex flex-col items-center pt-24 page-transition">
+        <button onclick="toggleSearch()" class="absolute top-8 right-8 text-2xl">✕</button>
+        <div class="w-full max-w-2xl">
+            <input type="text" id="grid-search-input" oninput="executeSearch(this.value)" 
+                   placeholder="SEARCH NODES OR SHARDS..." 
+                   class="w-full bg-transparent border-b-2 border-[#f1c40f] text-3xl font-black outline-none pb-4 tracking-tighter uppercase placeholder:opacity-20">
+            <div id="search-results" class="mt-12 space-y-4 max-h-[60vh] overflow-y-auto custom-scroll"></div>
+        </div>
+    </div>
+
+    <div id="quick-action-overlay" class="hidden fixed inset-0 z-[300] bg-black/80 backdrop-blur-xl items-center justify-center p-6" onclick="hideQuickActions()">
+        <div class="grid grid-cols-2 gap-4 max-w-sm w-full">
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="window.location.href='feed.html?action=new'">
+                <span class="text-3xl">✨</span> <span class="text-[10px] font-black">NEW SHARD</span>
+            </button>
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="window.location.href='vault.html?action=upload'">
+                <span class="text-3xl">📂</span> <span class="text-[10px] font-black">VAULT UP</span>
+            </button>
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="window.location.href='messages.html'">
+                <span class="text-3xl">💬</span> <span class="text-[10px] font-black">MESSAGES</span>
+            </button>
+            <button class="glass-interactive p-8 rounded-3xl flex flex-col items-center gap-3" onclick="toggleSearch()">
+                <span class="text-3xl">🔍</span> <span class="text-[10px] font-black">SEARCH</span>
+            </button>
+        </div>
+    </div>`;
+
+    const container = document.getElementById('global-nav');
+    if (container) container.innerHTML = navHTML;
+}
+
+// --- 2. INTERACTION ENGINE ---
+
+function setupInteractions() {
+    const glow = document.getElementById('glow');
+    const logoNode = document.querySelector('.logo-node');
+    let touchTimer;
+
+    // Neural Glow Following (Touch/Android)
+    document.addEventListener('touchstart', (e) => {
+        if (!glow) return;
+        const touch = e.touches[0];
+        glow.style.transform = `translate(${touch.clientX - 150}px, ${touch.clientY - 150}px)`;
+    });
+
+    // Logo Long Press for Quick Actions
+    if (logoNode) {
+        logoNode.addEventListener('touchstart', () => {
+            touchTimer = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate([30, 50]);
+                window.showQuickActions();
+            }, 600);
+        });
+        logoNode.addEventListener('touchend', () => clearTimeout(touchTimer));
+        logoNode.addEventListener('touchmove', () => clearTimeout(touchTimer));
+    }
+}
+
+// --- 3. ECOSYSTEM MONITORING ---
+
+export function initStatusMonitor() {
+    const statusHTML = `
+        <div class="elementa-glass status-shard fixed bottom-20 md:bottom-8 right-8 flex items-center gap-3 px-4 py-2 rounded-full text-[8px] font-black tracking-widest z-[90] border border-white/5">
+            <div id="connection-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span id="latency-text">00MS</span>
+            <span class="opacity-20">|</span>
+            <span id="node-count">1 NODE ONLINE</span>
+        </div>`;
+    document.body.insertAdjacentHTML('beforeend', statusHTML);
+
+    // Latency Ping Logic
+    setInterval(async () => {
+        const start = Date.now();
+        try {
+            await fetch('https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8', { mode: 'no-cors' });
+            const latency = Date.now() - start;
+            const text = document.getElementById('latency-text');
+            const dot = document.getElementById('connection-dot');
+            
+            text.textContent = `${latency}MS`;
+            dot.className = latency > 300 ? "w-2 h-2 rounded-full bg-yellow-500" : "w-2 h-2 rounded-full bg-green-500";
+        } catch {
+            document.getElementById('connection-dot').className = "w-2 h-2 rounded-full bg-red-500";
+            document.getElementById('latency-text').textContent = "DISCONNECTED";
+        }
+    }, 5000);
+
+    // Active Node Count Listener
+    onSnapshot(collection(db, "active_sessions"), (snap) => {
+        const count = snap.size || 1;
+        document.getElementById('node-count').textContent = `${count} ${count === 1 ? 'NODE' : 'NODES'} ONLINE`;
+    });
+}
+
+export function initSolarSync() {
+    const hour = new Date().getHours();
+    document.body.classList.remove('obsidian-mode', 'alabaster-mode');
+    document.body.classList.add(hour >= 18 || hour < 6 ? 'obsidian-mode' : 'alabaster-mode');
+}
+
+// --- 4. GLOBAL UTILITIES & ACTIONS ---
+
+window.toggleSearch = () => {
+    const modal = document.getElementById('search-modal');
+    modal.classList.toggle('hidden');
+    if (!modal.classList.contains('hidden')) {
+        document.getElementById('grid-search-input').focus();
+    }
+};
+
+window.executeSearch = (query) => {
+    const resultsContainer = document.getElementById('search-results');
+    if (query.length < 2) {
+        resultsContainer.innerHTML = '';
+        return;
+    }
+
+    // High Performance Client-Side Search
+    const localPosts = Array.from(document.querySelectorAll('.elementa-glass p'));
+    const filtered = localPosts.filter(p => p.textContent.toLowerCase().includes(query.toLowerCase()));
+
+    resultsContainer.innerHTML = filtered.map(p => `
+        <div class="glass-interactive p-4 rounded-2xl border border-white/5 cursor-pointer" onclick="toggleSearch()">
+            <p class="text-[8px] text-[#f1c40f] font-black mb-1 uppercase tracking-widest">SHARD MATCH</p>
+            <p class="text-sm line-clamp-2 opacity-70 font-light">${p.textContent}</p>
+        </div>
+    `).join('');
+};
+
+window.showQuickActions = () => {
+    document.getElementById('quick-action-overlay').style.display = 'flex';
+};
+
+window.hideQuickActions = () => {
+    document.getElementById('quick-action-overlay').style.display = 'none';
+};
+
+function handleActiveState() {
+    const currentPage = window.location.pathname.split("/").pop() || 'index.html';
+    const links = document.querySelectorAll('nav a');
+    links.forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+            link.classList.add('bg-white/10', 'text-[#f1c40f]', 'border', 'border-white/10');
+        }
+    });
+}
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('Neural Link Cached.'))
+                .catch(() => console.log('Offline Node Failed.'));
+        });
+    }
+}
+
+
+
+// --- Modal Controls modalControls.js---
+function openComposer() {
+    document.getElementById('composer-modal').classList.remove('hidden');
+}
+
+function closeComposer() {
+    document.getElementById('composer-modal').classList.add('hidden');
+}
+
+// --- Deployment Logic ---
+function deployShard() {
+    const content = document.getElementById('shard-content').value;
+    const deployBtn = event.currentTarget;
+
+    // 1. Enter Loading State
+    deployBtn.innerText = "DEPLOYING...";
+    deployBtn.disabled = true;
+
+    // 2. Mock Transmission
+    setTimeout(() => {
+        console.log("Shard deployed to the ledger:", content);
+        
+        // 3. Close and Reset
+        closeComposer();
+        deployBtn.innerText = "DEPLOY";
+        deployBtn.disabled = false;
+        
+        // Optional: Trigger a success notification
+    }, 2000);
+               }
+
+
+// A simplified Force-Directed Graph logic for Android Performance
+class Node {
+    constructor(id, label, type) {
+        this.id = id;
+        this.label = label;
+        this.type = type; // 'user', 'post', or 'asset'
+        this.x = Math.random() * window.innerWidth;
+        this.y = Math.random() * window.innerHeight;
+        this.vx = 0;
+        this.vy = 0;
+    }
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.type === 'user' ? 8 : 4, 0, Math.PI * 2);
+        ctx.fillStyle = this.type === 'user' ? '#f1c40f' : 'rgba(255,255,255,0.5)';
+        ctx.fill();
+        
+        ctx.font = "8px Monospace";
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.fillText(this.label, this.x + 10, this.y + 3);
+    }
+}
+
+// Logic to connect shards to your central Identity
+function animateNetwork() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    links.forEach(link => {
+        ctx.beginPath();
+        ctx.moveTo(link.source.x, link.source.y);
+        ctx.lineTo(link.target.x, link.target.y);
+        ctx.strokeStyle = 'rgba(241, 196, 15, 0.1)';
+        ctx.stroke();
+    });
+
+    nodes.forEach(node => {
+        node.draw(ctx);
+        // Add subtle drifting "Kinetics"
+        node.x += Math.sin(Date.now() / 1000) * 0.2;
+        node.y += Math.cos(Date.now() / 1000) * 0.2;
+    });
+
+    requestAnimationFrame(animateNetwork);
+    }
+  
+
+
+// --- QR CODE GENERATION/ qr-generaion.js ---
+function generateNodeQR(nodeId) {
+    const canvas = document.getElementById('sync-qr-canvas');
+    // Using a library like QRCode.js
+    QRCode.toCanvas(canvas, nodeId, {
+        width: 300,
+        margin: 2,
+        color: {
+            dark: '#020617',  // Matches your background
+            light: '#ffffff'  // Matches your QR container
+        }
+    }, function (error) {
+        if (error) console.error("Sync Error:", error);
+        console.log("Neural Sync Ready.");
+    });
+}
+
+// --- SCANNER LOGIC ---
+function startScanner() {
+    const syncButton = event.target;
+    syncButton.innerText = "ACCESSING OPTICS...";
+    
+    // Logic to initialize camera and scanner
+    // This typically opens a modal or overlays a video feed
+    console.log("Initializing Local Node Discovery...");
+    
+    // Example: Redirecting to a dedicated scanner view
+    // window.location.href = "/scanner";
+}
+
+// Auto-generate on load (Mock ID)
+window.onload = () => generateNodeQR("NODE-X-772-ADX");
+                    
+
+
+// The Universal Renderer Engine
+const shardContainer = document.querySelector('#shard-container');
+
+const renderShards = (shards) => {
+    shardContainer.innerHTML = shards.map(shard => `
+        <div class="elementa-glass p-5 rounded-[30px] border border-white/5 animate-fade-in">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full aura-${shard.userAura} p-[2px]">
+                        <img src="${shard.userPhoto}" class="rounded-full w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="text-white text-[11px] font-bold uppercase tracking-widest">${shard.userName}</h4>
+                        <p class="text-[9px] text-slate-500 uppercase tracking-tighter">${shard.location} • ${shard.timestamp}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-2xl overflow-hidden mb-4 bg-black/40">
+                <img src="${shard.contentImage}" class="w-full h-auto opacity-90">
+                ${shard.text ? `<p class="p-4 text-sm font-light text-slate-300 leading-relaxed">${shard.text}</p>` : ''}
+            </div>
+
+            <div class="flex items-center justify-between px-1">
+                <div class="flex gap-5">
+                    <button class="flex items-center gap-2 group">
+                        <span class="text-slate-500 group-hover:text-[#f1c40f] transition-colors">▲</span>
+                        <span class="text-[10px] font-mono text-slate-400">${shard.likes}</span>
+                    </button>
+                    <button class="flex items-center gap-2 group">
+                        <span class="text-slate-500 group-hover:text-red-500 transition-colors">▼</span>
+                        <span class="text-[10px] font-mono text-slate-400">${shard.dislikes}</span>
+                    </button>
+                </div>
+                <button onclick="downloadShard('${shard.id}')" class="text-slate-500 hover:text-white">
+                    <span class="text-lg">⤓</span>
+                </button>
+            </div>
+        </div>
+    `).join('');
+};
+
+
+// js/security.js
+export async function authenticateNode() {
+    const publicKeyCredentialCreationOptions = {
+        challenge: Uint8Array.from("elementa-secure-node", c => c.charCodeAt(0)),
+        rp: { name: "Elementa Ecosystem" },
+        user: {
+            id: Uint8Array.from("UZER_01", c => c.charCodeAt(0)),
+            name: "Yewilsaw Chanie",
+            displayName: "Ye_Chanie"
+        },
+        pubKeyCredParams: [{ alg: -7, type: "public-key" }], // ES256
+        authenticatorSelection: { authenticatorAttachment: "platform" } // Uses phone's biometric
+    };
+
+    try {
+        const credential = await navigator.credentials.create({
+            publicKey: publicKeyCredentialCreationOptions
+        });
+        if (credential) {
+            console.log("Biometric identity verified.");
+            return true;
+        }
+    } catch (err) {
+        console.error("Authentication failed:", err);
+        return false;
+    }
+}
+
+
+// solar.js
+function updateSolarTheme() {
+    const hour = new Date().getHours();
+    const root = document.documentElement;
+
+    if (hour >= 6 && hour <= 18) {
+        // Daylight Mode: Vibrant Gold
+        root.style.setProperty('--accent-gold', '#f1c40f');
+        root.style.setProperty('--bg-obsidian', '#020617');
+    } else {
+        // Night Mode: Neon/Deep Gold
+        root.style.setProperty('--accent-gold', '#d4af37');
+        root.style.setProperty('--bg-obsidian', '#000000');
+    }
+}
+setInterval(updateSolarTheme, 60000); // Check every minute
+
+
+// spark.js
+import { db, auth } from "./firebase.js";
+import { 
+    collection, 
+    addDoc, 
+    onSnapshot, 
+    query, 
+    where, 
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// --- HAPTIC FEEDBACK ---
+const sparkPulse = () => {
+    if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+};
+
+/**
+ * 1. SEND A SPARK
+ * Creates a notification/interaction request for another user.
+ */
+export async function sendSpark(targetNodeId) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        await addDoc(collection(db, "sparks"), {
+            from: user.uid,
+            fromName: "Yewilsaw", // Optional: cache name for performance
+            to: targetNodeId,
+            timestamp: serverTimestamp(), // Use server time for consistency
+            status: "pending"
+        });
+        console.log("Spark emitted toward:", targetNodeId);
+    } catch (err) {
+        console.error("Spark failed to ignite:", err);
+    }
+}
+
+/**
+ * 2. LISTEN FOR SPARKS
+ * Listens for incoming "pending" sparks and triggers UI/Haptic feedback.
+ */
+export function listenForSparks(uiCallback) {
+    // Ensure listener only attaches when user is logged in
+    auth.onAuthStateChanged((user) => {
+        if (!user) return;
+
+        const q = query(
+            collection(db, "sparks"), 
+            where("to", "==", user.uid), 
+            where("status", "==", "pending")
+        );
+
+        // Return the unsubscribe function to clean up later
+        return onSnapshot(q, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const sparkData = change.doc.data();
+                    
+                    // Trigger physical feedback
+                    sparkPulse();
+                    
+                    // Trigger visual/UI feedback if a callback is provided
+                    if (uiCallback) {
+                        uiCallback(sparkData, change.doc.id);
+                    } else {
+                        console.log("New Spark Received:", sparkData);
+                    }
+                }
+            });
+        });
+    });
+            }
+                          
+
+
+// js/stream-engine.js
+export async function initiateNeuralStream(targetNodeId) {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    
+    // Trigger "Incoming Pulse" on target device
+    sendSparkNotification(targetNodeId, "INCOMING_STREAM");
+
+    // Connect to the Peer-to-Peer Relay
+    const peerConnection = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+    
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+    
+    // Haptic Feedback for Connection
+    if ("vibrate" in navigator) {
+        navigator.vibrate([100, 50, 100]); // "Connected" pulse
+    }
+}
+
+
+// support.js
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+async function sendUplinkReport() {
+    const type = document.getElementById('report-type').value;
+    const body = document.getElementById('report-body').value;
+    
+    try {
+        await addDoc(collection(db, "reports"), {
+            userId: auth.currentUser.uid,
+            category: type,
+            message: body,
+            timestamp: Date.now(),
+            deviceInfo: navigator.userAgent // Helps you debug Android/iOS specific issues
+        });
+        showToast("TRANSMISSION SUCCESSFUL");
+    } catch (e) {
+        showToast("UPLINK FAILED");
+    }
+                  }
+
+
+// sw.js
+const CACHE_NAME = 'elementa-v1';
+const ASSETS = [
+  '/',
+  '/index.html',
+  '/css/style.css',
+  '/js/master.js',
+  '/pages/feed.html',
+  '/pages/vault.html'
+];
+
+// Install Event: Caching the Frosted Obsidian UI
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    })
+  );
+});
+
+// Fetch Event: Serve from cache first, then network
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
+// sw.js update
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js');
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/assets/icon-192.png',
+    badge: '/assets/icon-badge.png',
+    vibrate: [200, 100, 200] // Custom pulse
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+  
+
+
+// terminal.js
+
+
+let inputBuffer = "";
+const COMMANDS = {
+    'help': 'Display available uplink protocols.',
+    'status': 'Check Neural Link and Cloud Node health.',
+    'clear': 'Purge terminal buffer.',
+    'broadcast --m': 'Send a Global Pulse to all nodes.',
+    'vault --ls': 'List all assets in the encrypted repository.',
+    'identity --sync': 'Force refresh of Firestore aggregation.'
+};
+
+document.addEventListener('keydown', (e) => {
+    // Hidden Trigger: Typing 'admin' opens the Uplink
+    inputBuffer += e.key;
+    if (inputBuffer.includes("admin")) {
+        showUplink();
+        inputBuffer = "";
+    }
+});
+
+function showUplink() {
+    const termHTML = `
+    <div id="uplink-overlay" class="fixed inset-0 z-[500] bg-black/90 backdrop-blur-md p-6 font-mono text-green-500 overflow-hidden flex flex-col">
+        <div class="flex justify-between border-b border-green-900/50 pb-2 mb-4">
+            <span>ELEMENTA UPLINK v1.0.4 [USER: YE_CHANIE]</span>
+            <button onclick="hideUplink()" class="text-red-500">[EXIT]</button>
+        </div>
+        <div id="terminal-output" class="flex-1 overflow-y-auto space-y-2 text-xs">
+            <p>> SYSTEM READY. TYPE 'HELP' FOR PROTOCOLS.</p>
+        </div>
+        <div class="flex gap-2 pt-4">
+            <span class="text-[#f1c40f]">λ</span>
+            <input type="text" id="terminal-input" class="bg-transparent border-none outline-none flex-1 text-green-500" autofocus>
+        </div>
+    </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', termHTML);
+    setupTerminalLogic();
+      }
+
+
+// ui.js
+let startX = 0;
+
+// Handle Tab Switching
+window.switchTab = (tabId) => {
+  const targetTab = document.getElementById(tabId);
+  if (!targetTab) return; // Prevent error if tabId doesn't exist
+
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  targetTab.classList.add('active');
+  
+  // Update nav buttons safely
+  document.querySelectorAll('nav button').forEach(btn => btn.style.borderBottom = 'none');
+  
+  const activeBtn = document.getElementById('btn-' + tabId);
+  if (activeBtn) {
+    activeBtn.style.borderBottom = `2px solid var(--accent)`;
+  }
+};
+
+// Custom Swipe Logic with basic error checking
+document.addEventListener('touchstart', e => {
+  if (e.touches?.[0]) startX = e.touches[0].clientX;
+});
+
+document.addEventListener('touchend', e => {
+  if (!e.changedTouches?.[0]) return;
+  
+  const endX = e.changedTouches[0].clientX;
+  const diff = startX - endX;
+
+  // Reduced threshold to 70px for better UX
+  if (diff > 70) window.switchTab('ai-view'); // Swipe left
+  if (diff < -70) window.switchTab('feed-view'); // Swipe right
+});
+
+function renderPost(post) {
+    const feedContainer = document.getElementById("social-feed");
+    if (!feedContainer) return; // Error check
+
+    const postEl = document.createElement("div");
+    postEl.className = "user-message";
+    
+    // Safety: Fallback for missing post data
+    const author = post.author || "Anonymous";
+    const text = post.text || "";
+    const time = post.timestamp ? new Date(post.timestamp).toLocaleString() : "Just now";
+
+    postEl.innerHTML = `
+        <strong>${author}</strong>
+        <p>${text}</p>
+        <small>${time}</small>
+    `;
+    feedContainer.prepend(postEl);
+      }
+
+
+
+// systems-health.js
+
+
+import { db } from "./firebase.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/**
+ * Aggregates system-wide metrics from the 'shards' collection.
+ * Useful for monitoring ecosystem health and user engagement.
+ */
+export async function generateStatusReport() {
+    try {
+        const shardSnapshot = await getDocs(collection(db, 'shards'));
+        
+        const metrics = { 
+            up: 0, 
+            down: 0, 
+            downloads: 0,
+            totalShards: shardSnapshot.size 
+        };
+
+        shardSnapshot.forEach(doc => {
+            const data = doc.data();
+            // Using ||= 0 to handle undefined/null values safely
+            metrics.up += data.resonanceCount || 0;
+            metrics.down += data.dissolveCount || 0;
+            metrics.downloads += data.downloadCount || 0;
+        });
+
+        // Log the report in a readable format
+        console.log(`[SYSTEM REPORT - ${new Date().toLocaleString()}]`);
+        console.table({
+            "Resonance (Up)": metrics.up,
+            "Dissolve (Down)": metrics.down,
+            "Downloads": metrics.downloads,
+            "Active Shards": metrics.totalShards
+        });
+
+        return metrics;
+    } catch (error) {
+        console.error("Failed to generate system report:", error);
+        return null;
+    }
+                }
+                
+// navigation.js
+export function initNavigation() {
+  // Loader + nav injection
+  // Highlight active page logic
+}
+
+// quickActions.js
+export function initQuickActions() {
+  // Long press detection + overlay injection
+}
+
+
+// search.js 
+export function initSearch() {
+  // toggleSearch + executeSearch logic
+}
+
+
+// solarSync.js
+export function initSolarSync() {
+  // Obsidian vs Alabaster mode
+}
+
+
+// statusMonitor.js
+export function initStatusMonitor() {
+  // Latency ping + Firestore active_sessions listener
+}
+
+
+// app.js
+
+import { db } from "./firebase.js";
+import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initFeed, createPost } from "./social.js";
+import { getGeminiResponse } from "./ai.js";
+
+const MY_PROFILE = {
+    name: "Yewilsaw Chanie Mekonen",
+    expertise: "Physical Chemistry (Kinetics & Spectroscopy)",
+    status: "Yale Application Under Review",
+    bio: "Expertise in kinetic models for heterogeneous systems and FT-IR spectroscopy."
+};
+
+async function init() {
+    // 1. Sync Profile to Firestore
+    const profileRef = doc(db, "users", "yewilsaw");
+    await setDoc(profileRef, MY_PROFILE, { merge: true });
+
+    // 2. Render Profile
+    document.getElementById("profile-display").innerHTML = `
+        <h2>${MY_PROFILE.name}</h2>
+        <p><strong>Status:</strong> ${MY_PROFILE.status}</p>
+        <p>${MY_PROFILE.bio}</p>
+    `;
+
+    // 3. Initialize Social Feed
+    initFeed("social-feed");
+
+    // 4. AI Post Assistant Logic
+    document.getElementById("ai-draft-btn").addEventListener("click", async () => {
+        const topic = document.getElementById("post-input").value;
+        const draft = await getGeminiResponse(`Draft a professional update about: ${topic}. Use my background in Kinetics.`);
+        document.getElementById("post-input").value = draft;
+    });
+
+    document.getElementById("share-btn").addEventListener("click", () => {
+        const content = document.getElementById("post-input").value;
+        if(content) createPost(content);
+    });
+}
+
+window.showSection = (id) => {
+    document.querySelectorAll("main > section").forEach(s => s.style.display = "none");
+    document.getElementById(`${id}-section`).style.display = "block";
+};
+
+init();
+ // The Expansion Protocol
+window.addEventListener('load', () => {
+    const splash = document.querySelector('#splash-screen');
+    const appInterface = document.querySelector('#main-ecosystem');
+
+    // Simulate Neural Calibration (Data Loading)
+    setTimeout(() => {
+        // Move logo and fade out the obsidian backdrop
+        splash.classList.add('reveal-ecosystem');
+        appInterface.style.opacity = '1';
+        
+        // Trigger Neural Haptic for the Architect
+        if ("vibrate" in navigator) {
+            navigator.vibrate(50); 
+        }
+    }, 2000); 
+});
+                                                          
+
+
+// feed.js
+
+import { db } from "./firebase.js";
+import { 
+    collection, addDoc, query, orderBy, onSnapshot, doc, updateDoc, increment 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getGeminiResponse } from "./ai.js";
+
+const postsRef = collection(db, "posts");
+
+/**
+ * Creates a post with AI-generated hashtags
+ */
+export async function createPost(text) {
+    try {
+        // AI Enhancement
+        const aiSuggestion = await getGeminiResponse(`Suggest 3 academic hashtags for: ${text}`);
+        const finalContent = `${text} \n\n ${aiSuggestion}`;
+
+        await addDoc(postsRef, {
+            author: "Yewilsaw Chanie Mekonen",
+            content: finalContent,
+            timestamp: Date.now(),
+            resonations: 0
+        });
+    } catch (error) {
+        console.error("Failed to post:", error);
+    }
+}
+
+/**
+ * Real-time listener for the feed
+ */
+export function initFeed(callback) {
+    const q = query(postsRef, orderBy("timestamp", "desc"));
+    return onSnapshot(q, (snapshot) => {
+        const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(posts);
+    });
+}
+
+/**
+ * The "Resonate" (Like) mechanism with haptic feedback
+ */
+window.resonate = async (postId) => {
+    const postRef = doc(db, "posts", postId);
+    try {
+        await updateDoc(postRef, {
+            resonations: increment(1)
+        });
+        
+        if (navigator.vibrate) {
+            navigator.vibrate(10); 
+        }
+    } catch (error) {
+        console.error("Connection unstable:", error);
+    }
+};
+        
+
+
+// privatechat.js
+
+import { db } from "./firebase.js";
+import { 
+    collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, setDoc 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Generate a consistent ID regardless of who starts the chat
+const getRoomId = (uid1, uid2) => [uid1, uid2].sort().join("_");
+
+export async function sendPrivateMessage(senderUid, recipientUid, text) {
+    const roomId = getRoomId(senderUid, recipientUid);
+    
+    try {
+        // 1. Add message to the sub-collection for history
+        await addDoc(collection(db, "conversations", roomId, "messages"), {
+            senderId: senderUid,
+            text: text,
+            timestamp: serverTimestamp()
+        });
+
+        // 2. Update the main conversation doc for Inbox previews
+        await setDoc(doc(db, "conversations", roomId), {
+            participants: [senderUid, recipientUid],
+            lastMessage: text,
+            lastUpdate: serverTimestamp()
+        }, { merge: true });
+        
+        console.log("Message transmitted via Neural Link.");
+    } catch (error) {
+        console.error("Transmission failed:", error);
+    }
+}
+
+/**
+ * Listens for messages in a specific room
+ */
+export function listenToMessages(senderUid, recipientUid, callback) {
+    const roomId = getRoomId(senderUid, recipientUid);
+    const q = query(
+        collection(db, "conversations", roomId, "messages"), 
+        orderBy("timestamp", "asc")
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+        const messages = snapshot.docs.map(doc => doc.data());
+        callback(messages);
+    });
+            }
+            
+profile.js
+
+import { db } from "./firebase.js";
+import { 
+    doc, setDoc, getDoc, collection, query, where, onSnapshot 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { auth } from "./master.js";
+
+/**
+ * Initializes/Updates the core profile document
+ * Uses the Auth UID for cross-module coherence
+ */
+export async function setupUserProfile(user) {
+    if (!user) return;
+    const profileRef = doc(db, "users", user.uid); 
+    await setDoc(profileRef, {
+        fullName: "Yewilsaw Chanie Mekonen",
+        specialization: "Physical Chemistry (Kinetics & Spectroscopy)",
+        currentStatus: "Yale application with department for review",
+        location: "Addis Ababa / New York City",
+        bio: "Expertise in kinetic models for heterogeneous systems and FT-IR spectroscopy.",
+        contact: "+251 973 729 140",
+        lastActive: new Date()
+    }, { merge: true });
+}
+
+/**
+ * Real-time stats listener: Posts, Total Resonance, and Rank
+ */
+export function syncProfileStats() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(collection(db, "posts"), where("authorUID", "==", user.uid));
+
+    return onSnapshot(q, (snapshot) => {
+        let totalResonations = 0;
+        const postCount = snapshot.size;
+
+        snapshot.forEach((doc) => {
+            totalResonations += (doc.data().resonations || 0);
+        });
+
+        // Update UI Shards
+        const uiMap = {
+            'stat-resonance': totalResonations.toLocaleString(),
+            'stat-posts': postCount,
+            'stat-rank': postCount > 0 ? (totalResonations / postCount).toFixed(1) : "0.0"
+        };
+
+        Object.entries(uiMap).forEach(([id, val]) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        });
+    });
+            }
+
+
+
+// shared.js
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = { /* Your Config Here */ };
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+
+// Check if user is logged in, if not, redirect to index
+export function protectRoute() {
+    onAuthStateChanged(auth, (user) => {
+        if (!user && !window.location.pathname.includes('index.html')) {
+            window.location.href = 'index.html';
+        }
+    });
+}
+
+// social.js
+
+import { db } from "./firebase.js";
+import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const postsRef = collection(db, "posts");
+
+/**
+ * Creates a research update linked to your UID for stats tracking
+ */
+export async function createPost(content, userUid) {
+    await addDoc(postsRef, {
+        author: "Yewilsaw Chanie Mekonen",
+        authorUID: userUid, // Crucial for profile.js sync
+        text: content,
+        timestamp: Date.now(),
+        type: "research_update",
+        resonations: 0 // Required for the Resonate/Like system
+    });
+}
+
+/**
+ * Connects the Firestore stream to your UI container
+ */
+export function initFeed(containerId) {
+    const q = query(postsRef, orderBy("timestamp", "desc"));
+    const container = document.getElementById(containerId);
+
+    if (!container) return;
+
+    return onSnapshot(q, (snapshot) => {
+        container.innerHTML = ""; 
+        snapshot.forEach((doc) => {
+            const post = doc.data();
+            const postId = doc.id;
+            renderPost(container, post, postId);
+        });
+    });
+}
+
+function renderPost(container, post, postId) {
+    const div = document.createElement("div");
+    div.className = "post-card"; // Using a consistent class for the ecosystem
+    div.innerHTML = `
+        <div class="post-header">
+            <strong>${post.author}</strong>
+            <small>${new Date(post.timestamp).toLocaleString()}</small>
+        </div>
+        <p class="post-content">${post.text}</p>
+        <div class="post-actions">
+            <button onclick="resonate('${postId}')">
+                Resonate (${post.resonations || 0})
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+                }
+            
+
+
+/**vault.js
+ * photos,videos
+ * 
+ * @param {Array} assets - Array of asset objects from Firestore or Storage
+ */
+export function renderAssets(assets) {
+    const grid = document.getElementById('vault-grid');
+    if (!grid) return;
+
+    // Coherence Check: Handle empty state
+    if (!assets || assets.length === 0) {
+        grid.innerHTML = `<p class="text-slate-500 italic p-4">No assets archived in the vault.</p>`;
+        return;
+    }
+
+    grid.innerHTML = assets.map(asset => {
+        const isVideo = asset.url.includes('.mp4') || asset.type === 'video';
+        
+        return `
+            <div class="visual-shard elementa-glass p-2 relative overflow-hidden group">
+                ${isVideo ? 
+                    `<video src="${asset.url}" muted loop playsinline 
+                            class="w-full h-auto cursor-pointer"
+                            onmouseover="this.play()" 
+                            onmouseout="this.pause()"></video>` : 
+                    `<img src="${asset.url}" loading="lazy" class="w-full h-auto">`
+                }
+                <div class="shard-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p class="text-[10px] font-bold text-[#f1c40f] uppercase mb-1">${asset.name}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[8px] text-slate-400">${asset.size || '0.0 MB'}</span>
+                        <button class="text-white text-[10px] hover:text-[#f1c40f]" 
+                                onclick="copyAssetLink('${asset.url}')">
+                            🔗 Share Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Global utility for the Share button to maintain coherence with vault UI
+window.copyAssetLink = (url) => {
+    navigator.clipboard.writeText(url);
+    alert("Asset link copied to clipboard.");
+};
+        
+
+
+// js/welcome.js
+const welcomeMsg = "Initializing Universal Social Ecosystem...";
+const welcomeTarget = document.getElementById('welcome-text');
+const subText = document.getElementById('sub-text');
+const loginForm = document.getElementById('login-form');
+
+async function startSequence() {
+    // 1. Typewriter Effect
+    for (let i = 0; i < welcomeMsg.length; i++) {
+        welcomeTarget.textContent += welcomeMsg[i];
+        await new Promise(r => setTimeout(r, 40)); // Speed of "thought"
+    }
+
+    // 2. Reveal Subtext
+    subText.classList.remove('opacity-0');
+    
+    // 3. Reveal Form
+    setTimeout(() => {
+        loginForm.classList.remove('opacity-0', 'translate-y-4');
+        subText.textContent = "GATEWAY READY | STANDBY FOR UPLINK";
+    }, 1000);
+}
+
+window.onload = startSequence;
+
+</script>
+</body>
+</html>
