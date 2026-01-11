@@ -364,6 +364,120 @@ body {
       });
       document.getElementById("msgInput").value = "";
     });
+    // --- Messaging Yewilsaw ---
+    const servers = {
+  iceServers: [
+    { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] },
+  ],
+  iceCandidatePoolSize: 10,
+};
+
+let pc = new RTCPeerConnection(servers);
+let localStream = null;
+let remoteStream = null;
+
+// 1. Setup Media
+async function startWebcam() {
+  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  remoteStream = new MediaStream();
+
+  // Push local tracks to the peer connection
+  localStream.getTracks().forEach((track) => {
+    pc.addTrack(track, localStream);
+  });
+
+  // Pull remote tracks when they arrive
+  pc.ontrack = (event) => {
+    event.streams[0].getTracks().forEach((track) => {
+      remoteStream.addTrack(track);
+    });
+  };
+
+  document.getElementById('localStream').srcObject = localStream;
+  document.getElementById('remoteStream').srcObject = remoteStream;
+}
+
+// 2. Create a Connection "Room" (Caller)
+async function createCall() {
+  const callDoc = doc(collection(db, 'calls'));
+  const offerCandidates = collection(callDoc, 'offerCandidates');
+  const answerCandidates = collection(callDoc, 'answerCandidates');
+
+  const callId = callDoc.id;
+
+  // Get ICE candidates and save to Firestore
+  pc.onicecandidate = (event) => {
+    event.candidate && addDoc(offerCandidates, event.candidate.toJSON());
+  };
+
+  // Create Offer
+  const offerDescription = await pc.createOffer();
+  await pc.setLocalDescription(offerDescription);
+
+  const offer = {
+    sdp: offerDescription.sdp,
+    type: offerDescription.type,
+  };
+
+  await setDoc(callDoc, { offer });
+
+  // Listen for Remote Answer
+  onSnapshot(callDoc, (snapshot) => {
+    const data = snapshot.data();
+    if (!pc.currentRemoteDescription && data?.answer) {
+      const answerDescription = new RTCSessionDescription(data.answer);
+      pc.setRemoteDescription(answerDescription);
+    }
+  });
+
+  // Listen for Remote ICE Candidates
+  onSnapshot(answerCandidates, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === 'added') {
+        const candidate = new RTCIceCandidate(change.doc.data());
+        pc.addIceCandidate(candidate);
+      }
+    });
+  });
+
+  console.log(`Call ID: ${callId} - Share this with your friend!`);
+}
+
+// 3. Join a Call (Callee)
+async function joinCall(callId) {
+  const callDoc = doc(db, 'calls', callId);
+  const answerCandidates = collection(callDoc, 'answerCandidates');
+  const offerCandidates = collection(callDoc, 'offerCandidates');
+
+  pc.onicecandidate = (event) => {
+    event.candidate && addDoc(answerCandidates, event.candidate.toJSON());
+  };
+
+  const callData = (await getDoc(callDoc)).data();
+
+  const offerDescription = callData.offer;
+  await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
+
+  const answerDescription = await pc.createAnswer();
+  await pc.setLocalDescription(answerDescription);
+
+  const answer = {
+    type: answerDescription.type,
+    sdp: answerDescription.sdp,
+  };
+
+  await updateDoc(callDoc, { answer });
+
+  onSnapshot(offerCandidates, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === 'added') {
+        const data = change.doc.data();
+        [span_6](start_span)pc.addIceCandidate(new RTCIceCandidate(data));[span_6](end_span)
+      }
+    });
+  });
+}
+
 
     // --- UPLOADS ---
     document.getElementById("uploadBtn").addEventListener("click", () => {
