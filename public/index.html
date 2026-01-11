@@ -1,86 +1,411 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELEMENTA | Universal Social Ecosystem</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <meta charset="UTF-8" />
+  <title>Elementa | Universal Social Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #007bff;
+      --primary-dark: #0056b3;
+      --bg: #f4f7fa;
+      --white: #ffffff;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --text: #333;
+    }
+    body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); }
+    header { background: var(--primary); color: white; padding: 20px; text-align: center; box-shadow: var(--shadow); }
+    
+    /* Navigation */
+    nav { display: flex; justify-content: center; background: var(--primary-dark); sticky; top: 0; z-index: 100; overflow-x: auto; }
+    nav button { flex: 1; padding: 14px; border: none; background: transparent; color: white; font-size: 15px; cursor: pointer; transition: 0.3s; min-width: 100px; }
+    nav button:hover { background: rgba(255,255,255,0.1); }
+    nav button.active { background: #003d80; font-weight: bold; border-bottom: 3px solid white; }
 
-    <style>
-        :root { --accent-gold: #f1c40f; --bg-obsidian: #020617; }
-        body { background-color: var(--bg-obsidian); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
-        .elementa-glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); }
-        .pane { position: absolute; inset: 0; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s; }
-        .nav-link { cursor: pointer; opacity: 0.4; transition: 0.3s; font-weight: 900; letter-spacing: 0.2em; }
-        .nav-link.active { opacity: 1; color: var(--accent-gold); border-right: 3px solid var(--accent-gold); }
-    </style>
+    /* Layout Containers */
+    main { max-width: 1100px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 850px) { main.dashboard-grid { grid-template-columns: 3fr 1fr; } }
+    
+    section { display: none; background: var(--white); border-radius: 12px; padding: 25px; box-shadow: var(--shadow); animation: fadeIn 0.4s; }
+    section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Components */
+    .post { border-bottom: 1px solid #eee; padding: 15px 0; }
+    .post h3 { margin: 0; color: var(--primary); font-size: 16px; }
+    .actions { display: flex; gap: 15px; margin-top: 10px; }
+    .actions button { background: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    
+    .sidebar-card { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .sidebar-card h3 { margin-top: 0; font-size: 18px; border-bottom: 2px solid var(--primary); display: inline-block; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 8px 0; border-bottom: 1px solid #e0e0e0; cursor: pointer; font-size: 14px; }
+    li:hover { color: var(--primary); }
+
+    input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    button.main-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    
+    #video-container { position: relative; background: #000; border-radius: 8px; overflow: hidden; margin-top: 15px; }
+    video { width: 100%; display: block; }
+    .status-msg { font-size: 14px; margin: 10px 0; color: #666; }
+  </style>
 </head>
-<body class="flex h-screen">
+<head>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --glass: rgba(255, 255, 255, 0.05);
+    --accent: #00d2ff;
+    --text: #e0e0e0;
+}
 
-    <nav id="main-nav" class="hidden w-72 border-r border-white/10 p-8 flex flex-col gap-10 elementa-glass z-[5000]">
-        <div class="text-4xl font-black tracking-tighter">ELEMENTA</div>
-        <div class="flex flex-col gap-8 uppercase text-[10px]">
-            <div onclick="show('feed')" id="nav-feed" class="nav-link active">🏠 Stream</div>
-            <div onclick="show('discovery')" id="nav-discovery" class="nav-link">🌐 Discovery</div>
-            <div onclick="show('vault')" id="nav-vault" class="nav-link">📂 Vault</div>
-            <div onclick="show('profile')" id="nav-profile" class="nav-link">👤 Identity</div>
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+}
+
+.app-container {
+    display: grid;
+    grid-template-columns: 240px 1fr 300px; /* Three-Pane Layout */
+    height: 100-vh;
+}
+
+/* Glassmorphism Effect */
+.sidebar, .right-panel, .top-bar {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.nav-links li {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-links li.active, .nav-links li:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.top-bar {
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.connection-status {
+    color: var(--accent);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.content-area {
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.post-card {
+    background: var(--glass);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.status-dot {
+    height: 8px;
+    width: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+</style></head>
+<body>
+
+  <header>
+    <h1>Elementa</h1>
+    <p>Universal Hub: Feed, Messages, Calls & Streams</p>
+  </header>
+
+  <div id="auth-gate">
+    <section id="guest" class="active" style="max-width: 400px; margin: 40px auto; display: block;">
+      <h2>Join the Community</h2>
+      <form id="signupForm">
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="password" id="password" placeholder="Create Password" required>
+        <button type="submit" class="main-btn">Sign Up / Login</button>
+      </form>
+      <p id="signupStatus" class="status-msg"></p>
+    </section>
+
+    <div id="dashboard" style="display:none;">
+      <nav>
+        <button data-tab="home" class="active">Home</button>
+        <button data-tab="feed">Feed</button>
+        <button data-tab="messages">Messages</button>
+        <button data-tab="streams">Streams</button>
+        <button data-tab="uploads">Uploads</button>
+      </nav>
+
+      <main class="dashboard-grid">
+        <div id="tab-content">
+          <section id="home" class="active">
+            <h2>Welcome, <span id="display-email"></span></h2>
+            <p>You are connected to the Elementa P2P Node.</p>
+            <button id="logoutBtn" style="background:#dc3545; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">Sign Out</button>
+          </section>
+
+          <section id="feed">
+            <h2>Community Feed</h2>
+            <input type="text" id="postInput" placeholder="What's happening?">
+            <button id="submitPost" class="main-btn" style="width: auto; margin-bottom: 20px;">Post</button>
+            <div id="feedPosts"></div>
+          </section>
+
+          <section id="messages">
+            <h2>Direct Messages</h2>
+            <div id="messageList" style="height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 10px;"></div>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="msgInput" placeholder="Type a message...">
+              <button id="sendMsgBtn" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 6px;">Send</button>
+            </div>
+          </section>
+
+          <section id="streams">
+            <h2>Live Broadcast</h2>
+            <button id="goLiveBtn" class="main-btn">Start Streaming</button>
+            <div id="video-container">
+              <video id="localStream" autoplay playsinline muted></video>
+            </div>
+          </section>
+
+          <section id="uploads">
+            <h2>Cloud Storage</h2>
+            <input type="file" id="fileInput">
+            <button id="uploadBtn" class="main-btn">Upload to Firebase</button>
+            <div id="uploadStatus" class="status-msg"></div>
+            <div id="uploadList"></div>
+          </section>
         </div>
-    </nav>
 
-    <main id="viewport" class="relative flex-1 bg-black overflow-hidden"></main>
+        <aside id="sidebar">
+          <div class="sidebar-card">
+            <h3>Trending Topics</h3>
+            <ul id="trendingTopics">
+              <li>#javascript</li>
+              <li>#web3</li>
+              <li>#elementa</li>
+            </ul>
+          </div>
+          <div class="sidebar-card">
+            <h3>Active Streams</h3>
+            <ul id="activeStreams">
+              <li style="color: #666; font-style: italic;">No streams live...</li>
+            </ul>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
 
-    <script type="module">
-        const config = {
-            apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
-            authDomain: "university-outreach-log.firebaseapp.com",
-            projectId: "university-outreach-log",
-            storageBucket: "university-outreach-log.firebasestorage.app",
-            messagingSenderId: "566149647802",
-            appId: "1:566149647802:web:490c7cc3d10b7cd7732183"
-        };
-        firebase.initializeApp(config);
-        const db = firebase.firestore();
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        const Templates = {
-            login: `
-                <div class="pane flex items-center justify-center bg-[#020617] z-[9999]">
-                    <div class="elementa-glass p-12 rounded-[60px] max-w-sm text-center">
-                        <h2 class="text-[#f1c40f] text-[10px] font-black tracking-[0.5em] mb-10 uppercase">Neural Calibration</h2>
-                        <button onclick="login()" class="w-full bg-[#f1c40f] text-black py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all">Establish Link</button>
-                    </div>
-                </div>`,
-            feed: `<div class="pane p-10 overflow-y-auto">
-                    <h2 class="text-5xl font-black uppercase mb-10">Stream</h2>
-                    <div id="feed-content" class="max-w-xl space-y-6"></div>
-                  </div>`,
-            profile: `<div class="pane p-10 flex flex-col items-center justify-center">
-                        <div class="w-40 h-40 bg-gradient-to-tr from-yellow-500 to-red-600 rounded-[40px] mb-8 rotate-6 shadow-2xl"></div>
-                        <h1 class="text-5xl font-black uppercase">Yewilsaw Chanie</h1>
-                        <p class="text-slate-500 tracking-[0.3em] uppercase text-[10px] mt-4">Computational Lead</p>
-                      </div>`
-        };
+    // PROJECT CONFIG (Using your provided details)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9fmgduk-bcSRTPL6FdcKKgqvTtQoICpE",
+      authDomain: "university-outreach-log.firebaseapp.com",
+      projectId: "university-outreach-log",
+      storageBucket: "university-outreach-log.firebasestorage.app",
+      messagingSenderId: "566149647802",
+      appId: "1:566149647802:web:490c7cc3d10b7cd7732183"
+    };
 
-        window.show = (view) => {
-            const vp = document.getElementById('viewport');
-            const newPane = document.createElement('div');
-            newPane.innerHTML = Templates[view];
-            vp.appendChild(newPane);
-            
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
-        };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-        window.login = async () => {
-            await firebase.auth().signInAnonymously();
-            document.getElementById('main-nav').classList.remove('hidden');
-            document.getElementById('viewport').innerHTML = "";
-            show('feed');
-        };
+    // --- AUTH LOGIC ---
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (loginErr) {
+          document.getElementById("signupStatus").textContent = `Error: ${loginErr.message}`;
+        }
+      }
+    });
 
-        window.onload = () => { document.getElementById('viewport').innerHTML = Templates.login; };
-    </script>
+    document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      const guestView = document.getElementById("guest");
+      const dashView = document.getElementById("dashboard");
+      if (user) {
+        guestView.style.display = "none";
+        dashView.style.display = "block";
+        document.getElementById("display-email").textContent = user.email;
+        initRealtimeData();
+      } else {
+        guestView.style.display = "block";
+        dashView.style.display = "none";
+      }
+    });
+
+    // --- NAVIGATION ---
+    const buttons = document.querySelectorAll("nav button");
+    const sections = document.querySelectorAll("#tab-content section");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    // --- REAL-TIME ENGINE ---
+    function initRealtimeData() {
+      // Feed
+      const feedQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(20));
+      onSnapshot(feedQuery, (snap) => {
+        const container = document.getElementById("feedPosts");
+        container.innerHTML = "";
+        snap.forEach(doc => {
+          const post = doc.data();
+          container.innerHTML += `
+            <article class="post">
+              <h3>@${post.author.split('@')[0]}</h3>
+              <p>${post.content}</p>
+              <div class="actions"><button>Like</button><button>Comment</button></div>
+            </article>`;
+        });
+      });
+
+      // Global Chat
+      const msgQuery = query(collection(db, "messages"), orderBy("createdAt", "asc"), limit(50));
+      onSnapshot(msgQuery, (snap) => {
+        const container = document.getElementById("messageList");
+        container.innerHTML = "";
+        snap.forEach(doc => {
+          const m = doc.data();
+          container.innerHTML += `<p><strong>${m.user}:</strong> ${m.text}</p>`;
+        });
+        container.scrollTop = container.scrollHeight;
+      });
+
+      // Streams Sidebar
+      const streamQuery = query(collection(db, "streams"), orderBy("createdAt", "desc"), limit(5));
+      onSnapshot(streamQuery, (snap) => {
+        const list = document.getElementById("activeStreams");
+        list.innerHTML = snap.empty ? "<li>No active streams</li>" : "";
+        snap.forEach(doc => {
+          const s = doc.data();
+          list.innerHTML += `<li>LIVE: ${s.title} (By ${s.host.split('@')[0]})</li>`;
+        });
+      });
+    }
+
+    // --- ACTIONS ---
+    document.getElementById("submitPost").addEventListener("click", async () => {
+      const content = document.getElementById("postInput").value;
+      if (!content) return;
+      await addDoc(collection(db, "posts"), {
+        author: auth.currentUser.email,
+        content: content,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById("postInput").value = "";
+    });
+
+    document.getElementById("sendMsgBtn").addEventListener("click", async () => {
+      const text = document.getElementById("msgInput").value;
+      if (!text) return;
+      await addDoc(collection(db, "messages"), {
+        user: auth.currentUser.email.split('@')[0],
+        text: text,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById("msgInput").value = "";
+    });
+
+    // --- UPLOADS ---
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+      const file = document.getElementById("fileInput").files[0];
+      if (!file) return;
+      const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on('state_changed', 
+        (snap) => {
+          const progress = (snap.bytesTransferred / snap.totalBytes) * 100;
+          document.getElementById("uploadStatus").textContent = `Uploading: ${progress.toFixed(0)}%`;
+        }, 
+        null, 
+        async () => {
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          await addDoc(collection(db, "uploads"), { name: file.name, url, createdAt: serverTimestamp() });
+          document.getElementById("uploadStatus").textContent = "Upload Complete!";
+        }
+      );
+    });
+
+    // --- WEB RTC / STREAMING ---
+    document.getElementById("goLiveBtn").addEventListener("click", async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById("localStream").srcObject = stream;
+        
+        // Signaling mock (in a full SFU setup, you'd send the SDP offer here)
+        await addDoc(collection(db, "streams"), {
+          host: auth.currentUser.email,
+          title: "Community Hangout",
+          createdAt: serverTimestamp()
+        });
+        
+        document.getElementById("goLiveBtn").textContent = "🔴 LIVE";
+        document.getElementById("goLiveBtn").style.background = "#dc3545";
+      } catch (err) {
+        alert("Camera access denied or unavailable.");
+      }
+    });
+  </script>
 </body>
 </html>
+          
