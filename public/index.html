@@ -402,6 +402,28 @@ body {
     await addDoc(collection(db, "streams"), { host: auth.currentUser.email, title: "P2P Stream", callId: callId, createdAt: serverTimestamp() });
     document.getElementById("goLiveBtn").textContent = "🔴 LIVE";
   });
+  // --- NAVIGATION LOGIC ---
+const tabs = document.querySelectorAll("nav button");
+const sections = document.querySelectorAll("main section");
+
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    // 1. Remove 'active' class from all buttons and sections
+    tabs.forEach(t => t.classList.remove("active"));
+    sections.forEach(s => s.classList.remove("active"));
+
+    // 2. Add 'active' class to clicked button
+    tab.classList.add("active");
+
+    // 3. Show the corresponding section based on data-tab attribute
+    const targetId = tab.getAttribute("data-tab");
+    const targetSection = document.getElementById(targetId);
+    if (targetSection) {
+      targetSection.classList.add("active");
+    }
+  });
+});
+  
 </script>
 </body>
 </html>
