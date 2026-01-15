@@ -225,6 +225,16 @@ body {
         </div>
 
         <aside id="sidebar">
+          <div class="relative group hidden md:block">
+    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors"></i>
+    <input 
+        type="text" 
+        id="global-search" 
+        oninput="filterPosts()"
+        placeholder="Search Elementa..." 
+        class="bg-slate-100 border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-violet-500 focus:bg-white outline-none transition-all"
+    />
+          </div>
           <div class="sidebar-card">
             <h3>Trending Topics</h3>
             <ul id="trendingTopics">
@@ -243,7 +253,16 @@ body {
       </main>
     </div>
   </div>
-
+<div class="relative group hidden md:block">
+    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors"></i>
+    <input 
+        type="text" 
+        id="global-search" 
+        oninput="filterPosts()"
+        placeholder="Search Elementa..." 
+        class="bg-slate-100 border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-violet-500 focus:bg-white outline-none transition-all"
+    />
+</div>
            
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -302,6 +321,38 @@ body {
       dashView.style.display = "none";
     }
   });
+  // search logic 
+  function filterPosts() {
+    const query = document.getElementById('global-search').value.toLowerCase();
+    const posts = document.querySelectorAll('#posts-container > div');
+
+    posts.forEach(post => {
+        const text = post.innerText.toLowerCase();
+        if (text.includes(query)) {
+            post.style.display = "block";
+            post.classList.add('animate-in', 'fade-in', 'duration-300'); // Optional animation
+        } else {
+            post.style.display = "none";
+        }
+    });
+
+    // Handle "No Results" state
+    const container = document.getElementById('posts-container');
+    const visiblePosts = container.querySelectorAll('div[style="display: block;"]').length;
+    
+    if (visiblePosts === 0 && query !== "") {
+        if (!document.getElementById('no-results')) {
+            container.insertAdjacentHTML('beforeend', `
+                <div id="no-results" class="text-center py-10 text-slate-400">
+                    <p>No matches found for "${query}"</p>
+                </div>
+            `);
+        }
+    } else {
+        const msg = document.getElementById('no-results');
+        if (msg) msg.remove();
+    }
+  }
 
   // --- REAL-TIME ENGINE ---
   function initRealtimeData() {
